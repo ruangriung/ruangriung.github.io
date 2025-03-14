@@ -227,6 +227,36 @@
         .dark-mode .progress-text {
             color: #ffffff;
         }
+        
+        /* Gaya tombol download */
+.app-download-buttons {
+    margin-top: 20px; /* Jarak dari elemen di atasnya */
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Jarak antara tombol */
+    flex-wrap: wrap; /* Agar tombol bisa pindah baris di layar kecil */
+}
+
+.btn-download {
+    background-color: #1877f2; /* Warna hijau */
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Jarak antara ikon dan teks */
+}
+
+.btn-download:hover {
+    background-color: #166fe5; /* Warna hijau yang lebih gelap saat hover */
+    transform: translateY(-2px);
+}
+
+.btn-download i {
+    font-size: 1.2rem; /* Ukuran ikon */
+}
     </style>
 </head>
 <body>
@@ -287,6 +317,15 @@
 
 
     </div>
+    <!-- Tombol Play Store dan App Store -->
+<div class="app-download-buttons">
+    <a href="https://play.google.com/store/apps/details?id=com.example.ruangriung" target="_blank" class="btn btn-download">
+        <i class="fab fa-google-play"></i> Download di Play Store
+    </a>
+    <a href="https://apps.apple.com/app/id123456789" target="_blank" class="btn btn-download">
+        <i class="fab fa-apple"></i> Download di App Store
+    </a>
+</div>
 
     <!-- Footer -->
     <footer>
