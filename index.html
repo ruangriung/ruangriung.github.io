@@ -283,6 +283,52 @@
     height: auto;
     border-radius: 10px;
 }
+
+ /* Gaya Cookie Consent Banner */
+    .cookie-consent {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #333;
+        color: #fff;
+        padding: 15px;
+        text-align: center;
+        z-index: 1000;
+        display: none; /* Awalnya disembunyikan */
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .cookie-consent p {
+        margin: 0 0 10px 0;
+        font-size: 0.9rem;
+    }
+
+    .cookie-consent button {
+        padding: 5px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 0 5px;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .cookie-consent button:hover {
+        opacity: 0.9;
+    }
+
+    #acceptCookies {
+        background-color: #0d6efd; /* Warna biru Bootstrap */
+        color: #fff;
+        border: none;
+    }
+
+    #declineCookies {
+        background-color: #6c757d; /* Warna abu-abu Bootstrap */
+        color: #fff;
+        border: none;
+    }
+	
     </style>
 </head>
 <body>
@@ -387,6 +433,13 @@
             Didesain oleh <a href="https://ariftirtana.com" target="_blank">ArifTirtana.com</a>.
         </p>
     </footer>
+	
+	<!-- Cookie Consent Banner -->
+<div class="cookie-consent" id="cookieConsent">
+    <p>Kami menggunakan cookie untuk meningkatkan pengalaman Anda. Dengan melanjutkan, Anda setuju dengan penggunaan cookie kami.</p>
+    <button id="acceptCookies" class="btn btn-primary">Setuju</button>
+    <button id="declineCookies" class="btn btn-secondary">Tolak</button>
+</div>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -415,7 +468,7 @@
         typeText();
 
         let progress = 0;
-        const duration = 7000; // Durasi loading screen (7 detik)
+        const duration = 5000; // Durasi loading screen (7 detik)
         const intervalTime = 50; // Interval update progress bar (ms)
         const increment = (intervalTime / duration) * 100; // Persentase peningkatan per interval
 
@@ -513,8 +566,38 @@
 setTimeout(() => {
     const modal = new bootstrap.Modal(document.getElementById('ruangriungModal'));
     modal.show();
-}, 11000);
+}, 18000);
 
+// Fungsi untuk menampilkan cookie consent banner
+    function showCookieConsent() {
+        const cookieConsent = document.getElementById('cookieConsent');
+        if (!localStorage.getItem('cookieConsent')) {
+            cookieConsent.style.display = 'block'; // Tampilkan banner
+        }
+    }
+
+    // Fungsi untuk menyetujui cookie
+    function acceptCookies() {
+        localStorage.setItem('cookieConsent', 'accepted');
+        document.getElementById('cookieConsent').style.display = 'none'; // Sembunyikan banner
+        console.log("Cookies diterima!");
+    }
+
+    // Fungsi untuk menolak cookie
+    function declineCookies() {
+        localStorage.setItem('cookieConsent', 'declined');
+        document.getElementById('cookieConsent').style.display = 'none'; // Sembunyikan banner
+        console.log("Cookies ditolak!");
+    }
+
+    // Event listener untuk tombol setuju dan tolak
+    document.getElementById('acceptCookies').addEventListener('click', acceptCookies);
+    document.getElementById('declineCookies').addEventListener('click', declineCookies);
+
+    // Tampilkan banner setelah konten utama dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(showCookieConsent, 11000); // Tampilkan banner setelah 1 detik
+    });
     </script>
 </body>
 </html>
