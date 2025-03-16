@@ -452,7 +452,7 @@
         const loadingProgressText = document.getElementById('loadingProgressText');
 
         // Teks yang akan ditampilkan dengan efek mengetik
-        const text = "Mohon tunggu ya, halaman Ruangriung sedang dimuat...";
+        const text = "Memuat halaman...";
         let index = 0;
 
         // Fungsi untuk mengetik teks
@@ -460,7 +460,7 @@
             if (index < text.length) {
                 loadingText.textContent += text.charAt(index);
                 index++;
-                setTimeout(typeText, 100); // Kecepatan mengetik (ms)
+                setTimeout(typeText, 80); // Kecepatan mengetik (ms)
             }
         };
 
@@ -468,7 +468,7 @@
         typeText();
 
         let progress = 0;
-        const duration = 3000; // Durasi loading screen (3 detik)
+        const duration = 2000; // Durasi loading screen (3 detik)
         const intervalTime = 50; // Interval update progress bar (ms)
         const increment = (intervalTime / duration) * 100; // Persentase peningkatan per interval
 
@@ -566,7 +566,7 @@
 setTimeout(() => {
     const modal = new bootstrap.Modal(document.getElementById('ruangriungModal'));
     modal.show();
-}, 18000);
+}, 15000);
 
 // Fungsi untuk menampilkan cookie consent banner
     function showCookieConsent() {
@@ -596,7 +596,7 @@ setTimeout(() => {
 
     // Tampilkan banner setelah konten utama dimuat
     document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(showCookieConsent, 11000); // Tampilkan banner setelah 1 detik
+        setTimeout(showCookieConsent, 7000); // Tampilkan banner setelah 1 detik
     });
     </script>
 </body>
