@@ -298,7 +298,7 @@
     <div class="logo">
         <img id="logoImage" src="logo-light.png" alt="Ruangriung Logo">
         <!-- Tombol Dark Mode di bawah logo -->
-        <button id="themeToggle">Dark Mode</button>
+        <button id="themeToggle">Toggle Dark Mode</button>
     </div>
 
     <!-- Form Random Spinner -->
@@ -323,20 +323,20 @@
     </div>
 
     <!-- Floating Facebook Button -->
-    <button class="floating-facebook" onclick="window.open('https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew', '_blank')">
+    <button class="floating-facebook" onclick="window.open('https://facebook.com', '_blank')">
         <i class="fab fa-facebook-f"></i>
     </button>
 
     <!-- Footer -->
     <footer>
-        &copy; <span id="currentYear"></span> Ruangriung Team dibuat dengan ♥️ oleh <a href="https://ariftirtana.com" target="_blank">ArifTirtana.com</a>
+        &copy; <span id="currentYear"></span> Ruangriung Team dibuat dengan ♥️ oleh ArifTirtana.com
     </footer>
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Confetti JS -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script> 
+    <script>
         // Audio untuk efek suara
         const spinSound = new Audio('spin-sound.wav');
         const resultSound = new Audio('result-sound.wav');
@@ -344,6 +344,10 @@
         // History hasil
         const historyList = document.getElementById('historyList');
 
+        // Daftar item yang tersedia untuk diacak
+        let availableItems = [];
+
+        // Fungsi untuk menambahkan hasil ke history
         function addToHistory(result) {
             const li = document.createElement('li');
             li.textContent = result;
@@ -375,18 +379,24 @@
             document.getElementById('inputText').value = '';
             document.getElementById('result').textContent = '';
             document.getElementById('historyList').innerHTML = '';
+            availableItems = []; // Reset daftar item yang tersedia
         });
 
         // Spinner
         document.getElementById('spinButton').addEventListener('click', function () {
             const inputText = document.getElementById('inputText').value;
-            const items = inputText.split(',').map(item => item.trim()).filter(item => item.length > 0);
+            let items = inputText.split(',').map(item => item.trim()).filter(item => item.length > 0);
 
-            if (items.length < 2) {
+            // Jika daftar item yang tersedia kosong, isi ulang dengan semua item
+            if (availableItems.length === 0) {
+                availableItems = [...items];
+            }
+
+            if (availableItems.length === 0) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Masukkan setidaknya dua item!',
+                    text: 'Semua item sudah terpilih! Silakan reset untuk memulai lagi.',
                 });
                 return;
             }
@@ -423,15 +433,18 @@
             resultDiv.textContent = 'Memutar...';
 
             const spinInterval = setInterval(() => {
-                const randomIndex = Math.floor(Math.random() * items.length);
-                resultDiv.textContent = items[randomIndex];
+                const randomIndex = Math.floor(Math.random() * availableItems.length);
+                resultDiv.textContent = availableItems[randomIndex];
             }, 100);
 
             setTimeout(() => {
                 clearInterval(spinInterval);
-                const randomIndex = Math.floor(Math.random() * items.length);
-                const result = items[randomIndex];
+                const randomIndex = Math.floor(Math.random() * availableItems.length);
+                const result = availableItems[randomIndex];
                 resultDiv.textContent = `Hasil: ${result}`;
+
+                // Hapus item yang sudah terpilih dari daftar yang tersedia
+                availableItems.splice(randomIndex, 1);
 
                 // Tampilkan SweetAlert2 dan confetti
                 const quotes = [
