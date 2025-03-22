@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<!-- Meta Tag Dasar -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Deskripsi Website -->
+<meta name="description" content="Random Spinner adalah website untuk mengacak teks atau nama dengan fitur spinner interaktif, efek confetti, dan notifikasi SweetAlert2. Cocok untuk pengundian acak, permainan, atau kegiatan seru lainnya. Dilengkapi dengan tema gelap, history hasil, dan suara efek yang menarik. Dikembangkan oleh Ruangriung Team dengan ♥️ oleh ArifTirtana.com.">
+
+<!-- Kata Kunci (Keywords) -->
+<meta name="keywords" content="random spinner, acak nama, spinner interaktif, efek confetti, SweetAlert2, pengundian acak, permainan acak, tema gelap, history hasil, suara efek, Ruangriung Team, ArifTirtana.com">
+
+<!-- Author -->
+<meta name="author" content="Arif Tirtana">
+
+<!-- Open Graph Meta Tags (Untuk Media Sosial) -->
+<meta property="og:title" content="Random Spinner - Acak Teks atau Nama dengan Spinner Interaktif">
+<meta property="og:description" content="Random Spinner adalah website untuk mengacak teks atau nama dengan fitur spinner interaktif, efek confetti, dan notifikasi SweetAlert2. Cocok untuk pengundian acak, permainan, atau kegiatan seru lainnya.">
+<meta property="og:image" content="ruangriung.png">
+<meta property="og:url" content="https://www.ruangriung.my.id/random-spinner">
+<meta property="og:type" content="website">
+
+<!-- Twitter Meta Tags -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Random Spinner - Acak Teks atau Nama dengan Spinner Interaktif">
+<meta name="twitter:description" content="Random Spinner adalah website untuk mengacak teks atau nama dengan fitur spinner interaktif, efek confetti, dan notifikasi SweetAlert2. Cocok untuk pengundian acak, permainan, atau kegiatan seru lainnya.">
+<meta name="twitter:image" content="ruangriung.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+<link rel="icon" type="image/png" sizes="16x16" href="logo.png">
+<link rel="apple-touch-icon" sizes="180x180" href="logo.png">
+    <title>Random Spinner</title>
+    <!-- Font Poppins dari Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        /* Gunakan font Poppins */
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .logo {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .logo img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode .container {
+            background-color: #444;
+            color: #fff;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        body.dark-mode h1 {
+            color: #fff;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode textarea {
+            background-color: #555;
+            color: #fff;
+            border-color: #777;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            transition: transform 0.2s ease, background-color 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #progressBar {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: none;
+        }
+
+        #progressBarFill {
+            width: 0;
+            height: 100%;
+            background-color: #28a745;
+            transition: width 0.1s linear;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        body.dark-mode #result {
+            color: #fff;
+        }
+
+        .spinner {
+            display: none;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #history {
+            margin-top: 20px;
+            text-align: left;
+            width: 100%;
+        }
+
+        #historyList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #historyList li {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode #historyList li {
+            background-color: #555;
+            color: #fff;
+        }
+
+        #resetButton {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #themeToggle {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #customButtonText {
+            width: 100%;
+            max-width: 200px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        /* Floating Facebook Button */
+        .floating-facebook {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #1877f2; /* Warna Facebook */
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .floating-facebook:hover {
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        body.dark-mode footer a {
+            color: #ccc;
+        }
+
+        /* Responsif untuk layar kecil */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            textarea {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+                max-width: 150px;
+            }
+
+            #result {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Logo Ruangriung di luar form -->
+    <div class="logo">
+        <img id="logoImage" src="logo-light.png" alt="Ruangriung Logo">
+        <!-- Tombol Dark Mode di bawah logo -->
+        <button id="themeToggle">Dark Mode</button>
+    </div>
+
+    <!-- Form Random Spinner -->
+    <div class="container">
+        <h1>Random Spinner</h1>
+        <textarea id="inputText" placeholder="Masukkan teks atau nama, pisahkan dengan koma"></textarea>
+        <input type="text" id="customButtonText" placeholder="Custom Nama Tombol">
+        <button id="spinButton">
+            <i class="fas fa-sync-alt spinner" id="spinnerIcon"></i>
+            <span id="buttonText">Putar!</span>
+        </button>
+        <div id="progressBar">
+            <div id="progressBarFill"></div>
+        </div>
+        <div id="result"></div>
+        <!-- Tombol Reset dipindahkan ke bawah hasil -->
+        <button id="resetButton">Reset</button>
+        <div id="history">
+            <h2>History Hasil</h2>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+
+    <!-- Floating Facebook Button -->
+    <button class="floating-facebook" onclick="window.open('https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew', '_blank')">
+        <i class="fab fa-facebook-f"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer>
+        &copy; <span id="currentYear"></span> Ruangriung Team dibuat dengan ♥️ oleh <a href="https://ariftirtana.com" target="_blank">ArifTirtana.com</a>
+    </footer>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script> 
+        // Audio untuk efek suara
+        const spinSound = new Audio('spin-sound.wav');
+        const resultSound = new Audio('result-sound.mp3');
+
+        // History hasil
+        const historyList = document.getElementById('historyList');
+
+        function addToHistory(result) {
+            const li = document.createElement('li');
+            li.textContent = result;
+            historyList.appendChild(li);
+        }
+
+        // Custom nama tombol
+        document.getElementById('customButtonText').addEventListener('input', function () {
+            const customText = this.value;
+            document.getElementById('buttonText').textContent = customText || 'Putar!';
+        });
+
+        // Toggle Dark Mode
+        const themeToggle = document.getElementById('themeToggle');
+        const logoImage = document.getElementById('logoImage');
+
+        themeToggle.addEventListener('click', function () {
+            document.body.classList.toggle('dark-mode');
+            // Ganti logo berdasarkan mode
+            if (document.body.classList.contains('dark-mode')) {
+                logoImage.src = 'logo-dark.png'; // Logo untuk dark mode
+            } else {
+                logoImage.src = 'logo-light.png'; // Logo untuk light mode
+            }
+        });
+
+        // Reset
+        document.getElementById('resetButton').addEventListener('click', function () {
+            document.getElementById('inputText').value = '';
+            document.getElementById('result').textContent = '';
+            document.getElementById('historyList').innerHTML = '';
+        });
+
+        // Spinner
+        document.getElementById('spinButton').addEventListener('click', function () {
+            const inputText = document.getElementById('inputText').value;
+            const items = inputText.split(',').map(item => item.trim()).filter(item => item.length > 0);
+
+            if (items.length < 2) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Masukkan setidaknya dua item!',
+                });
+                return;
+            }
+
+            // Disable tombol saat spinner berjalan
+            const spinButton = document.getElementById('spinButton');
+            spinButton.disabled = true;
+            document.getElementById('buttonText').textContent = 'Memutar...';
+            document.getElementById('spinnerIcon').style.display = 'inline-block';
+            document.getElementById('progressBar').style.display = 'block';
+
+            // Mainkan efek suara
+            spinSound.play();
+
+            // Animasi progress bar
+            const progressBarFill = document.getElementById('progressBarFill');
+            const spinDuration = 3000; // Durasi spinner (3 detik)
+            const startTime = Date.now();
+
+            const updateProgressBar = () => {
+                const elapsedTime = Date.now() - startTime;
+                const progress = (elapsedTime / spinDuration) * 100;
+                progressBarFill.style.width = `${progress}%`;
+
+                if (elapsedTime < spinDuration) {
+                    requestAnimationFrame(updateProgressBar);
+                }
+            };
+
+            updateProgressBar();
+
+            // Animasi spinner
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Memutar...';
+
+            const spinInterval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * items.length);
+                resultDiv.textContent = items[randomIndex];
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(spinInterval);
+                const randomIndex = Math.floor(Math.random() * items.length);
+                const result = items[randomIndex];
+                resultDiv.textContent = `Hasil: ${result}`;
+
+                // Tampilkan SweetAlert2 dan confetti
+                const quotes = [
+                    "Selamat! Kamu hebat!",
+                    "Mantap! Hasilnya keren!",
+                    "Lanjutkan! Semangat!",
+                ];
+                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Hasil Acak',
+                    text: `Selamat! Hasilnya adalah: ${result}\n${randomQuote}`,
+                    confirmButtonText: 'OK',
+                }).then(() => {
+                    // Trigger confetti
+                    confetti({
+                        particleCount: 150,
+                        spread: 60,
+                        origin: { y: 0.6 },
+                        colors: ['#ff0000', '#00ff00', '#0000ff'],
+                    });
+                    // Mainkan efek suara
+                    resultSound.play();
+                });
+
+                // Tambahkan ke history
+                addToHistory(result);
+
+                // Reset tombol dan progress bar
+                spinButton.disabled = false;
+                document.getElementById('buttonText').textContent = 'Putar!';
+                document.getElementById('spinnerIcon').style.display = 'none';
+                document.getElementById('progressBar').style.display = 'none';
+                progressBarFill.style.width = '0';
+            }, spinDuration);
+        });
+
+        // Tahun dinamis di footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
