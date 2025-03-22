@@ -39,7 +39,6 @@
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
-        /* Gunakan font Poppins */
         body {
             font-family: 'Poppins', Arial, sans-serif;
             background-color: #f4f4f4;
@@ -168,8 +167,17 @@
             color: #333;
         }
 
+        #result span.hasil-text {
+            color: #28a745; /* Warna hijau untuk kata "Hasil" */
+            font-weight: bold;
+        }
+
         body.dark-mode #result {
             color: #fff;
+        }
+
+        body.dark-mode #result span.hasil-text {
+            color: #4caf50; /* Warna hijau yang lebih terang untuk dark mode */
         }
 
         .spinner {
@@ -268,7 +276,7 @@
             color: #666;
         }
 
-        body.dark-mode footer a {
+        body.dark-mode footer a{
             color: #ccc;
         }
 
@@ -294,14 +302,14 @@
     </style>
 </head>
 <body>
-   <!-- Logo Ruangriung di luar form dengan link ke home -->
-<div class="logo">
-    <a href="https://ruangriung.my.id" target="_blank">
-        <img id="logoImage" src="logo-light.png" alt="Ruangriung Logo - Random Spinner">
-    </a>
-    <!-- Tombol Dark Mode di bawah logo -->
-    <button id="themeToggle">Toggle Dark Mode</button>
-</div>
+    <!-- Logo Ruangriung di luar form dengan link ke home -->
+    <div class="logo">
+        <a href="https://www.ariftirtana.com" target="_blank">
+            <img id="logoImage" src="logo-light.png" alt="Ruangriung Logo - Random Spinner">
+        </a>
+        <!-- Tombol Dark Mode di bawah logo -->
+        <button id="themeToggle">Toggle Dark Mode</button>
+    </div>
 
     <!-- Form Random Spinner -->
     <div class="container">
@@ -325,13 +333,13 @@
     </div>
 
     <!-- Floating Facebook Button -->
-    <button class="floating-facebook" onclick="window.open('https://facebook.com', '_blank')">
+    <button class="floating-facebook" onclick="window.open('https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew', '_blank')">
         <i class="fab fa-facebook-f"></i>
     </button>
 
     <!-- Footer -->
     <footer>
-        &copy; <span id="currentYear"></span> Ruangriung Team dibuat dengan ♥️ oleh ArifTirtana.com
+        &copy; <span id="currentYear"></span> Ruangriung Team dibuat dengan ♥️ oleh <a href="https://ariftirtana.com" target="_blank">ArifTirtana.com</a>
     </footer>
 
     <!-- SweetAlert2 JS -->
@@ -443,7 +451,7 @@
                 clearInterval(spinInterval);
                 const randomIndex = Math.floor(Math.random() * availableItems.length);
                 const result = availableItems[randomIndex];
-                resultDiv.textContent = `Hasil: ${result}`;
+                resultDiv.innerHTML = `<span class="hasil-text">Hasil:</span> ${result}`; // Modifikasi di sini
 
                 // Hapus item yang sudah terpilih dari daftar yang tersedia
                 availableItems.splice(randomIndex, 1);
