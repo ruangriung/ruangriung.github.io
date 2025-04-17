@@ -919,6 +919,44 @@
     margin-top: 5px;
     font-style: italic;
 }
+#clear-btn {
+    background: var(--bg);
+    color: var(--danger);
+    border: none;
+    padding: 0 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 52px;
+    justify-content: center;
+    height: 35px;
+    margin-bottom: 15px;
+}
+
+#clear-btn i {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#clear-btn:hover {
+    background: rgba(214, 48, 49, 0.1);
+    transform: translateY(-2px);
+}
+
+#clear-btn:active {
+    transform: translateY(0);
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.1);
+}
     </style>
 </head>
 <body>
@@ -934,6 +972,7 @@
         </div>
         
         <div class="card">
+        	<button id="clear-btn" title="Clear Prompt"><i class="fas fa-trash"></i> Clear</button>
             <div class="input-group">
                 <i class="fas fa-wand-magic-sparkles input-icon"></i>
                 <textarea id="prompt-textarea" placeholder="Describe your dream image in detail... (e.g. A cyberpunk cityscape at night with neon lights, 8k ultra detailed, cinematic lighting)"></textarea>
@@ -941,6 +980,7 @@
                     <button id="enhance-btn" title="Enhance Prompt"><i class="fas fa-brain"></i> Enhance</button>
                     <button id="generate-btn"><i class="fas fa-magic-wand-sparkles"></i> Generate</button>
                 </div>
+
             </div>
             
             <div class="settings-grid">
@@ -1369,6 +1409,7 @@
             const heightValue = document.getElementById('height-value');
             const aspectRatioDisplay = document.getElementById('aspect-ratio-display');
             const modelSelect = document.getElementById('model');
+            const clearBtn = document.getElementById('clear-btn');
             
             // Modal elements
             const apiKeyModal = document.getElementById('api-key-modal');
@@ -1431,6 +1472,11 @@
             widthSlider.addEventListener('input', updateDimensionSliders);
             heightSlider.addEventListener('input', updateDimensionSliders);
             resetHistoryBtn.addEventListener('click', resetHistory);
+            
+            clearBtn.addEventListener('click', function() {
+    promptTextarea.value = '';
+    promptTextarea.focus();
+});
             
             // Model select change listener
             modelSelect.addEventListener('change', function() {
