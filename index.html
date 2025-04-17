@@ -1,603 +1,2009 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Meta Tag SEO -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ruangriung sedang dalam pengembangan! Kami sedang menyiapkan website keren dengan fitur-fitur menarik. Pantau terus perkembangannya!">
-    <meta name="keywords" content="Ruangriung, Under Construction, Website Development, Fitur Menarik, Countdown">
-    <meta name="author" content="Ruangriung Team">
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="Ruangriung - Under Construction">
-    <meta property="og:description" content="Ruangriung sedang dalam pengembangan! Kami sedang menyiapkan website keren dengan fitur-fitur menarik. Pantau terus perkembangannya!">
-    <meta property="og:image" content="https://ruangriung.my.id/logo-light.png"> <!-- Ganti dengan URL gambar logo Anda -->
-    <meta property="og:url" content="https://RuangRiung.my.id"> <!-- Ganti dengan URL website Anda -->
-    <meta property="og:type" content="website">
-    <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Ruangriung - Under Construction">
-    <meta name="twitter:description" content="Ruangriung sedang dalam pengembangan! Kami sedang menyiapkan website keren dengan fitur-fitur menarik. Pantau terus perkembangannya!">
-    <meta name="twitter:image" content="https://ruangriung.my
-    id/logo-light.png"> <!-- Ganti dengan URL gambar logo Anda -->
-    <title>RuangRiung | AI IMAGE</title>
-	<link rel="icon" type="image/png" href="logo.png">
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome 6.7.2 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts: Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
+    	<!-- Meta Description -->
+<meta name="description" content="Generate stunning AI art with multiple styles - from photorealistic to anime, cyberpunk to Studio Ghibli. Create professional photography, digital art, oil paintings and more with advanced AI image generation.">
+
+<!-- Meta Theme Color (sesuai warna primary di CSS) -->
+<meta name="theme-color" content="#6c5ce7">
+<meta name="msapplication-navbutton-color" content="#6c5ce7">
+<meta name="apple-mobile-web-app-status-bar-style" content="#6c5ce7">
+
+<!-- Open Graph / Social Media Meta (opsional tapi recommended) -->
+<meta property="og:title" content="RuangRiung AI Image Generator - Create Stunning Digital Art">
+<meta property="og:description" content="Transform text into beautiful AI-generated artwork in various styles including photography, anime, digital painting and more.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ruangriung.my.id">
+<meta property="og:image" content="assets/logo.png">
+    <title>RuangRiung AI Image Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c0;
+            --primary-light: #a29bfe;
+            --bg: #e0e5ec;
+            --shadow-light: #ffffff;
+            --shadow-dark: #a3b1c6;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+        }
+        
+        .dark-mode {
+            --primary: #a29bfe;
+            --primary-dark: #847bd1;
+            --primary-light: #6c5ce7;
+            --bg: #2d3436;
+            --shadow-light: #3c4245;
+            --shadow-dark: #1e2224;
+            --text: #dfe6e9;
+            --text-light: #b2bec3;
+            --success: #55efc4;
+            --danger: #ff7675;
+            --warning: #ffeaa7;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #ffffff;
-            color: #000000;
-            transition: background-color 0.3s, color 0.3s;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .dark-mode {
-            background-color: #121212;
-            color: #ffffff;
-        }
-        /* Logo sebagai Header Banner */
-        .logo-banner {
-            width: 100%; /* Lebar penuh */
-            max-width: 1920px; /* Maksimum lebar sesuai ukuran logo */
-            height: auto; /* Tinggi menyesuaikan */
-            margin-bottom: 30px; /* Jarak antara logo dan konten */
-        }
-        /* Card untuk Deskripsi */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            margin-bottom: 20px;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-        .card-body {
-            padding: 20px;
-        }
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .card-text {
-            font-size: 1rem;
+            background-color: var(--bg);
+            color: var(--text);
             line-height: 1.6;
-        }
-        .countdown {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .toggle-dark-mode-text {
-            margin-left: 8px;
-        }
-        /* Gaya tombol dark mode */
-        #toggleDarkMode {
-            background-color: #000000;
-            color: #ffffff;
-            border: none;
-            transition: background-color 0.3s, color 0.3s;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            /* Tambahkan margin-top untuk memberikan jarak */
-        }
-        .dark-mode #toggleDarkMode {
-            background-color: #ffc107;
-            color: #000000;
-        }
-        /* Gaya tombol Gabung Group */
-        #joinGroupButton {
-            background-color: #1877f2; /* Warna biru Facebook */
-            color: #ffffff;
-            border: none;
-            transition: background-color 0.3s, color 0.3s;
-            margin-top: 10px; /* Jarak dari elemen di atasnya */
-        }
-        #joinGroupButton:hover {
-            background-color: #166fe5; /* Warna biru Facebook yang lebih gelap saat hover */
-        }
-        /* Konten utama */
-        .container {
-            flex: 1; /* Mengisi sisa ruang yang tersedia */
+            padding: 20px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding-bottom: 60px; /* Memberikan ruang untuk footer */
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        /* Footer */
-        footer {
-            background-color: #f8f9fa; /* Warna latar belakang footer */
-            padding: 20px 0;
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+        }
+        
+        header {
             text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        .subtitle {
+            color: var(--text-light);
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+        
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 15px;
+            background: var(--bg);
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+        }
+        
+        .dark-mode-toggle i {
+            font-size: 16px;
+        }
+        
+        .card {
+            background: var(--bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 12px 12px 20px var(--shadow-dark), -12px -12px 20px var(--shadow-light);
+        }
+        
+        .input-group {
+            display: flex;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        #prompt-textarea {
+            flex: 1;
+            padding: 16px 20px 16px 50px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            outline: none;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
+            color: var(--text);
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        #prompt-textarea:focus {
+            box-shadow: inset 5px 5px 8px var(--shadow-dark), inset -5px -5px 8px var(--shadow-light);
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            color: var(--primary);
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .input-buttons {
+            display: flex;
+            gap: 15px;
+            margin-left: 15px;
+        }
+        
+        #generate-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 140px;
+            justify-content: center;
+            height: 52px;
+        }
+        
+        #enhance-btn {
+            background: var(--bg);
+            color: var(--primary);
+            border: none;
+            padding: 0 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 52px;
+            justify-content: center;
+            height: 52px;
+        }
+        
+        #generate-btn i, #enhance-btn i {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #generate-btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+        }
+        
+        #enhance-btn:hover {
+            background: var(--shadow-light);
+            transform: translateY(-2px);
+        }
+        
+        #generate-btn:active, #enhance-btn:active {
+            transform: translateY(0);
+            box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .setting-group {
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .select-container {
+            position: relative;
             width: 100%;
         }
-        .dark-mode footer {
-            background-color: #1a1a1a; /* Warna latar belakang footer di dark mode */
-            color: #ffffff;
+        
+        select {
+            width: 100%;
+            padding: 15px 15px 15px 40px;
+            border: none;
+            border-radius: 15px;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
+            appearance: none;
+            outline: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            height: 50px;
         }
-        .footer-credits, .footer-design {
-            margin: 5px 0;
-            font-size: 0.9rem;
-            color: #666666;
+        
+        .select-container::after {
+            content: "\f078";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--primary);
         }
-        .dark-mode .footer-credits, .dark-mode .footer-design {
-            color: #aaaaaa;
+        
+        .select-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 14px;
         }
-        .footer-credits a, .footer-design a {
-            color: #007bff;
-            text-decoration: none;
-            transition: color 0.3s ease;
+        
+        select:focus {
+            box-shadow: inset 5px 5px 8px var(--shadow-dark), inset -5px -5px 8px var(--shadow-light);
         }
-        .footer-credits a:hover, .footer-design a:hover {
-            color: #0056b3;
+        
+        .number-input-container {
+            position: relative;
+            width: 100%;
         }
-        .footer-credits i {
-            margin-right: 5px;
+        
+        .number-input-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 14px;
         }
-        /* Loading Screen */
-        #loadingScreen {
+        
+        #seed {
+            width: 100%;
+            padding: 15px 15px 15px 40px;
+            border: none;
+            border-radius: 15px;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
+            font-size: 14px;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            height: 50px;
+        }
+        
+        #seed:focus {
+            box-shadow: inset 5px 5px 8px var(--shadow-dark), inset -5px -5px 8px var(--shadow-light);
+        }
+        
+        .slider-container {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
+        }
+        
+        .slider-group {
+            margin-bottom: 15px;
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            outline: none;
+            margin: 10px 0;
+            --range-percent: 50%;
+            background: linear-gradient(to right, var(--primary) 0%, var(--primary) var(--range-percent), var(--shadow-dark) var(--range-percent), var(--shadow-dark) 100%);
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 3px solid white;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border: 3px solid white;
+        }
+        
+        .slider-value-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .slider-value {
+            font-weight: 600;
+            color: var(--primary);
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        
+        .dimension-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .dimension-slider {
+            flex: 1;
+        }
+        
+        .dimension-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .aspect-ratio-display {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+        
+        .advanced-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            cursor: pointer;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: var(--bg);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        .advanced-toggle:hover {
+            background: rgba(108, 92, 231, 0.1);
+        }
+        
+        .advanced-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .advanced-content.show {
+            max-height: 1000px;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: var(--bg);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        .checkbox-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+        }
+        
+        .checkbox-group input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+        
+        .checkbox-group label {
+            margin-bottom: 0;
+            flex: 1;
+        }
+        
+        .image-container {
+            background: var(--bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        #generated-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 15px;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            display: none;
+            object-fit: contain;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--bg);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            font-family: 'Poppins', sans-serif;
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+        
+        .btn i {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--shadow-light);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--bg);
+            color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(214, 48, 49, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.1);
+        }
+        
+        .error-message {
+            color: var(--danger);
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 500;
+            display: none;
+            padding: 15px;
+            border-radius: 15px;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
+        }
+        
+        .history-panel {
+            margin-top: 30px;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg);
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+        }
+        
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+        }
+        
+        .history-thumbnail {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+            box-shadow: 2px 2px 5px var(--shadow-dark), -2px -2px 5px var(--shadow-light);
+        }
+        
+        .history-prompt {
+            flex: 1;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .history-date {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-left: 15px;
+        }
+        
+        .saved-prompts-panel {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .saved-prompt-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg);
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            justify-content: space-between;
+        }
+        
+        .saved-prompt-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+        }
+        
+        .saved-prompt-text {
+            flex: 1;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .saved-prompt-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: 15px;
+        }
+        
+        .saved-prompt-action {
+            color: var(--primary);
+            cursor: pointer;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #ffffff;
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            z-index: 1000;
-            transition: opacity 0.5s ease-in-out;
-            padding: 20px; /* Tambahkan padding untuk memberikan jarak dari tepi layar */
-        }
-        .dark-mode #loadingScreen {
-            background-color: #121212;
-        }
-        /* Spinner Berdenyut */
-        .pulse-spinner {
-            width: 60px;
-            height: 60px;
-            background-color: #007bff;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-            margin-bottom: 20px; /* Jarak antara spinner dan teks loading */
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 0.7; }
-            50% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0.8); opacity: 0.7; }
-        }
-        /* Teks Loading dengan Typewriter Effect */
-        .loading-text {
-            margin-top: 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #000000;
-            overflow: hidden; /* Sembunyikan teks yang belum diketik */
-            border-right: 2px solid #000000; /* Kursor berkedip */
-            white-space: pre-wrap; /* Teks bisa pindah baris */
-            letter-spacing: 0.15em; /* Jarak antar huruf */
-            text-align: center; /* Teks di tengah */
-            width: 90%; /* Lebar teks disesuaikan */
-            max-width: 600px; /* Maksimum lebar teks */
-            margin: 0 auto; /* Posisi teks di tengah */
-            word-wrap: break-word; /* Memastikan teks tidak melebihi lebar container */
-        }
-        .dark-mode .loading-text {
-            color: #ffffff;
-            border-right-color: #ffffff; /* Warna kursor di dark mode */
-        }
-        /* Progress Bar */
-        .progress-bar-container {
-            width: 100%;
-            max-width: 300px; /* Lebar maksimum progress bar */
-            height: 10px;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            margin-top: 20px; /* Jarak antara teks loading dan progress bar */
-            overflow: hidden;
-        }
-        .dark-mode .progress-bar-container {
-            background-color: #333333;
-        }
-        .progress-bar {
-            height: 100%;
-            width: 0;
-            background-color: #007bff;
-            border-radius: 5px;
-            transition: width 0.1s linear;
-        }
-        .progress-text {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #000000;
-        }
-        .dark-mode .progress-text {
-            color: #ffffff;
         }
         
-        /* Gaya tombol download */
-.app-download-buttons {
-    margin-top: 20px; /* Jarak dari elemen di atasnya */
-    display: flex;
-    justify-content: center;
-    gap: 10px; /* Jarak antara tombol */
-    flex-wrap: wrap; /* Agar tombol bisa pindah baris di layar kecil */
+        .modal-content {
+            background-color: var(--bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+            max-width: 500px;
+            width: 90%;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .api-key-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 15px;
+        }
+        
+        .api-key-input:focus {
+            outline: none;
+            box-shadow: inset 5px 5px 8px var(--shadow-dark), inset -5px -5px 8px var(--shadow-light);
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .modal-btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .modal-btn-secondary {
+            background: var(--bg);
+            color: var(--primary);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .modal-btn:active {
+            transform: translateY(0);
+        }
+        
+        .text-muted {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .input-buttons {
+                margin-left: 0;
+                margin-top: 15px;
+                width: 100%;
+            }
+            
+            #generate-btn, #enhance-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .checkbox-container {
+                gap: 10px;
+            }
+            
+            .checkbox-group {
+                padding: 10px 12px;
+            }
+            
+            .advanced-toggle {
+                padding: 10px 12px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .modal-btn {
+                width: 100%;
+            }
+        }
+        .note {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 5px;
+    font-style: italic;
 }
-
-.btn-download {
-    background-color: #1877f2; /* Warna hijau */
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Jarak antara ikon dan teks */
-}
-
-.btn-download:hover {
-    background-color: #166fe5; /* Warna hijau yang lebih gelap saat hover */
-    transform: translateY(-2px);
-}
-
-.btn-download i {
-    font-size: 1.2rem; /* Ukuran ikon */
-}
-
-/* Gaya untuk modal popup */
-.modal-content {
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.modal-footer {
-    border-top: none;
-    padding-top: 0;
-}
-
-.modal-title {
-    font-weight: bold;
-}
-
-.modal-body img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-}
-
- /* Gaya Cookie Consent Banner */
-    .cookie-consent {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: #333;
-        color: #fff;
-        padding: 15px;
-        text-align: center;
-        z-index: 1000;
-        display: none; /* Awalnya disembunyikan */
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .cookie-consent p {
-        margin: 0 0 10px 0;
-        font-size: 0.9rem;
-    }
-
-    .cookie-consent button {
-        padding: 5px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin: 0 5px;
-        font-size: 0.9rem;
-        transition: background-color 0.3s ease;
-    }
-
-    .cookie-consent button:hover {
-        opacity: 0.9;
-    }
-
-    #acceptCookies {
-        background-color: #0d6efd; /* Warna biru Bootstrap */
-        color: #fff;
-        border: none;
-    }
-
-    #declineCookies {
-        background-color: #6c757d; /* Warna abu-abu Bootstrap */
-        color: #fff;
-        border: none;
-    }
-	
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loadingScreen">
-        <div class="pulse-spinner"></div>
-        <!-- Teks Loading dengan Typewriter Effect -->
-        <div class="loading-text" id="loadingText"></div>
-        <!-- Progress Bar -->
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="loadingProgressBar"></div>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-magic-wand-sparkles"></i> RuangRiung AI Image Generator</h1>
+            <p class="subtitle">Transform your imagination into stunning visuals with AI</p>
+        </header>
+        
+        <div class="dark-mode-toggle" id="dark-mode-toggle">
+            <i class="fas fa-moon"></i>
+            <span>Dark Mode</span>
         </div>
-        <div class="progress-text" id="loadingProgressText">0%</div>
-    </div>
-
-    <div class="container text-center">
-        <!-- Logo sebagai Header Banner -->
-        <img src="logo-light.png" alt="Logo Ruangriung" class="logo-banner" id="logo">
-
-        <!-- Card untuk Deskripsi -->
+        
         <div class="card">
-            <div class="card-body">
-            		
-            	<!-- Toggle Dark Mode -->
-        <button class="btn" id="toggleDarkMode">
-            <i class="fas fa-moon" id="darkModeIcon"></i>
-            <i class="fas fa-sun d-none" id="lightModeIcon"></i>
-            <span class="toggle-dark-mode-text" id="toggleDarkModeText">Dark Mode</span>
-        </button>
-                <h5 class="card-title">RuangRiung AI Image</h5>
-                <p class="card-text">
-                   Team <strong>RUANGRIUNG</strong> lagi sibuk nih buat nyiapin sesuatu yang keren buat konten kreator seperti kalian! 🚀 Kami lagi ngoding <i class="fas fa-code"></i>, desain, dan nyiapin fitur-fitur yang bakal bikin kamu betah nongkrong di sini.
-                </p>
-                <p class="card-text">
-                    Jadi, sabar ya! Tungguin terus perkembangannya. Jangan lupa pantengin terus, karena bakal ada kejutan seru yang nggak boleh kamu lewatin! 😎
-                </p>
+            <div class="input-group">
+                <i class="fas fa-wand-magic-sparkles input-icon"></i>
+                <textarea id="prompt-textarea" placeholder="Describe your dream image in detail... (e.g. A cyberpunk cityscape at night with neon lights, 8k ultra detailed, cinematic lighting)"></textarea>
+                <div class="input-buttons">
+                    <button id="enhance-btn" title="Enhance Prompt"><i class="fas fa-brain"></i> Enhance</button>
+                    <button id="generate-btn"><i class="fas fa-magic-wand-sparkles"></i> Generate</button>
+                </div>
+            </div>
+            
+            <div class="settings-grid">
+                <div class="setting-group">
+                    <label><i class="fas fa-expand"></i> Image Dimensions</label>
+                    <div class="slider-container">
+                        <div class="dimension-slider-container">
+                            <span>Width:</span>
+                            <input type="range" class="dimension-slider" id="width-slider" min="512" max="2048" value="1024" step="64">
+                            <span class="dimension-value" id="width-value">1024</span>
+                        </div>
+                        <div class="dimension-slider-container">
+                            <span>Height:</span>
+                            <input type="range" class="dimension-slider" id="height-slider" min="512" max="2048" value="1024" step="64">
+                            <span class="dimension-value" id="height-value">1024</span>
+                        </div>
+                        <div class="aspect-ratio-display" id="aspect-ratio-display">Aspect Ratio: 1:1</div>
+
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label for="model"><i class="fas fa-microchip"></i> AI Model</label>
+                    <div class="select-container">
+                        <i class="fas fa-microchip"></i>
+                        <select id="model">
+                            <option value="pollinations">Pollinations AI (FLUX Turbo)</option>
+                            <option value="dall-e-3">DALL-E 3 (Requires API Key)</option>
+                            <option value="stability-ai">Stability.AI (Requires API Key)</option>
+                        </select>
+                    </div>
+<div class="note">DALL-E 3 hanya mendukung ukuran: 1024×1024, 1792×1024, atau 1024×1792</div>
+                </div>
+<div class="note">Stability.AI membutuhkan ukuran gambar kelipatan 64 (contoh: 512, 576, 640, 704, 768)</div>
+<div class="note">Ukuran optimal: 512-2048 (pastikan kelipatan 64 untuk Stability.AI)</div>
+                
+                <div class="setting-group">
+                    <label for="style"><i class="fas fa-paint-brush"></i> Art Style</label>
+                    <div class="select-container">
+                        <i class="fas fa-paint-brush"></i>
+<select id="style">
+    <!-- Ultra Realism -->
+    <optgroup label="Ultra Realism">
+        <option value="">Hyper Realistic</option>
+        <option value="photorealistic">8K Photorealistic</option>
+        <option value="cinematic realism">Cinematic Realism</option>
+        <option value="hyperdetailed">Hyperdetailed</option>
+        <option value="sci-fi realism">Sci-Fi Realism</option>
+        <option value="medical illustration">Medical Illustration</option>
+    </optgroup>
+
+    <!-- Photography -->
+    <optgroup label="Photography Styles">
+        <option value="professional photography">Professional Photography</option>
+        <option value="casual photography">Casual Photography</option>
+        <option value="studio portrait">Studio Portrait (Ring Light)</option>
+        <option value="fujifilm pro">Fujifilm PRO</option>
+        <option value="kodak portra">Kodak Portra</option>
+        <option value="leica m">Leica M-Series</option>
+        
+        <!-- Sub-genres -->
+        <option value="street photography">Street Photography</option>
+        <option value="urban exploration">Urban Exploration</option>
+        <option value="fashion photography">Fashion Editorial</option>
+        <option value="product photography">Product Photography</option>
+        <option value="food photography">Food Photography</option>
+        <option value="macro photography">Macro Photography</option>
+        <option value="astrophotography">Astrophotography</option>
+        <option value="underwater">Underwater Photography</option>
+        <option value="drone photography">Drone Photography</option>
+        <option value="long exposure">Long Exposure</option>
+        <option value="tilt-shift">Tilt-Shift</option>
+        <option value="infrared">Infrared Photography</option>
+    </optgroup>
+
+    <!-- Anime/Manga -->
+    <optgroup label="Anime & Manga">
+        <option value="anime">Modern Anime</option>
+        <option value="studio ghibli">Studio Ghibli</option>
+        <option value="makoto shinkai">Makoto Shinkai</option>
+        <option value="90s anime">90s Anime</option>
+        <option value="manga">Shonen Manga</option>
+        <option value="seinen manga">Seinen Manga</option>
+        <option value="webtoon">Webtoon</option>
+        <option value="manhwa">Korean Manhwa</option>
+        <option value="chibi">Chibi</option>
+        <option value="kawaii">Kawaii Style</option>
+        <option value="mecha anime">Mecha Anime</option>
+        <option value="shoujo anime">Shoujo Anime</option>
+    </optgroup>
+
+    <!-- Digital Painting -->
+    <optgroup label="Digital Painting">
+        <option value="digital painting">Digital Painting</option>
+        <option value="concept art">Concept Art</option>
+        <option value="character design">Character Design</option>
+        <option value="environment art">Environment Art</option>
+        <option value="matte painting">Matte Painting</option>
+        <option value="speedpainting">Speedpainting</option>
+        <option value="fantasy art">Fantasy Art</option>
+        <option value="dark fantasy">Dark Fantasy</option>
+        <option value="book illustration">Book Illustration</option>
+        <option value="children book">Children's Book</option>
+    </optgroup>
+
+    <!-- Traditional Media -->
+    <optgroup label="Traditional Media">
+        <option value="oil painting">Oil Painting</option>
+        <option value="watercolor">Watercolor</option>
+        <option value="gouache">Gouache</option>
+        <option value="acrylic painting">Acrylic Painting</option>
+        <option value="pastel">Pastel</option>
+        <option value="ink wash">Ink Wash</option>
+        <option value="fresco">Fresco</option>
+        <option value="tempera">Tempera</option>
+        
+        <!-- Historical Periods -->
+        <option value="renaissance">Renaissance</option>
+        <option value="baroque">Baroque</option>
+        <option value="rococo">Rococo</option>
+        <option value="impressionist">Impressionist</option>
+        <option value="post-impressionist">Post-Impressionist</option>
+        <option value="expressionist">Expressionist</option>
+        <option value="art nouveau">Art Nouveau</option>
+        <option value="art deco">Art Deco</option>
+        <option value="victorian">Victorian</option>
+        <option value="socialist realism">Socialist Realism</option>
+    </optgroup>
+
+    <!-- Drawing Techniques -->
+    <optgroup label="Drawing Techniques">
+        <option value="pencil sketch">Pencil Sketch</option>
+        <option value="charcoal sketch">Charcoal Sketch</option>
+        <option value="ink drawing">Ink Drawing</option>
+        <option value="ballpoint pen">Ballpoint Pen</option>
+        <option value="colored pencil">Colored Pencil</option>
+        <option value="marker drawing">Marker Drawing</option>
+        <option value="etching">Etching</option>
+        <option value="linocut">Linocut</option>
+        <option value="woodcut">Woodcut</option>
+        <option value="pointillism">Pointillism</option>
+        <option value="stippling">Stippling</option>
+    </optgroup>
+
+    <!-- 3D & CGI -->
+    <optgroup label="3D & CGI">
+        <option value="3d render">3D Render</option>
+        <option value="blender">Blender</option>
+        <option value="unreal engine">Unreal Engine</option>
+        <option value="octane render">Octane Render</option>
+        <option value="redshift">Redshift</option>
+        <option value="arnold render">Arnold Render</option>
+        <option value="zbrush">ZBrush Sculpt</option>
+        <option value="claymation">Claymation</option>
+        <option value="stop motion">Stop Motion</option>
+        <option value="isometric">Isometric</option>
+        <option value="voxel art">Voxel Art</option>
+    </optgroup>
+
+    <!-- Game Art Styles -->
+    <optgroup label="Game Art Styles">
+        <option value="low poly">Low Poly</option>
+        <option value="pixel art">Pixel Art</option>
+        <option value="ps1 graphics">PS1 Graphics</option>
+        <option value="ps2 graphics">PS2 Graphics</option>
+        <option value="n64 style">N64 Style</option>
+        <option value="arc system works">Arc System Works</option>
+        <option value="cel shaded">Cel-Shaded</option>
+        <option value="borderlands">Borderlands Style</option>
+        <option value="valorant style">Valorant Style</option>
+        <option value="overwatch style">Overwatch Style</option>
+        <option value="genshin impact">Genshin Impact</option>
+        <option value="honkai star rail">Honkai: Star Rail</option>
+    </optgroup>
+
+    <!-- Cyberpunk & Futuristic -->
+    <optgroup label="Cyberpunk & Futuristic">
+        <option value="cyberpunk">Cyberpunk 2077</option>
+        <option value="cyberpunk anime">Cyberpunk Anime</option>
+        <option value="biopunk">Biopunk</option>
+        <option value="dieselpunk">Dieselpunk</option>
+        <option value="steampunk">Steampunk</option>
+        <option value="atompunk">Atompunk</option>
+        <option value="solarpunk">Solarpunk</option>
+        <option value="cassette futurism">Cassette Futurism</option>
+        <option value="retro futurism">Retro Futurism</option>
+        <option value="blade runner">Blade Runner</option>
+        <option value="ghost in the shell">Ghost in the Shell</option>
+    </optgroup>
+
+    <!-- Cartoon & Comics -->
+    <optgroup label="Cartoon & Comics">
+        <option value="disney style">Disney</option>
+        <option value="pixar style">Pixar</option>
+        <option value="dreamworks">Dreamworks</option>
+        <option value="cartoon network">Cartoon Network</option>
+        <option value="adult swim">Adult Swim</option>
+        <option value="rick and morty">Rick and Morty</option>
+        <option value="calarts style">CalArts Style</option>
+        <option value="peanuts">Peanuts</option>
+        <option value="marvel comics">Marvel Comics</option>
+        <option value="dc comics">DC Comics</option>
+        <option value="european comics">European Comics</option>
+        <option value="french ligne claire">Ligne Claire</option>
+    </optgroup>
+
+    <!-- Abstract & Experimental -->
+    <optgroup label="Abstract & Experimental">
+        <option value="abstract">Abstract</option>
+        <option value="cubism">Cubism</option>
+        <option value="surrealism">Surrealism</option>
+        <option value="dadaism">Dadaism</option>
+        <option value="bauhaus">Bauhaus</option>
+        <option value="constructivism">Constructivism</option>
+        <option value="psychedelic">Psychedelic</option>
+        <option value="fluid art">Fluid Art</option>
+        <option value="glitch art">Glitch Art</option>
+        <option value="fractal art">Fractal Art</option>
+        <option value="generative art">Generative Art</option>
+        <option value="data bending">Data Bending</option>
+    </optgroup>
+
+    <!-- Special Effects -->
+    <optgroup label="Special Effects">
+        <option value="holographic">Holographic</option>
+        <option value="neon glow">Neon Glow</option>
+        <option value="chromatic aberration">Chromatic Aberration</option>
+        <option value="double exposure">Double Exposure</option>
+        <option value="light painting">Light Painting</option>
+        <option value="lens flare">Lens Flare</option>
+        <option value="vhs effect">VHS Effect</option>
+        <option value="crt screen">CRT Screen</option>
+        <option value="film grain">Film Grain</option>
+        <option value="cross processing">Cross Processing</option>
+    </optgroup>
+
+    <!-- Cultural & Historical -->
+    <optgroup label="Cultural & Historical">
+        <option value="ukiyo-e">Ukiyo-e</option>
+        <option value="chinese painting">Chinese Painting</option>
+        <option value="sumi-e">Sumi-e</option>
+        <option value="persian miniature">Persian Miniature</option>
+        <option value="medieval illuminated">Medieval Illuminated</option>
+        <option value="byzantine icon">Byzantine Icon</option>
+        <option value="tribal art">Tribal Art</option>
+        <option value="afrofuturism">Afrofuturism</option>
+        <option value="indigenous art">Indigenous Art</option>
+        <option value="soviet propaganda">Soviet Propaganda</option>
+    </optgroup>
+</select>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label for="quality"><i class="fas fa-star"></i> Quality</label>
+                    <div class="select-container">
+                        <i class="fas fa-star"></i>
+                        <select id="quality">
+                            <option value="normal">Normal</option>
+                            <option value="high" selected>High</option>
+                            <option value="ultra">Ultra</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="advanced-toggle" id="advanced-toggle">
+                <span><i class="fas fa-cogs"></i> Advanced Settings</span>
+                <i class="fas fa-chevron-down" id="advanced-arrow"></i>
+            </div>
+            
+            <div class="advanced-content" id="advanced-content">
+                <div class="settings-grid">
+                    <div class="setting-group">
+                        <label for="lighting"><i class="fas fa-lightbulb"></i> Lighting</label>
+                        <div class="select-container">
+                            <i class="fas fa-lightbulb"></i>
+                            <select id="lighting">
+                                <option value="">Default</option>
+                                <option value="dramatic">Dramatic</option>
+                                <option value="soft">Soft</option>
+                                <option value="cinematic">Cinematic</option>
+                                <option value="neon">Neon</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label for="color"><i class="fas fa-palette"></i> Color Palette</label>
+                        <div class="select-container">
+                            <i class="fas fa-palette"></i>
+                            <select id="color">
+                                <option value="">Default</option>
+                                <option value="vibrant">Vibrant</option>
+                                <option value="pastel">Pastel</option>
+                                <option value="monochrome">Monochrome</option>
+                                <option value="warm">Warm Tones</option>
+                                <option value="cool">Cool Tones</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label for="composition"><i class="fas fa-th-large"></i> Composition</label>
+                        <div class="select-container">
+                            <i class="fas fa-th-large"></i>
+                            <select id="composition">
+                                <option value="">Default</option>
+                                <option value="close-up">Close-up</option>
+                                <option value="wide shot">Wide Shot</option>
+                                <option value="macro">Macro</option>
+                                <option value="aerial">Aerial</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label for="seed"><i class="fas fa-seedling"></i> Seed (for consistency)</label>
+                        <div class="number-input-container">
+                            <i class="fas fa-seedling"></i>
+                            <input type="number" id="seed" placeholder="Leave blank for random">
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="checkbox-container">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="hd" checked>
+                        <label for="hd"><i class="fas fa-expand"></i> HD Resolution</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enhance-details" checked>
+                        <label for="enhance-details"><i class="fas fa-search-plus"></i> Enhance Details</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Creating your masterpiece... This may take a moment</p>
+            </div>
+            
+            <div class="error-message" id="error-message"></div>
+        </div>
+        
+        <div class="image-container">
+            <img id="generated-image" alt="Your AI generated image will appear here">
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="download-btn"><i class="fas fa-download"></i> Download</button>
+                <button class="btn btn-secondary" id="share-btn"><i class="fas fa-share-alt"></i> Share</button>
+                <button class="btn btn-secondary" id="remix-btn"><i class="fas fa-random"></i> Remix</button>
+                <button class="btn btn-secondary" id="save-prompt-btn"><i class="fas fa-bookmark"></i> Save Prompt</button>
             </div>
         </div>
-
-        <!-- Tombol Gabung Group -->
-        <a href="https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew" target="_blank" class="btn" id="joinGroupButton">
-            <i class="fab fa-facebook"></i> Kunjungi Group
-        </a>
-
-        <!-- Countdown -->
-        <div class="countdown" id="countdown"></div>
-
-        <!-- Progress Bar untuk Countdown -->
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="countdownProgressBar"></div>
+        
+        <div class="card history-panel" id="history-panel">
+            <div class="history-header">
+                <h3><i class="fas fa-history"></i> Generation History</h3>
+                <button class="btn btn-danger" id="reset-history-btn"><i class="fas fa-trash"></i> Clear History</button>
+            </div>
+            <div id="history-list"></div>
         </div>
-        <div class="progress-text" id="countdownProgressText">100%</div>
-
-        <!-- Teks Pengerjaan -->
-        <div class="progress-info" id="progressInfo">
-            Proses pengerjaan masih berjalan... Sabar ya, karena yang keren juga butuh waktu! 😉
+        
+        <div class="card saved-prompts-panel" id="saved-prompts-panel">
+            <h3><i class="fas fa-bookmark"></i> Saved Prompts</h3>
+            <div id="saved-prompts-list"></div>
         </div>
-
-
     </div>
-    <!-- Tombol Play Store dan App Store -->
-<div class="app-download-buttons">
-    <a href="https://play.google.com/store/apps/details?id=com.example.ruangriung" target="_blank" class="btn btn-download">
-        <i class="fab fa-google-play"></i> Download di Play Store
-    </a>
-    <a href="https://apps.apple.com/app/id123456789" target="_blank" class="btn btn-download">
-        <i class="fab fa-apple"></i> Download di App Store
-    </a>
-</div>
-
-<!-- Modal Popup -->
-<div class="modal fade" id="ruangriungModal" tabindex="-1" aria-labelledby="ruangriungModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    
+    <!-- API Key Modal -->
+    <div class="modal" id="api-key-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ruangriungModalLabel">Selamat Datang di Ruangriung! </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h3 class="modal-title" id="api-key-modal-title"><i class="fas fa-key"></i> API Key Required</h3>
+                <button class="close-modal" id="close-modal">&times;</button>
             </div>
-            <div class="modal-body text-center">
-                <img src="ruangriung.png" alt="Ruangriung" class="img-fluid">
-                <p class="mt-3">Terima kasih telah mengunjungi Ruangriung. Kami sedang menyiapkan sesuatu yang istimewa untuk Anda! stay tuned ♥️</p>
+            <div class="modal-body">
+                <p id="api-key-instructions">To use this model, please enter your API key. Your key will be stored locally in your browser and never sent to our servers.</p>
+                <input type="password" class="api-key-input" id="api-key-input" placeholder="Enter your API key">
+                <p class="text-muted" id="api-key-link"><small>Don't have an API key? Get one from <a href="#" target="_blank" id="api-key-provider-link">the provider</a></small></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button class="modal-btn modal-btn-secondary" id="cancel-btn">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="save-api-key-btn">Save API Key</button>
             </div>
         </div>
     </div>
-</div>
-
-    <!-- Footer -->
+    
     <footer>
-        <p>&copy; <span id="dynamicYear"></span> Ruangriung. All rights reserved.</p>
-        <p class="footer-credits">
-            dibuat dengan ♥️ | Powered by: 
-            <a href="https://getbootstrap.com/" target="_blank"><i class="fab fa-bootstrap"></i> Bootstrap</a>, 
-            <a href="https://jquery.com/" target="_blank"><i class="fab fa-js"></i> jQuery</a>, 
-            <a href="https://github.com/" target="_blank"><i class="fab fa-github"></i> GitHub</a>, 
-            <a href="https://www.cloudflare.com/" target="_blank"><i class="fas fa-cloud"></i> Cloudflare</a>, 
-            <a href="https://fontawesome.com/" target="_blank"><i class="fab fa-font-awesome"></i> FontAwesome</a>.
-        </p>
-        <p class="footer-design">
-            Didesain oleh <a href="https://ariftirtana.com" target="_blank">ArifTirtana.com</a>.
-        </p>
+        &copy; <span id="current-year"></span> Ruangriung AI Image Generator. All rights reserved. powered by <a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> Develop with ♥️ by<a href="https://ariftirtana.my.id" target="_blank">Arif Tirtana</a>
     </footer>
-	
-	<!-- Cookie Consent Banner -->
-<div class="cookie-consent" id="cookieConsent">
-    <p>Kami menggunakan cookie untuk meningkatkan pengalaman Anda. Dengan melanjutkan, Anda setuju dengan penggunaan cookie kami.</p>
-    <button id="acceptCookies" class="btn btn-primary">Setuju</button>
-    <button id="declineCookies" class="btn btn-secondary">Tolak</button>
-</div>
-
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
+    
     <script>
-        // Loading Screen
-        const loadingScreen = document.getElementById('loadingScreen');
-        const loadingText = document.getElementById('loadingText');
-        const loadingProgressBar = document.getElementById('loadingProgressBar');
-        const loadingProgressText = document.getElementById('loadingProgressText');
-
-        // Teks yang akan ditampilkan dengan efek mengetik
-        const text = "Memuat halaman...";
-        let index = 0;
-
-        // Fungsi untuk mengetik teks
-        const typeText = () => {
-            if (index < text.length) {
-                loadingText.textContent += text.charAt(index);
-                index++;
-                setTimeout(typeText, 80); // Kecepatan mengetik (ms)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Elements
+            const promptTextarea = document.getElementById('prompt-textarea');
+            const generateBtn = document.getElementById('generate-btn');
+            const enhanceBtn = document.getElementById('enhance-btn');
+            const generatedImage = document.getElementById('generated-image');
+            const loadingElement = document.querySelector('.loading');
+            const downloadBtn = document.getElementById('download-btn');
+            const shareBtn = document.getElementById('share-btn');
+            const remixBtn = document.getElementById('remix-btn');
+            const savePromptBtn = document.getElementById('save-prompt-btn');
+            const errorMessage = document.getElementById('error-message');
+            const historyPanel = document.getElementById('history-panel');
+            const historyList = document.getElementById('history-list');
+            const resetHistoryBtn = document.getElementById('reset-history-btn');
+            const savedPromptsPanel = document.getElementById('saved-prompts-panel');
+            const savedPromptsList = document.getElementById('saved-prompts-list');
+            const advancedToggle = document.getElementById('advanced-toggle');
+            const advancedContent = document.getElementById('advanced-content');
+            const advancedArrow = document.getElementById('advanced-arrow');
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const widthSlider = document.getElementById('width-slider');
+            const heightSlider = document.getElementById('height-slider');
+            const widthValue = document.getElementById('width-value');
+            const heightValue = document.getElementById('height-value');
+            const aspectRatioDisplay = document.getElementById('aspect-ratio-display');
+            const modelSelect = document.getElementById('model');
+            
+            // Modal elements
+            const apiKeyModal = document.getElementById('api-key-modal');
+            const apiKeyModalTitle = document.getElementById('api-key-modal-title');
+            const apiKeyInstructions = document.getElementById('api-key-instructions');
+            const apiKeyInput = document.getElementById('api-key-input');
+            const apiKeyLink = document.getElementById('api-key-link');
+            const apiKeyProviderLink = document.getElementById('api-key-provider-link');
+            const closeModalBtn = document.getElementById('close-modal');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+            
+            // Settings elements
+            const styleSelect = document.getElementById('style');
+            const qualitySelect = document.getElementById('quality');
+            const lightingSelect = document.getElementById('lighting');
+            const colorSelect = document.getElementById('color');
+            const compositionSelect = document.getElementById('composition');
+            const seedInput = document.getElementById('seed');
+            const hdCheckbox = document.getElementById('hd');
+            const enhanceDetailsCheckbox = document.getElementById('enhance-details');
+            
+            // History array
+            let generationHistory = JSON.parse(localStorage.getItem('generationHistory')) || [];
+            let savedPrompts = JSON.parse(localStorage.getItem('savedPrompts')) || [];
+            
+            // Check for saved dark mode preference
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
             }
-        };
-
-        // Mulai efek mengetik
-        typeText();
-
-        let progress = 0;
-        const duration = 2000; // Durasi loading screen (3 detik)
-        const intervalTime = 50; // Interval update progress bar (ms)
-        const increment = (intervalTime / duration) * 100; // Persentase peningkatan per interval
-
-        // Fungsi untuk mengupdate progress bar
-        const updateProgress = () => {
-            progress += increment;
-            if (progress > 100) progress = 100; // Pastikan tidak melebihi 100%
-            loadingProgressBar.style.width = `${progress}%`;
-            loadingProgressText.textContent = `${Math.round(progress)}%`;
-
-            if (progress < 100) {
-                setTimeout(updateProgress, intervalTime); // Lanjutkan update
-            } else {
-                // Sembunyikan loading screen setelah selesai
-                loadingScreen.style.opacity = '0'; // Efek fade-out
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none'; // Sembunyikan elemen setelah fade-out
-                }, 500); // Durasi fade-out
+            
+            // Check for saved API keys
+            const savedDalleApiKey = localStorage.getItem('dalleApiKey');
+            const savedStabilityApiKey = localStorage.getItem('stabilityApiKey');
+            
+            // Initialize
+            updateHistoryPanel();
+            updateSavedPromptsPanel();
+            updateSliderFill();
+            updateDimensionSliders();
+            
+            // Event listeners
+            generateBtn.addEventListener('click', generateImage);
+            enhanceBtn.addEventListener('click', enhancePrompt);
+            promptTextarea.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    generateImage();
+                }
+            });
+            
+            downloadBtn.addEventListener('click', downloadImage);
+            shareBtn.addEventListener('click', shareImage);
+            remixBtn.addEventListener('click', remixImage);
+            savePromptBtn.addEventListener('click', savePrompt);
+            advancedToggle.addEventListener('click', toggleAdvanced);
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+            widthSlider.addEventListener('input', updateDimensionSliders);
+            heightSlider.addEventListener('input', updateDimensionSliders);
+            resetHistoryBtn.addEventListener('click', resetHistory);
+            
+            // Model select change listener
+            modelSelect.addEventListener('change', function() {
+                const selectedModel = this.value;
+                
+                if (selectedModel === 'dall-e-3' && !localStorage.getItem('dalleApiKey')) {
+                    showApiKeyModal('DALL-E 3', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.openai.com/api-keys');
+                } else if (selectedModel === 'stability-ai' && !localStorage.getItem('stabilityApiKey')) {
+                    showApiKeyModal('Stability.AI', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.stability.ai/account/keys');
+                }
+            });
+            
+            // Modal event listeners
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            saveApiKeyBtn.addEventListener('click', saveApiKey);
+            
+            // Update slider fill for dimension sliders
+            widthSlider.addEventListener('input', updateSliderFill);
+            heightSlider.addEventListener('input', updateSliderFill);
+            
+            // Functions
+            function updateDimensionSliders() {
+                const width = parseInt(widthSlider.value);
+                const height = parseInt(heightSlider.value);
+                
+                widthValue.textContent = width;
+                heightValue.textContent = height;
+                
+                // Calculate aspect ratio
+                const gcd = (a, b) => b ? gcd(b, a % b) : a;
+                const ratio = gcd(width, height);
+                const aspectRatio = `${width/ratio}:${height/ratio}`;
+                
+                aspectRatioDisplay.textContent = `Aspect Ratio: ${aspectRatio}`;
+                
+                // Update slider fill
+                updateSliderFill();
             }
-        };
-
-        // Mulai progress bar
-        setTimeout(updateProgress, intervalTime);
-
-        // Countdown
-        const countdownDate = new Date("April 4, 2025 09:00:00").getTime();
-        const startDate = new Date("January 1, 2025 00:00:00").getTime(); // Tanggal awal countdown
-
-        const updateCountdown = () => {
-            const now = new Date().getTime();
-            const distance = countdownDate - now;
-
-            // Hitung hari, jam, menit, dan detik
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Tampilkan countdown
-            document.getElementById("countdown").innerHTML = `
-                ${days} <small>hari</small> 
-                ${hours} <small>jam</small> 
-                ${minutes} <small>menit</small> 
-                ${seconds} <small>detik</small>
-            `;
-
-            // Hitung persentase waktu yang tersisa
-            const totalTime = countdownDate - startDate; // Total waktu dari awal hingga akhir
-            const remainingTime = distance; // Waktu yang tersisa
-            const percentage = (remainingTime / totalTime) * 100; // Persentase waktu yang tersisa
-
-            // Update progress bar dan teks persentase
-            document.getElementById("countdownProgressBar").style.width = `${percentage}%`;
-            document.getElementById("countdownProgressText").textContent = `${Math.round(percentage)}%`;
-
-            // Jika countdown selesai
-            if (distance < 0) {
-                clearInterval(countdownInterval);
-                document.getElementById("countdown").innerHTML = "Website Sudah Live!";
-                document.getElementById("countdownProgressBar").style.width = "0%";
-                document.getElementById("countdownProgressText").textContent = "0%";
-                document.getElementById("progressInfo").textContent = "Yeay! Website sudah live! 🎉";
+            
+            async function generateImage() {
+                const prompt = promptTextarea.value.trim();
+                const selectedModel = modelSelect.value;
+                
+                if (!prompt) {
+                    showError('Please enter a description for the image');
+                    return;
+                }
+                
+                // Check if API key is required and exists
+                if (selectedModel === 'dall-e-3') {
+                    const apiKey = localStorage.getItem('dalleApiKey');
+                    if (!apiKey) {
+                        showError('Please provide an API key for DALL-E 3');
+                        showApiKeyModal('DALL-E 3', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.openai.com/api-keys');
+                        return;
+                    }
+                } else if (selectedModel === 'stability-ai') {
+                    const apiKey = localStorage.getItem('stabilityApiKey');
+                    if (!apiKey) {
+                        showError('Please provide an API key for Stability.AI');
+                        showApiKeyModal('Stability.AI', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.stability.ai/account/keys');
+                        return;
+                    }
+                }
+                
+                // Hide previous image and error, show loading
+                generatedImage.style.display = 'none';
+                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+                errorMessage.style.display = 'none';
+                loadingElement.style.display = 'block';
+                
+                // Build the prompt with additional parameters
+                let fullPrompt = prompt;
+                
+                // Add style if selected
+                if (styleSelect.value) {
+                    fullPrompt += `, ${styleSelect.value}`;
+                }
+                
+                // Add lighting
+                if (lightingSelect.value) {
+                    fullPrompt += `, ${lightingSelect.value} lighting`;
+                }
+                
+                // Add color palette
+                if (colorSelect.value) {
+                    fullPrompt += `, ${colorSelect.value} colors`;
+                }
+                
+                // Add composition
+                if (compositionSelect.value) {
+                    fullPrompt += `, ${compositionSelect.value}`;
+                }
+                
+                // Add quality
+                if (qualitySelect.value !== 'normal') {
+                    fullPrompt += `, ${qualitySelect.value} quality`;
+                }
+                
+                // Add HD if checked
+                if (hdCheckbox.checked) {
+                    fullPrompt += `, ultra HD`;
+                }
+                
+                // Add detail enhancement if checked
+                if (enhanceDetailsCheckbox.checked) {
+                    fullPrompt += `, highly detailed`;
+                }
+                
+                try {
+                    let imageUrl;
+                    
+                    if (selectedModel === 'dall-e-3') {
+                        // Generate with DALL-E 3
+                        imageUrl = await generateWithDalle(fullPrompt);
+                    } else if (selectedModel === 'stability-ai') {
+                        // Generate with Stability.AI
+                        imageUrl = await generateWithStability(fullPrompt);
+                    } else {
+                        // Generate with Pollinations AI
+                        imageUrl = generateWithPollinations(fullPrompt);
+                    }
+                    
+                    // Load the image
+                    generatedImage.onload = function() {
+                        loadingElement.style.display = 'none';
+                        generatedImage.style.display = 'block';
+                        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                        
+                        // Add to history only if this is a new generation, not from history click
+                        if (!generatedImage.dataset.fromHistory) {
+                            addToHistory(fullPrompt, imageUrl);
+                        } else {
+                            delete generatedImage.dataset.fromHistory;
+                        }
+                    };
+                    
+                    generatedImage.onerror = function() {
+                        loadingElement.style.display = 'none';
+                        showError('Failed to generate image. Please try a different prompt.');
+                    };
+                    
+                    generatedImage.src = imageUrl;
+                } catch (error) {
+                    console.error('Error generating image:', error);
+                    loadingElement.style.display = 'none';
+                    showError(error.message || 'Failed to generate image. Please try again.');
+                }
             }
-        };
-
-        const countdownInterval = setInterval(updateCountdown, 1000);
-        updateCountdown();
-
-        // Dynamic Year in Footer
-        document.getElementById("dynamicYear").textContent = new Date().getFullYear();
-
-        // Toggle Dark Mode
-        const toggleDarkModeButton = document.getElementById("toggleDarkMode");
-        const darkModeIcon = document.getElementById("darkModeIcon");
-        const lightModeIcon = document.getElementById("lightModeIcon");
-        const toggleDarkModeText = document.getElementById("toggleDarkModeText");
-        const logo = document.getElementById("logo");
-
-        toggleDarkModeButton.addEventListener("click", () => {
-            document.body.classList.toggle("dark-mode");
-            darkModeIcon.classList.toggle("d-none");
-            lightModeIcon.classList.toggle("d-none");
-
-            // Ganti logo berdasarkan mode
-            if (document.body.classList.contains("dark-mode")) {
-                toggleDarkModeText.textContent = "Light Mode";
-                logo.src = "logo-dark.png"; // Ganti dengan logo dark mode
-            } else {
-                toggleDarkModeText.textContent = "Dark Mode";
-                logo.src = "logo-light.png"; // Ganti dengan logo light mode
+            
+            function generateWithPollinations(prompt) {
+                // Get dimensions from sliders
+                const width = widthSlider.value;
+                const height = heightSlider.value;
+                let ratioParam = `?width=${width}&height=${height}&nologo=true`;
+                
+                // Add seed if provided
+                if (seedInput.value) {
+                    ratioParam += `&seed=${seedInput.value}`;
+                }
+                
+                // Encode the prompt for URL
+                const encodedPrompt = encodeURIComponent(prompt);
+                
+                // Generate the image URL
+                return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
+            }
+            
+            async function generateWithDalle(prompt) {
+                const apiKey = localStorage.getItem('dalleApiKey');
+                if (!apiKey) {
+                    throw new Error('No API key provided for DALL-E 3');
+                }
+                
+                // Get dimensions from sliders
+                const width = parseInt(widthSlider.value);
+                const height = parseInt(heightSlider.value);
+                
+                // DALL-E 3 only supports certain sizes
+                let dalleSize;
+                if (width === 1024 && height === 1024) {
+                    dalleSize = "1024x1024";
+                } else if (width === 1792 && height === 1024) {
+                    dalleSize = "1792x1024";
+                } else if (width === 1024 && height === 1792) {
+                    dalleSize = "1024x1792";
+                } else {
+                    // Default to 1024x1024 if unsupported size
+                    dalleSize = "1024x1024";
+                }
+                
+                try {
+                    const response = await fetch('https://api.openai.com/v1/images/generations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: "dall-e-3",
+                            prompt: prompt,
+                            n: 1,
+                            size: dalleSize,
+                            quality: hdCheckbox.checked ? "hd" : "standard"
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error?.message || 'Failed to generate image with DALL-E 3');
+                    }
+                    
+                    if (data.data && data.data[0] && data.data[0].url) {
+                        return data.data[0].url;
+                    } else {
+                        throw new Error('No image URL returned from DALL-E 3');
+                    }
+                } catch (error) {
+                    console.error('DALL-E 3 API error:', error);
+                    throw error;
+                }
+            }
+            
+            async function generateWithStability(prompt) {
+                const apiKey = localStorage.getItem('stabilityApiKey');
+                if (!apiKey) {
+                    throw new Error('No API key provided for Stability.AI');
+                }
+                
+                // Get dimensions from sliders
+                const width = parseInt(widthSlider.value);
+                const height = parseInt(heightSlider.value);
+                
+                // Stability.AI has some size restrictions
+                let validWidth = Math.min(Math.max(width, 512), 2048);
+                let validHeight = Math.min(Math.max(height, 512), 2048);
+                
+                // Must be divisible by 64
+                validWidth = Math.floor(validWidth / 64) * 64;
+                validHeight = Math.floor(validHeight / 64) * 64;
+                
+                try {
+                    const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            text_prompts: [
+                                {
+                                    text: prompt,
+                                    weight: 1
+                                }
+                            ],
+                            cfg_scale: 7,
+                            height: validHeight,
+                            width: validWidth,
+                            steps: 30,
+                            samples: 1,
+                            seed: seedInput.value || Math.floor(Math.random() * 1000000)
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Failed to generate image with Stability.AI');
+                    }
+                    
+                    if (data.artifacts && data.artifacts[0] && data.artifacts[0].base64) {
+                        return `data:image/png;base64,${data.artifacts[0].base64}`;
+                    } else {
+                        throw new Error('No image data returned from Stability.AI');
+                    }
+                } catch (error) {
+                    console.error('Stability.AI API error:', error);
+                    throw error;
+                }
+            }
+            
+            async function enhancePrompt() {
+                const prompt = promptTextarea.value.trim();
+                
+                if (!prompt) {
+                    showError('Please enter a description to enhance');
+                    return;
+                }
+                
+                // Show loading state
+                const originalButtonHTML = enhanceBtn.innerHTML;
+                enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
+                enhanceBtn.disabled = true;
+                
+                try {
+                    // Encode the prompt for URL
+                    const encodedPrompt = encodeURIComponent(prompt);
+                    
+                    // Call the Pollinations AI text API
+                    const response = await fetch(`https://text.pollinations.ai/${encodedPrompt}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to enhance prompt');
+                    }
+                    
+                    const enhancedPrompt = await response.text();
+                    promptTextarea.value = enhancedPrompt;
+                } catch (error) {
+                    console.error('Error enhancing prompt:', error);
+                    showError('Failed to enhance prompt. Please try again.');
+                } finally {
+                    // Restore button state
+                    enhanceBtn.innerHTML = originalButtonHTML;
+                    enhanceBtn.disabled = false;
+                }
+            }
+            
+            function downloadImage() {
+                if (!generatedImage.src) {
+                    showError('No image to download');
+                    return;
+                }
+                
+                const link = document.createElement('a');
+                link.href = generatedImage.src;
+                const prompt = promptTextarea.value.trim().substring(0, 30).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                link.download = `ai-art-${prompt || 'generated'}-${Date.now()}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            function shareImage() {
+                if (!generatedImage.src) {
+                    showError('No image to share');
+                    return;
+                }
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'AI Generated Art',
+                        text: 'Check out this image I created with AI: ' + promptTextarea.value.trim(),
+                        url: generatedImage.src
+                    }).catch(err => {
+                        console.error('Error sharing:', err);
+                        copyToClipboard(generatedImage.src);
+                    });
+                } else {
+                    copyToClipboard(generatedImage.src);
+                }
+            }
+            
+            function copyToClipboard(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                alert('Image URL copied to clipboard!');
+            }
+            
+            function remixImage() {
+                if (!generatedImage.src) {
+                    showError('No image to remix');
+                    return;
+                }
+                
+                // Add some randomness to the prompt
+                const currentPrompt = promptTextarea.value.trim();
+                const modifiers = [
+                    'in a different style',
+                    'with a new color scheme',
+                    'from a different angle',
+                    'with dramatic lighting',
+                    'as a surreal interpretation',
+                    'in a fantasy version'
+                ];
+                
+                const randomModifier = modifiers[Math.floor(Math.random() * modifiers.length)];
+                promptTextarea.value = currentPrompt + ', ' + randomModifier;
+                
+                // Generate new image
+                generateImage();
+            }
+            
+            function savePrompt() {
+                const prompt = promptTextarea.value.trim();
+                if (!prompt) {
+                    showError('Please enter a prompt to save');
+                    return;
+                }
+                
+                // Check if prompt already exists
+                const existingPrompt = savedPrompts.find(p => p.prompt === prompt);
+                if (existingPrompt) {
+                    alert('This prompt is already saved!');
+                    return;
+                }
+                
+                const promptItem = {
+                    prompt: prompt,
+                    timestamp: new Date().toISOString()
+                };
+                
+                savedPrompts.unshift(promptItem);
+                localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts));
+                updateSavedPromptsPanel();
+                
+                alert('Prompt saved! You can find it in the Saved Prompts section.');
+            }
+            
+            function addToHistory(prompt, imageUrl) {
+                // Check if this prompt already exists in history
+                const existingIndex = generationHistory.findIndex(item => item.prompt === prompt);
+                
+                if (existingIndex >= 0) {
+                    // Remove the old entry if it exists
+                    generationHistory.splice(existingIndex, 1);
+                }
+                
+                const historyItem = {
+                    prompt: prompt,
+                    imageUrl: imageUrl,
+                    timestamp: new Date().toISOString()
+                };
+                
+                generationHistory.unshift(historyItem);
+                if (generationHistory.length > 10) {
+                    generationHistory = generationHistory.slice(0, 10);
+                }
+                
+                localStorage.setItem('generationHistory', JSON.stringify(generationHistory));
+                updateHistoryPanel();
+            }
+            
+            function updateHistoryPanel() {
+                if (generationHistory.length === 0) {
+                    historyPanel.style.display = 'none';
+                    return;
+                }
+                
+                historyPanel.style.display = 'block';
+                historyList.innerHTML = '';
+                
+                generationHistory.forEach((item, index) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <img src="${item.imageUrl}" alt="Generated image" class="history-thumbnail">
+                        <div class="history-prompt">${item.prompt.substring(0, 50)}${item.prompt.length > 50 ? '...' : ''}</div>
+                        <div class="history-date">${new Date(item.timestamp).toLocaleDateString()}</div>
+                    `;
+                    
+                    historyItem.addEventListener('click', () => {
+                        promptTextarea.value = item.prompt;
+                        generatedImage.dataset.fromHistory = 'true';
+                        generatedImage.src = item.imageUrl;
+                        generatedImage.style.display = 'block';
+                        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                    });
+                    
+                    historyList.appendChild(historyItem);
+                });
+            }
+            
+            function resetHistory() {
+                if (confirm('Are you sure you want to clear your generation history? This cannot be undone.')) {
+                    generationHistory = [];
+                    localStorage.setItem('generationHistory', JSON.stringify(generationHistory));
+                    updateHistoryPanel();
+                }
+            }
+            
+            function updateSavedPromptsPanel() {
+                if (savedPrompts.length === 0) {
+                    savedPromptsPanel.style.display = 'none';
+                    return;
+                }
+                
+                savedPromptsPanel.style.display = 'block';
+                savedPromptsList.innerHTML = '';
+                
+                savedPrompts.forEach((item, index) => {
+                    const promptItem = document.createElement('div');
+                    promptItem.className = 'saved-prompt-item';
+                    promptItem.innerHTML = `
+                        <div class="saved-prompt-text">${item.prompt.substring(0, 50)}${item.prompt.length > 50 ? '...' : ''}</div>
+                        <div class="saved-prompt-actions">
+                            <i class="fas fa-copy saved-prompt-action" title="Copy to prompt"></i>
+                            <i class="fas fa-trash saved-prompt-action" title="Delete"></i>
+                        </div>
+                    `;
+                    
+                    // Add click handler for copy action
+                    promptItem.querySelector('.fa-copy').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        promptTextarea.value = item.prompt;
+                        promptTextarea.focus();
+                    });
+                    
+                    // Add click handler for delete action
+                    promptItem.querySelector('.fa-trash').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        savedPrompts.splice(index, 1);
+                        localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts));
+                        updateSavedPromptsPanel();
+                    });
+                    
+                    // Add click handler to use the prompt
+                    promptItem.addEventListener('click', () => {
+                        promptTextarea.value = item.prompt;
+                    });
+                    
+                    savedPromptsList.appendChild(promptItem);
+                });
+            }
+            
+            function toggleAdvanced() {
+                advancedContent.classList.toggle('show');
+                advancedArrow.classList.toggle('fa-chevron-down');
+                advancedArrow.classList.toggle('fa-chevron-up');
+            }
+            
+            function updateSliderFill() {
+                // Update dimension sliders
+                const widthValue = widthSlider.value;
+                const widthPercent = (widthValue - widthSlider.min) / (widthSlider.max - widthSlider.min) * 100;
+                widthSlider.style.setProperty('--range-percent', `${widthPercent}%`);
+                
+                const heightValue = heightSlider.value;
+                const heightPercent = (heightValue - heightSlider.min) / (heightSlider.max - heightSlider.min) * 100;
+                heightSlider.style.setProperty('--range-percent', `${heightPercent}%`);
+            }
+            
+            function toggleDarkMode() {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                
+                if (isDarkMode) {
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+                } else {
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+                }
+                
+                localStorage.setItem('darkMode', isDarkMode);
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                loadingElement.style.display = 'none';
+            }
+            
+            // Modal functions
+            function showApiKeyModal(modelName, placeholder, link) {
+                apiKeyModalTitle.innerHTML = `<i class="fas fa-key"></i> ${modelName} API Key`;
+                apiKeyInstructions.textContent = `To use ${modelName}, please enter your API key. Your key will be stored locally in your browser and never sent to our servers.`;
+                apiKeyInput.placeholder = placeholder;
+                apiKeyProviderLink.textContent = modelName;
+                apiKeyProviderLink.href = link;
+                
+                // Clear the input field
+                apiKeyInput.value = '';
+                
+                apiKeyModal.style.display = 'flex';
+            }
+            
+            function closeModal() {
+                apiKeyModal.style.display = 'none';
+            }
+            
+            function saveApiKey() {
+                const apiKey = apiKeyInput.value.trim();
+                const selectedModel = modelSelect.value;
+                
+                if (!apiKey) {
+                    alert('Please enter your API key');
+                    return;
+                }
+                
+                // Simple validation for API key format
+                if (!apiKey.startsWith('sk-')) {
+                    alert('Please enter a valid API key (should start with "sk-")');
+                    return;
+                }
+                
+                // Save the API key based on the selected model
+                if (selectedModel === 'dall-e-3') {
+                    localStorage.setItem('dalleApiKey', apiKey);
+                } else if (selectedModel === 'stability-ai') {
+                    localStorage.setItem('stabilityApiKey', apiKey);
+                }
+                
+                closeModal();
+                
+                // If the user was trying to generate an image, trigger it now
+                if (promptTextarea.value.trim()) {
+                    generateImage();
+                }
             }
         });
-        
-        // Tampilkan modal popup 7 detik setelah halaman selesai dimuat
-setTimeout(() => {
-    const modal = new bootstrap.Modal(document.getElementById('ruangriungModal'));
-    modal.show();
-}, 15000);
-
-// Fungsi untuk menampilkan cookie consent banner
-    function showCookieConsent() {
-        const cookieConsent = document.getElementById('cookieConsent');
-        if (!localStorage.getItem('cookieConsent')) {
-            cookieConsent.style.display = 'block'; // Tampilkan banner
-        }
-    }
-
-    // Fungsi untuk menyetujui cookie
-    function acceptCookies() {
-        localStorage.setItem('cookieConsent', 'accepted');
-        document.getElementById('cookieConsent').style.display = 'none'; // Sembunyikan banner
-        console.log("Cookies diterima!");
-    }
-
-    // Fungsi untuk menolak cookie
-    function declineCookies() {
-        localStorage.setItem('cookieConsent', 'declined');
-        document.getElementById('cookieConsent').style.display = 'none'; // Sembunyikan banner
-        console.log("Cookies ditolak!");
-    }
-
-    // Event listener untuk tombol setuju dan tolak
-    document.getElementById('acceptCookies').addEventListener('click', acceptCookies);
-    document.getElementById('declineCookies').addEventListener('click', declineCookies);
-
-    // Tampilkan banner setelah konten utama dimuat
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(showCookieConsent, 7000); // Tampilkan banner setelah 1 detik
-    });
     </script>
 </body>
 </html>
