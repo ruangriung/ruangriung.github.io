@@ -15,7 +15,7 @@
 <meta property="og:title" content="RuangRiung AI Image Generator - Create Stunning Digital Art">
 <meta property="og:description" content="Transform text into beautiful AI-generated artwork in various styles including photography, anime, digital painting and more.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://ruangriung.my.id">
+<meta property="og:url" content="https://arif.ruangriung.my.id">
 <meta property="og:image" content="assets/logo.webp">
     <title>RuangRiung AI Image Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -883,6 +883,36 @@
                 width: 100%;
             }
         }
+        .checkbox-group {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: var(--bg);
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+    margin-bottom: 10px;
+}
+
+.checkbox-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+}
+
+.checkbox-group input {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
+.checkbox-group label {
+    margin-bottom: 0;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
         .note {
     font-size: 12px;
     color: var(--text-light);
@@ -1242,7 +1272,10 @@
                         <input type="checkbox" id="hd" checked>
                         <label for="hd"><i class="fas fa-expand"></i> HD Resolution</label>
                     </div>
-                    
+                    <div class="checkbox-group">
+    <input type="checkbox" id="safe-filter" checked>
+    <label for="safe-filter"><i class="fas fa-shield-alt"></i> Safe Filter (NSFW protection)</label>
+</div>
                     <div class="checkbox-group">
                         <input type="checkbox" id="enhance-details" checked>
                         <label for="enhance-details"><i class="fas fa-search-plus"></i> Enhance Details</label>
@@ -1302,7 +1335,7 @@
     </div>
     
     <footer>
-        &copy; <span id="current-year"></span> Ruangriung AI Image Generator. All rights reserved. powered by <a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> Develop with ♥️ by<a href="https://ariftirtana.my.id" target="_blank">Arif Tirtana</a>
+        &copy; <span id="current-year"></span> AI Image Generator. All rights reserved. powered by <a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> Develop with ♥️ by<a href="https://ariftirtana.my.id" target="_blank">Arif Tirtana</a>
     </footer>
     
     <script>
@@ -1549,23 +1582,24 @@
                 }
             }
             
-            function generateWithPollinations(prompt) {
-                // Get dimensions from sliders
-                const width = widthSlider.value;
-                const height = heightSlider.value;
-                let ratioParam = `?width=${width}&height=${height}&nologo=true`;
-                
-                // Add seed if provided
-                if (seedInput.value) {
-                    ratioParam += `&seed=${seedInput.value}`;
-                }
-                
-                // Encode the prompt for URL
-                const encodedPrompt = encodeURIComponent(prompt);
-                
-                // Generate the image URL
-                return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
-            }
+function generateWithPollinations(prompt) {
+    // Get dimensions from sliders
+    const width = widthSlider.value;
+    const height = heightSlider.value;
+    const safeFilter = document.getElementById('safe-filter').checked;
+    let ratioParam = `?width=${width}&height=${height}&nologo=true&safe=${safeFilter}`;
+    
+    // Add seed if provided
+    if (seedInput.value) {
+        ratioParam += `&seed=${seedInput.value}`;
+    }
+    
+    // Encode the prompt for URL
+    const encodedPrompt = encodeURIComponent(prompt);
+    
+    // Generate the image URL
+    return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
+}
             
             async function generateWithDalle(prompt) {
                 const apiKey = localStorage.getItem('dalleApiKey');
