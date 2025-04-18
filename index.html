@@ -1111,6 +1111,75 @@ footer {
 html {
     scroll-behavior: smooth;
 }
+.prompt-suggestions-container {
+    margin-bottom: 15px;
+}
+
+.prompt-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.prompt-suggestion {
+    background: var(--bg);
+    color: var(--primary);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.prompt-suggestion:hover {
+    background: var(--primary-light);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.prompt-suggestion i {
+    font-size: 12px;
+}
+
+.suggestions-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.suggestions-loading .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--bg);
+    border-top: 2px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.refresh-suggestions {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.refresh-suggestions:hover {
+    text-decoration: underline;
+}
     </style>
 </head>
 <body>
@@ -1126,6 +1195,16 @@ html {
         </div>
         
         <div class="card">
+        	<div class="prompt-suggestions-container">
+    <div class="prompt-suggestions" id="prompt-suggestions"></div>
+    <div class="suggestions-loading" id="suggestions-loading" style="display: none;">
+        <div class="spinner"></div>
+        <span>Generating creative prompts...</span>
+    </div>
+    <button class="refresh-suggestions" id="refresh-suggestions">
+        <i class="fas fa-sync-alt"></i> Refresh Suggestions
+    </button>
+</div>
         	<button id="clear-btn" title="Clear Prompt"><i class="fas fa-trash"></i> Clear</button>
             <div class="input-group">
                 <i class="fas fa-wand-magic-sparkles input-icon"></i>
@@ -1499,7 +1578,7 @@ html {
             
             <div class="loading">
                 <div class="spinner"></div>
-                <p>Creating your masterpiece... This may take a moment</p>
+                <p>Kami sedang menyiapkan hasil terbaik untuk Anda... Tunggu sejenak</p>
             </div>
             
             <div class="error-message" id="error-message"></div>
@@ -1559,7 +1638,7 @@ html {
     <i class="fab fa-facebook-f"></i>
 </a>
     <script>
-    	document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Set current year in footer
     document.getElementById('current-year').textContent = new Date().getFullYear();
     
@@ -1596,6 +1675,9 @@ html {
     const modelNotesToggle = document.getElementById('model-notes-toggle');
     const modelNotesContent = document.getElementById('model-notes-content');
     const modelNotesArrow = document.getElementById('model-notes-arrow');
+    const promptSuggestionsContainer = document.getElementById('prompt-suggestions');
+    const suggestionsLoading = document.getElementById('suggestions-loading');
+    const refreshSuggestionsBtn = document.getElementById('refresh-suggestions');
 
     // Modal elements
     const apiKeyModal = document.getElementById('api-key-modal');
@@ -1617,6 +1699,7 @@ html {
     const seedInput = document.getElementById('seed');
     const hdCheckbox = document.getElementById('hd');
     const enhanceDetailsCheckbox = document.getElementById('enhance-details');
+    const safeFilterCheckbox = document.getElementById('safe-filter');
 
     // History array
     let generationHistory = JSON.parse(localStorage.getItem('generationHistory')) || [];
@@ -1629,6 +1712,15 @@ html {
         model: '',
         settings: {}
     };
+    
+    // Default prompts in case AI generation fails
+    const defaultPrompts = [
+        "A majestic lion in the savannah at sunset, ultra detailed, cinematic lighting, 8k",
+        "Cyberpunk cityscape at night with neon lights, rain-soaked streets, futuristic vehicles, 8k ultra detailed",
+        "Portrait of a beautiful elf with intricate jewelry, fantasy art, highly detailed, digital painting",
+        "Cute anime girl with pink hair in a cherry blossom garden, Studio Ghibli style",
+        "Futuristic spaceship orbiting a gas giant, sci-fi, hyperrealistic, 8k"
+    ];
     
     // Check for saved dark mode preference
     const darkMode = localStorage.getItem('darkMode') === 'true';
@@ -1646,6 +1738,7 @@ html {
     updateSavedPromptsPanel();
     updateSliderFill();
     updateDimensionSliders();
+    generatePromptSuggestions(); // Generate prompt suggestions on load
     
     // Event listeners
     generateBtn.addEventListener('click', generateImage);
@@ -1671,6 +1764,7 @@ html {
     batchGenerateBtn.addEventListener('click', generateBatch);
     modelNotesToggle.addEventListener('click', toggleModelNotes);
     modelSelect.addEventListener('change', handleModelChange);
+    refreshSuggestionsBtn.addEventListener('click', generatePromptSuggestions);
     
     // Modal event listeners
     closeModalBtn.addEventListener('click', closeModal);
@@ -1684,7 +1778,136 @@ html {
     // Reset all settings button
     document.getElementById('reset-all-btn').addEventListener('click', resetAllSettings);
 
-    // Functions
+    // Function to generate AI-powered prompt suggestions
+    async function generatePromptSuggestions() {
+        promptSuggestionsContainer.innerHTML = '';
+        suggestionsLoading.style.display = 'flex';
+        
+        try {
+            // System message to guide the AI
+            const systemMessage = {
+                role: "system",
+                content: "You are a creative AI prompt generator. Generate 3 diverse, creative, and detailed prompts for AI image generation. " +
+                         "Each prompt should be for a different category (fantasy, sci-fi, realism, surealism, anime, ghibli etc). " +
+                         "Format the response with each prompt on a new line, prefixed with '1. ', '2. ', etc. " +
+                         "Each prompt should be 1-2 sentences long and include details about style, lighting, shot and composition."
+            };
+            
+            let fullResponse = "";
+            
+            // Call the streaming API
+            await streamChatCompletion(
+                [systemMessage],
+                { 
+                    model: "openai",
+                    seed: Math.floor(Math.random() * 1000000)
+                },
+                (textChunk) => {
+                    fullResponse += textChunk;
+                }
+            );
+            
+            // Process the response to extract prompts
+            const prompts = fullResponse.split('\n')
+                .map(line => line.replace(/^\d+\.\s*/, '').trim())
+                .filter(line => line.length > 0)
+                .slice(0, 5); // Take up to 5 prompts
+            
+            // Display the prompts as clickable buttons
+            displayPromptSuggestions(prompts);
+            
+        } catch (error) {
+            console.error('Error generating prompt suggestions:', error);
+            // Fallback to default prompts if AI fails
+            displayPromptSuggestions(defaultPrompts);
+        } finally {
+            suggestionsLoading.style.display = 'none';
+        }
+    }
+    
+    // Function to display prompt suggestions
+    function displayPromptSuggestions(prompts) {
+        promptSuggestionsContainer.innerHTML = '';
+        
+        prompts.forEach((prompt, index) => {
+            const button = document.createElement('button');
+            button.className = 'prompt-suggestion';
+            button.innerHTML = `<i class="fas fa-lightbulb"></i> Suggestion ${index + 1}`;
+            button.setAttribute('data-prompt', prompt);
+            
+            button.addEventListener('click', function() {
+                promptTextarea.value = prompt;
+                promptTextarea.focus();
+            });
+            
+            promptSuggestionsContainer.appendChild(button);
+        });
+    }
+
+    // Stream chat completion function for prompt suggestions
+    async function streamChatCompletion(messages, options = {}, onChunkReceived) {
+        const url = "https://text.pollinations.ai/openai";
+        const payload = {
+            model: options.model || "openai",
+            messages: messages,
+            seed: options.seed,
+            stream: true,
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "text/event-stream",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `HTTP error! status: ${response.status}, message: ${errorText}`
+                );
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+
+                // Process buffer line by line (SSE format: data: {...}\n\n)
+                const lines = buffer.split("\n\n");
+                buffer = lines.pop(); // Keep the potentially incomplete last line
+
+                for (const line of lines) {
+                    if (line.startsWith("data: ")) {
+                        const dataStr = line.substring(6).trim();
+                        if (dataStr === "[DONE]") continue;
+                        
+                        try {
+                            const chunk = JSON.parse(dataStr);
+                            const content = chunk?.choices?.[0]?.delta?.content;
+                            if (content && onChunkReceived) {
+                                onChunkReceived(content);
+                            }
+                        } catch (e) {
+                            console.error("Failed to parse stream chunk:", dataStr, e);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error during streaming chat completion:", error);
+            throw error;
+        }
+    }
+
     function updateDimensionSliders() {
         const width = parseInt(widthSlider.value);
         const height = parseInt(heightSlider.value);
@@ -1758,7 +1981,7 @@ html {
                 composition: compositionSelect.value,
                 hd: hdCheckbox.checked,
                 enhanceDetails: enhanceDetailsCheckbox.checked,
-                safeFilter: document.getElementById('safe-filter').checked
+                safeFilter: safeFilterCheckbox.checked
             }
         };
         
@@ -2006,7 +2229,7 @@ html {
         // Get dimensions from sliders
         const width = widthSlider.value;
         const height = heightSlider.value;
-        const safeFilter = document.getElementById('safe-filter').checked;
+        const safeFilter = safeFilterCheckbox.checked;
         let ratioParam = `?width=${width}&height=${height}&nologo=true&safe=${safeFilter}`;
         
         // Add seed if provided
@@ -2192,69 +2415,6 @@ html {
             // Restore button state
             enhanceBtn.innerHTML = originalButtonHTML;
             enhanceBtn.disabled = false;
-        }
-    }
-    
-    async function streamChatCompletion(messages, options = {}, onChunkReceived) {
-        const url = "https://text.pollinations.ai/openai";
-        const payload = {
-            model: options.model || "openai",
-            messages: messages,
-            seed: options.seed,
-            stream: true, // Enable streaming
-        };
-
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "text/event-stream",
-                },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(
-                    `HTTP error! status: ${response.status}, message: ${errorText}`
-                );
-            }
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let buffer = "";
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                buffer += decoder.decode(value, { stream: true });
-
-                // Process buffer line by line (SSE format: data: {...}\n\n)
-                const lines = buffer.split("\n\n");
-                buffer = lines.pop(); // Keep the potentially incomplete last line
-
-                for (const line of lines) {
-                    if (line.startsWith("data: ")) {
-                        const dataStr = line.substring(6).trim();
-                        if (dataStr === "[DONE]") continue;
-                        
-                        try {
-                            const chunk = JSON.parse(dataStr);
-                            const content = chunk?.choices?.[0]?.delta?.content;
-                            if (content && onChunkReceived) {
-                                onChunkReceived(content);
-                            }
-                        } catch (e) {
-                            console.error("Failed to parse stream chunk:", dataStr, e);
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            console.error("Error during streaming chat completion:", error);
-            throw error;
         }
     }
     
