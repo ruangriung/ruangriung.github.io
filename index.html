@@ -1085,6 +1085,29 @@ footer {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+.floating-facebook-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px; /* pindahkan ke kiri */
+    background: #1877f2;
+    color: white;
+    font-size: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* buat lingkaran sempurna */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    z-index: 999;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+}
+
+.floating-facebook-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+}
     </style>
 </head>
 <body>
@@ -1529,7 +1552,11 @@ footer {
     Develop with ♥️ by <a href="https://ariftirtana.my.id" target="_blank" class="footer-link">Arif Tirtana</a> | Thanks to <i class="fab fa-github"></i><a href="https://github.com" target="_blank" class="footer-link"> GitHub</a> &  <a href="https://www.cloudflare.com/" target="_blank" class="footer-link">Cloudflare</a> <i class="fas fa-cloud"></i>
 <button id="reset-all-btn" class="footer-reset-btn"><i class="fas fa-trash"></i> Reset All Settings</button>
 </footer>
-    
+<a href="https://www.facebook.com/ruangriung" target="_blank" class="floating-facebook-btn" title="Follow us on Facebook">
+    <i class="fab fa-facebook-f"></i>
+</a>
+    <i class="fab fa-facebook-f"></i>
+</a>
     <script>
 document.addEventListener('DOMContentLoaded', function() {
 
