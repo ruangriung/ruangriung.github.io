@@ -988,6 +988,36 @@ footer {
 .dark-mode .footer-link:hover {
     color: var(--primary);
 }
+
+.footer-reset-btn {
+    display: block;
+    margin: 15px auto 0;
+    padding: 8px 16px;
+    background: var(--bg);
+    color: var(--danger);
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.footer-reset-btn:hover {
+    background: rgba(214, 48, 49, 0.1);
+    transform: translateY(-2px);
+}
+
+.footer-reset-btn:active {
+    transform: translateY(0);
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2), inset -2px -2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.footer-reset-btn i {
+    margin-right: 5px;
+}
     </style>
 </head>
 <body>
@@ -1407,10 +1437,40 @@ footer {
     &copy; <span id="current-year"></span> RuangRiung AI Image Generator. All rights reserved | 
     powered by <a href="https://pollinations.ai" target="_blank" class="footer-link">Pollinations.ai</a> | 
     Develop with ♥️ by <a href="https://ariftirtana.my.id" target="_blank" class="footer-link">Arif Tirtana</a>
+<button id="reset-all-btn" class="footer-reset-btn"><i class="fas fa-trash"></i> Reset All Settings</button>
 </footer>
     
     <script>
 document.addEventListener('DOMContentLoaded', function() {
+
+// Tambahkan event listener ini di bagian JavaScript (di dalam DOMContentLoaded)
+document.getElementById('reset-all-btn').addEventListener('click', function() {
+    if (confirm('Are you sure you want to reset ALL settings? This will clear:\n- Generation history\n- Saved prompts\n- API keys\n- Dark mode preference\n\nThis action cannot be undone.')) {
+        // Clear all localStorage items
+        localStorage.removeItem('generationHistory');
+        localStorage.removeItem('savedPrompts');
+        localStorage.removeItem('dalleApiKey');
+        localStorage.removeItem('stabilityApiKey');
+        localStorage.removeItem('darkMode');
+        
+        // Reset state variables
+        generationHistory = [];
+        savedPrompts = [];
+        
+        // Update UI
+        updateHistoryPanel();
+        updateSavedPromptsPanel();
+        
+        // Reset dark mode to default (light)
+        document.body.classList.remove('dark-mode');
+        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+        
+        // Reset model selection to default
+        modelSelect.value = 'pollinations';
+        
+        alert('All settings have been reset to defaults.');
+    }
+});
     // Set current year in footer
     document.getElementById('current-year').textContent = new Date().getFullYear();
     
