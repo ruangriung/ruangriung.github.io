@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    	<!-- Meta Description -->
-<meta name="description" content="Generate stunning AI art with multiple styles - from photorealistic to anime, cyberpunk to Studio Ghibli. Create professional photography, digital art, oil paintings and more with advanced AI image generation.">
+    <!-- Meta Description -->
+    <meta name="description" content="Generate stunning AI art with multiple styles - from photorealistic to anime, cyberpunk to Studio Ghibli. Create professional photography, digital art, oil paintings and more with advanced AI image generation.">
 
-<!-- Meta Theme Color (sesuai warna primary di CSS) -->
-<meta name="theme-color" content="#6c5ce7">
-<meta name="msapplication-navbutton-color" content="#6c5ce7">
-<meta name="apple-mobile-web-app-status-bar-style" content="#6c5ce7">
+    <!-- Meta Theme Color (sesuai warna primary di CSS) -->
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="msapplication-navbutton-color" content="#6c5ce7">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#6c5ce7">
 
-<!-- Open Graph / Social Media Meta (opsional tapi recommended) -->
-<meta property="og:title" content="RuangRiung AI Image Generator - Create Stunning Digital Art">
-<meta property="og:description" content="Transform text into beautiful AI-generated artwork in various styles including photography, anime, digital painting and more.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://ruangriung.my.id">
-<meta property="og:image" content="assets/logo.webp">
+    <!-- Open Graph / Social Media Meta (opsional tapi recommended) -->
+    <meta property="og:title" content="RuangRiung AI Image Generator - Create Stunning Digital Art">
+    <meta property="og:description" content="Transform text into beautiful AI-generated artwork in various styles including photography, anime, digital painting and more.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ruangriung.my.id">
+    <meta property="og:image" content="assets/logo.webp">
     <!-- Favicon -->
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="logo.png">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo.png">
     <title>RuangRiung AI Image Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -985,7 +985,6 @@
                     <button id="enhance-btn" title="Enhance Prompt"><i class="fas fa-brain"></i> Enhance</button>
                     <button id="generate-btn"><i class="fas fa-magic-wand-sparkles"></i> Generate</button>
                 </div>
-
             </div>
             
             <div class="settings-grid">
@@ -1003,7 +1002,6 @@
                             <span class="dimension-value" id="height-value">1024</span>
                         </div>
                         <div class="aspect-ratio-display" id="aspect-ratio-display">Aspect Ratio: 1:1</div>
-
                     </div>
                 </div>
                 
@@ -1017,225 +1015,225 @@
                             <option value="stability-ai">Stability.AI (Requires API Key)</option>
                         </select>
                     </div>
-<div class="note">DALL-E 3 hanya mendukung ukuran: 1024×1024, 1792×1024, atau 1024×1792</div>
+                    <div class="note">DALL-E 3 hanya mendukung ukuran: 1024×1024, 1792×1024, atau 1024×1792</div>
                 </div>
-<div class="note">Stability.AI membutuhkan ukuran gambar kelipatan 64 (contoh: 512, 576, 640, 704, 768)</div>
-<div class="note">Ukuran optimal: 512-2048 (pastikan kelipatan 64 untuk Stability.AI)</div>
+                <div class="note">Stability.AI membutuhkan ukuran gambar kelipatan 64 (contoh: 512, 576, 640, 704, 768)</div>
+                <div class="note">Ukuran optimal: 512-2048 (pastikan kelipatan 64 untuk Stability.AI)</div>
                 
                 <div class="setting-group">
                     <label for="style"><i class="fas fa-paint-brush"></i> Art Style</label>
                     <div class="select-container">
                         <i class="fas fa-paint-brush"></i>
-<select id="style">
-    <!-- Ultra Realism -->
-    <optgroup label="Ultra Realism">
-        <option value="">Hyper Realistic</option>
-        <option value="photorealistic">8K Photorealistic</option>
-        <option value="cinematic realism">Cinematic Realism</option>
-        <option value="hyperdetailed">Hyperdetailed</option>
-        <option value="sci-fi realism">Sci-Fi Realism</option>
-        <option value="medical illustration">Medical Illustration</option>
-    </optgroup>
+                        <select id="style">
+                            <!-- Ultra Realism -->
+                            <optgroup label="Ultra Realism">
+                                <option value="">Hyper Realistic</option>
+                                <option value="photorealistic">8K Photorealistic</option>
+                                <option value="cinematic realism">Cinematic Realism</option>
+                                <option value="hyperdetailed">Hyperdetailed</option>
+                                <option value="sci-fi realism">Sci-Fi Realism</option>
+                                <option value="medical illustration">Medical Illustration</option>
+                            </optgroup>
 
-    <!-- Photography -->
-    <optgroup label="Photography Styles">
-        <option value="professional photography">Professional Photography</option>
-        <option value="casual photography">Casual Photography</option>
-        <option value="studio portrait">Studio Portrait (Ring Light)</option>
-        <option value="fujifilm pro">Fujifilm PRO</option>
-        <option value="kodak portra">Kodak Portra</option>
-        <option value="leica m">Leica M-Series</option>
-        
-        <!-- Sub-genres -->
-        <option value="street photography">Street Photography</option>
-        <option value="urban exploration">Urban Exploration</option>
-        <option value="fashion photography">Fashion Editorial</option>
-        <option value="product photography">Product Photography</option>
-        <option value="food photography">Food Photography</option>
-        <option value="macro photography">Macro Photography</option>
-        <option value="astrophotography">Astrophotography</option>
-        <option value="underwater">Underwater Photography</option>
-        <option value="drone photography">Drone Photography</option>
-        <option value="long exposure">Long Exposure</option>
-        <option value="tilt-shift">Tilt-Shift</option>
-        <option value="infrared">Infrared Photography</option>
-    </optgroup>
+                            <!-- Photography -->
+                            <optgroup label="Photography Styles">
+                                <option value="professional photography">Professional Photography</option>
+                                <option value="casual photography">Casual Photography</option>
+                                <option value="studio portrait">Studio Portrait (Ring Light)</option>
+                                <option value="fujifilm pro">Fujifilm PRO</option>
+                                <option value="kodak portra">Kodak Portra</option>
+                                <option value="leica m">Leica M-Series</option>
+                                
+                                <!-- Sub-genres -->
+                                <option value="street photography">Street Photography</option>
+                                <option value="urban exploration">Urban Exploration</option>
+                                <option value="fashion photography">Fashion Editorial</option>
+                                <option value="product photography">Product Photography</option>
+                                <option value="food photography">Food Photography</option>
+                                <option value="macro photography">Macro Photography</option>
+                                <option value="astrophotography">Astrophotography</option>
+                                <option value="underwater">Underwater Photography</option>
+                                <option value="drone photography">Drone Photography</option>
+                                <option value="long exposure">Long Exposure</option>
+                                <option value="tilt-shift">Tilt-Shift</option>
+                                <option value="infrared">Infrared Photography</option>
+                            </optgroup>
 
-    <!-- Anime/Manga -->
-    <optgroup label="Anime & Manga">
-        <option value="anime">Modern Anime</option>
-        <option value="studio ghibli">Studio Ghibli</option>
-        <option value="makoto shinkai">Makoto Shinkai</option>
-        <option value="90s anime">90s Anime</option>
-        <option value="manga">Shonen Manga</option>
-        <option value="seinen manga">Seinen Manga</option>
-        <option value="webtoon">Webtoon</option>
-        <option value="manhwa">Korean Manhwa</option>
-        <option value="chibi">Chibi</option>
-        <option value="kawaii">Kawaii Style</option>
-        <option value="mecha anime">Mecha Anime</option>
-        <option value="shoujo anime">Shoujo Anime</option>
-    </optgroup>
+                            <!-- Anime/Manga -->
+                            <optgroup label="Anime & Manga">
+                                <option value="anime">Modern Anime</option>
+                                <option value="studio ghibli">Studio Ghibli</option>
+                                <option value="makoto shinkai">Makoto Shinkai</option>
+                                <option value="90s anime">90s Anime</option>
+                                <option value="manga">Shonen Manga</option>
+                                <option value="seinen manga">Seinen Manga</option>
+                                <option value="webtoon">Webtoon</option>
+                                <option value="manhwa">Korean Manhwa</option>
+                                <option value="chibi">Chibi</option>
+                                <option value="kawaii">Kawaii Style</option>
+                                <option value="mecha anime">Mecha Anime</option>
+                                <option value="shoujo anime">Shoujo Anime</option>
+                            </optgroup>
 
-    <!-- Digital Painting -->
-    <optgroup label="Digital Painting">
-        <option value="digital painting">Digital Painting</option>
-        <option value="concept art">Concept Art</option>
-        <option value="character design">Character Design</option>
-        <option value="environment art">Environment Art</option>
-        <option value="matte painting">Matte Painting</option>
-        <option value="speedpainting">Speedpainting</option>
-        <option value="fantasy art">Fantasy Art</option>
-        <option value="dark fantasy">Dark Fantasy</option>
-        <option value="book illustration">Book Illustration</option>
-        <option value="children book">Children's Book</option>
-    </optgroup>
+                            <!-- Digital Painting -->
+                            <optgroup label="Digital Painting">
+                                <option value="digital painting">Digital Painting</option>
+                                <option value="concept art">Concept Art</option>
+                                <option value="character design">Character Design</option>
+                                <option value="environment art">Environment Art</option>
+                                <option value="matte painting">Matte Painting</option>
+                                <option value="speedpainting">Speedpainting</option>
+                                <option value="fantasy art">Fantasy Art</option>
+                                <option value="dark fantasy">Dark Fantasy</option>
+                                <option value="book illustration">Book Illustration</option>
+                                <option value="children book">Children's Book</option>
+                            </optgroup>
 
-    <!-- Traditional Media -->
-    <optgroup label="Traditional Media">
-        <option value="oil painting">Oil Painting</option>
-        <option value="watercolor">Watercolor</option>
-        <option value="gouache">Gouache</option>
-        <option value="acrylic painting">Acrylic Painting</option>
-        <option value="pastel">Pastel</option>
-        <option value="ink wash">Ink Wash</option>
-        <option value="fresco">Fresco</option>
-        <option value="tempera">Tempera</option>
-        
-        <!-- Historical Periods -->
-        <option value="renaissance">Renaissance</option>
-        <option value="baroque">Baroque</option>
-        <option value="rococo">Rococo</option>
-        <option value="impressionist">Impressionist</option>
-        <option value="post-impressionist">Post-Impressionist</option>
-        <option value="expressionist">Expressionist</option>
-        <option value="art nouveau">Art Nouveau</option>
-        <option value="art deco">Art Deco</option>
-        <option value="victorian">Victorian</option>
-        <option value="socialist realism">Socialist Realism</option>
-    </optgroup>
+                            <!-- Traditional Media -->
+                            <optgroup label="Traditional Media">
+                                <option value="oil painting">Oil Painting</option>
+                                <option value="watercolor">Watercolor</option>
+                                <option value="gouache">Gouache</option>
+                                <option value="acrylic painting">Acrylic Painting</option>
+                                <option value="pastel">Pastel</option>
+                                <option value="ink wash">Ink Wash</option>
+                                <option value="fresco">Fresco</option>
+                                <option value="tempera">Tempera</option>
+                                
+                                <!-- Historical Periods -->
+                                <option value="renaissance">Renaissance</option>
+                                <option value="baroque">Baroque</option>
+                                <option value="rococo">Rococo</option>
+                                <option value="impressionist">Impressionist</option>
+                                <option value="post-impressionist">Post-Impressionist</option>
+                                <option value="expressionist">Expressionist</option>
+                                <option value="art nouveau">Art Nouveau</option>
+                                <option value="art deco">Art Deco</option>
+                                <option value="victorian">Victorian</option>
+                                <option value="socialist realism">Socialist Realism</option>
+                            </optgroup>
 
-    <!-- Drawing Techniques -->
-    <optgroup label="Drawing Techniques">
-        <option value="pencil sketch">Pencil Sketch</option>
-        <option value="charcoal sketch">Charcoal Sketch</option>
-        <option value="ink drawing">Ink Drawing</option>
-        <option value="ballpoint pen">Ballpoint Pen</option>
-        <option value="colored pencil">Colored Pencil</option>
-        <option value="marker drawing">Marker Drawing</option>
-        <option value="etching">Etching</option>
-        <option value="linocut">Linocut</option>
-        <option value="woodcut">Woodcut</option>
-        <option value="pointillism">Pointillism</option>
-        <option value="stippling">Stippling</option>
-    </optgroup>
+                            <!-- Drawing Techniques -->
+                            <optgroup label="Drawing Techniques">
+                                <option value="pencil sketch">Pencil Sketch</option>
+                                <option value="charcoal sketch">Charcoal Sketch</option>
+                                <option value="ink drawing">Ink Drawing</option>
+                                <option value="ballpoint pen">Ballpoint Pen</option>
+                                <option value="colored pencil">Colored Pencil</option>
+                                <option value="marker drawing">Marker Drawing</option>
+                                <option value="etching">Etching</option>
+                                <option value="linocut">Linocut</option>
+                                <option value="woodcut">Woodcut</option>
+                                <option value="pointillism">Pointillism</option>
+                                <option value="stippling">Stippling</option>
+                            </optgroup>
 
-    <!-- 3D & CGI -->
-    <optgroup label="3D & CGI">
-        <option value="3d render">3D Render</option>
-        <option value="blender">Blender</option>
-        <option value="unreal engine">Unreal Engine</option>
-        <option value="octane render">Octane Render</option>
-        <option value="redshift">Redshift</option>
-        <option value="arnold render">Arnold Render</option>
-        <option value="zbrush">ZBrush Sculpt</option>
-        <option value="claymation">Claymation</option>
-        <option value="stop motion">Stop Motion</option>
-        <option value="isometric">Isometric</option>
-        <option value="voxel art">Voxel Art</option>
-    </optgroup>
+                            <!-- 3D & CGI -->
+                            <optgroup label="3D & CGI">
+                                <option value="3d render">3D Render</option>
+                                <option value="blender">Blender</option>
+                                <option value="unreal engine">Unreal Engine</option>
+                                <option value="octane render">Octane Render</option>
+                                <option value="redshift">Redshift</option>
+                                <option value="arnold render">Arnold Render</option>
+                                <option value="zbrush">ZBrush Sculpt</option>
+                                <option value="claymation">Claymation</option>
+                                <option value="stop motion">Stop Motion</option>
+                                <option value="isometric">Isometric</option>
+                                <option value="voxel art">Voxel Art</option>
+                            </optgroup>
 
-    <!-- Game Art Styles -->
-    <optgroup label="Game Art Styles">
-        <option value="low poly">Low Poly</option>
-        <option value="pixel art">Pixel Art</option>
-        <option value="ps1 graphics">PS1 Graphics</option>
-        <option value="ps2 graphics">PS2 Graphics</option>
-        <option value="n64 style">N64 Style</option>
-        <option value="arc system works">Arc System Works</option>
-        <option value="cel shaded">Cel-Shaded</option>
-        <option value="borderlands">Borderlands Style</option>
-        <option value="valorant style">Valorant Style</option>
-        <option value="overwatch style">Overwatch Style</option>
-        <option value="genshin impact">Genshin Impact</option>
-        <option value="honkai star rail">Honkai: Star Rail</option>
-    </optgroup>
+                            <!-- Game Art Styles -->
+                            <optgroup label="Game Art Styles">
+                                <option value="low poly">Low Poly</option>
+                                <option value="pixel art">Pixel Art</option>
+                                <option value="ps1 graphics">PS1 Graphics</option>
+                                <option value="ps2 graphics">PS2 Graphics</option>
+                                <option value="n64 style">N64 Style</option>
+                                <option value="arc system works">Arc System Works</option>
+                                <option value="cel shaded">Cel-Shaded</option>
+                                <option value="borderlands">Borderlands Style</option>
+                                <option value="valorant style">Valorant Style</option>
+                                <option value="overwatch style">Overwatch Style</option>
+                                <option value="genshin impact">Genshin Impact</option>
+                                <option value="honkai star rail">Honkai: Star Rail</option>
+                            </optgroup>
 
-    <!-- Cyberpunk & Futuristic -->
-    <optgroup label="Cyberpunk & Futuristic">
-        <option value="cyberpunk">Cyberpunk 2077</option>
-        <option value="cyberpunk anime">Cyberpunk Anime</option>
-        <option value="biopunk">Biopunk</option>
-        <option value="dieselpunk">Dieselpunk</option>
-        <option value="steampunk">Steampunk</option>
-        <option value="atompunk">Atompunk</option>
-        <option value="solarpunk">Solarpunk</option>
-        <option value="cassette futurism">Cassette Futurism</option>
-        <option value="retro futurism">Retro Futurism</option>
-        <option value="blade runner">Blade Runner</option>
-        <option value="ghost in the shell">Ghost in the Shell</option>
-    </optgroup>
+                            <!-- Cyberpunk & Futuristic -->
+                            <optgroup label="Cyberpunk & Futuristic">
+                                <option value="cyberpunk">Cyberpunk 2077</option>
+                                <option value="cyberpunk anime">Cyberpunk Anime</option>
+                                <option value="biopunk">Biopunk</option>
+                                <option value="dieselpunk">Dieselpunk</option>
+                                <option value="steampunk">Steampunk</option>
+                                <option value="atompunk">Atompunk</option>
+                                <option value="solarpunk">Solarpunk</option>
+                                <option value="cassette futurism">Cassette Futurism</option>
+                                <option value="retro futurism">Retro Futurism</option>
+                                <option value="blade runner">Blade Runner</option>
+                                <option value="ghost in the shell">Ghost in the Shell</option>
+                            </optgroup>
 
-    <!-- Cartoon & Comics -->
-    <optgroup label="Cartoon & Comics">
-        <option value="disney style">Disney</option>
-        <option value="pixar style">Pixar</option>
-        <option value="dreamworks">Dreamworks</option>
-        <option value="cartoon network">Cartoon Network</option>
-        <option value="adult swim">Adult Swim</option>
-        <option value="rick and morty">Rick and Morty</option>
-        <option value="calarts style">CalArts Style</option>
-        <option value="peanuts">Peanuts</option>
-        <option value="marvel comics">Marvel Comics</option>
-        <option value="dc comics">DC Comics</option>
-        <option value="european comics">European Comics</option>
-        <option value="french ligne claire">Ligne Claire</option>
-    </optgroup>
+                            <!-- Cartoon & Comics -->
+                            <optgroup label="Cartoon & Comics">
+                                <option value="disney style">Disney</option>
+                                <option value="pixar style">Pixar</option>
+                                <option value="dreamworks">Dreamworks</option>
+                                <option value="cartoon network">Cartoon Network</option>
+                                <option value="adult swim">Adult Swim</option>
+                                <option value="rick and morty">Rick and Morty</option>
+                                <option value="calarts style">CalArts Style</option>
+                                <option value="peanuts">Peanuts</option>
+                                <option value="marvel comics">Marvel Comics</option>
+                                <option value="dc comics">DC Comics</option>
+                                <option value="european comics">European Comics</option>
+                                <option value="french ligne claire">Ligne Claire</option>
+                            </optgroup>
 
-    <!-- Abstract & Experimental -->
-    <optgroup label="Abstract & Experimental">
-        <option value="abstract">Abstract</option>
-        <option value="cubism">Cubism</option>
-        <option value="surrealism">Surrealism</option>
-        <option value="dadaism">Dadaism</option>
-        <option value="bauhaus">Bauhaus</option>
-        <option value="constructivism">Constructivism</option>
-        <option value="psychedelic">Psychedelic</option>
-        <option value="fluid art">Fluid Art</option>
-        <option value="glitch art">Glitch Art</option>
-        <option value="fractal art">Fractal Art</option>
-        <option value="generative art">Generative Art</option>
-        <option value="data bending">Data Bending</option>
-    </optgroup>
+                            <!-- Abstract & Experimental -->
+                            <optgroup label="Abstract & Experimental">
+                                <option value="abstract">Abstract</option>
+                                <option value="cubism">Cubism</option>
+                                <option value="surrealism">Surrealism</option>
+                                <option value="dadaism">Dadaism</option>
+                                <option value="bauhaus">Bauhaus</option>
+                                <option value="constructivism">Constructivism</option>
+                                <option value="psychedelic">Psychedelic</option>
+                                <option value="fluid art">Fluid Art</option>
+                                <option value="glitch art">Glitch Art</option>
+                                <option value="fractal art">Fractal Art</option>
+                                <option value="generative art">Generative Art</option>
+                                <option value="data bending">Data Bending</option>
+                            </optgroup>
 
-    <!-- Special Effects -->
-    <optgroup label="Special Effects">
-        <option value="holographic">Holographic</option>
-        <option value="neon glow">Neon Glow</option>
-        <option value="chromatic aberration">Chromatic Aberration</option>
-        <option value="double exposure">Double Exposure</option>
-        <option value="light painting">Light Painting</option>
-        <option value="lens flare">Lens Flare</option>
-        <option value="vhs effect">VHS Effect</option>
-        <option value="crt screen">CRT Screen</option>
-        <option value="film grain">Film Grain</option>
-        <option value="cross processing">Cross Processing</option>
-    </optgroup>
+                            <!-- Special Effects -->
+                            <optgroup label="Special Effects">
+                                <option value="holographic">Holographic</option>
+                                <option value="neon glow">Neon Glow</option>
+                                <option value="chromatic aberration">Chromatic Aberration</option>
+                                <option value="double exposure">Double Exposure</option>
+                                <option value="light painting">Light Painting</option>
+                                <option value="lens flare">Lens Flare</option>
+                                <option value="vhs effect">VHS Effect</option>
+                                <option value="crt screen">CRT Screen</option>
+                                <option value="film grain">Film Grain</option>
+                                <option value="cross processing">Cross Processing</option>
+                            </optgroup>
 
-    <!-- Cultural & Historical -->
-    <optgroup label="Cultural & Historical">
-        <option value="ukiyo-e">Ukiyo-e</option>
-        <option value="chinese painting">Chinese Painting</option>
-        <option value="sumi-e">Sumi-e</option>
-        <option value="persian miniature">Persian Miniature</option>
-        <option value="medieval illuminated">Medieval Illuminated</option>
-        <option value="byzantine icon">Byzantine Icon</option>
-        <option value="tribal art">Tribal Art</option>
-        <option value="afrofuturism">Afrofuturism</option>
-        <option value="indigenous art">Indigenous Art</option>
-        <option value="soviet propaganda">Soviet Propaganda</option>
-    </optgroup>
-</select>
+                            <!-- Cultural & Historical -->
+                            <optgroup label="Cultural & Historical">
+                                <option value="ukiyo-e">Ukiyo-e</option>
+                                <option value="chinese painting">Chinese Painting</option>
+                                <option value="sumi-e">Sumi-e</option>
+                                <option value="persian miniature">Persian Miniature</option>
+                                <option value="medieval illuminated">Medieval Illuminated</option>
+                                <option value="byzantine icon">Byzantine Icon</option>
+                                <option value="tribal art">Tribal Art</option>
+                                <option value="afrofuturism">Afrofuturism</option>
+                                <option value="indigenous art">Indigenous Art</option>
+                                <option value="soviet propaganda">Soviet Propaganda</option>
+                            </optgroup>
+                        </select>
                     </div>
                 </div>
                 
@@ -1308,7 +1306,6 @@
                             <i class="fas fa-seedling"></i>
                             <input type="number" id="seed" placeholder="Leave blank for random">
                         </div>
-                        
                     </div>
                 </div>
                 
@@ -1318,9 +1315,9 @@
                         <label for="hd"><i class="fas fa-expand"></i> HD Resolution</label>
                     </div>
                     <div class="checkbox-group">
-    <input type="checkbox" id="safe-filter" checked>
-    <label for="safe-filter"><i class="fas fa-shield-alt"></i> Safe Filter (NSFW protection)</label>
-</div>
+                        <input type="checkbox" id="safe-filter" checked>
+                        <label for="safe-filter"><i class="fas fa-shield-alt"></i> Safe Filter (NSFW protection)</label>
+                    </div>
                     <div class="checkbox-group">
                         <input type="checkbox" id="enhance-details" checked>
                         <label for="enhance-details"><i class="fas fa-search-plus"></i> Enhance Details</label>
@@ -1342,6 +1339,7 @@
                 <button class="btn btn-primary" id="download-btn"><i class="fas fa-download"></i> Download</button>
                 <button class="btn btn-secondary" id="share-btn"><i class="fas fa-share-alt"></i> Share</button>
                 <button class="btn btn-secondary" id="remix-btn"><i class="fas fa-random"></i> Remix</button>
+                <button class="btn btn-secondary" id="variation-btn"><i class="fas fa-clone"></i> Variation</button>
                 <button class="btn btn-secondary" id="save-prompt-btn"><i class="fas fa-bookmark"></i> Save Prompt</button>
             </div>
         </div>
@@ -1397,6 +1395,7 @@
             const downloadBtn = document.getElementById('download-btn');
             const shareBtn = document.getElementById('share-btn');
             const remixBtn = document.getElementById('remix-btn');
+            const variationBtn = document.getElementById('variation-btn');
             const savePromptBtn = document.getElementById('save-prompt-btn');
             const errorMessage = document.getElementById('error-message');
             const historyPanel = document.getElementById('history-panel');
@@ -1441,6 +1440,14 @@
             let generationHistory = JSON.parse(localStorage.getItem('generationHistory')) || [];
             let savedPrompts = JSON.parse(localStorage.getItem('savedPrompts')) || [];
             
+            // Current generation state
+            let currentGeneration = {
+                prompt: '',
+                seed: null,
+                model: '',
+                settings: {}
+            };
+            
             // Check for saved dark mode preference
             const darkMode = localStorage.getItem('darkMode') === 'true';
             if (darkMode) {
@@ -1471,6 +1478,7 @@
             downloadBtn.addEventListener('click', downloadImage);
             shareBtn.addEventListener('click', shareImage);
             remixBtn.addEventListener('click', remixImage);
+            variationBtn.addEventListener('click', generateVariation);
             savePromptBtn.addEventListener('click', savePrompt);
             advancedToggle.addEventListener('click', toggleAdvanced);
             darkModeToggle.addEventListener('click', toggleDarkMode);
@@ -1479,9 +1487,9 @@
             resetHistoryBtn.addEventListener('click', resetHistory);
             
             clearBtn.addEventListener('click', function() {
-    promptTextarea.value = '';
-    promptTextarea.focus();
-});
+                promptTextarea.value = '';
+                promptTextarea.focus();
+            });
             
             // Model select change listener
             modelSelect.addEventListener('change', function() {
@@ -1592,6 +1600,25 @@
                     fullPrompt += `, highly detailed`;
                 }
                 
+                // Store current generation state
+                currentGeneration = {
+                    prompt: fullPrompt,
+                    seed: seedInput.value || Math.floor(Math.random() * 1000000),
+                    model: selectedModel,
+                    settings: {
+                        width: widthSlider.value,
+                        height: heightSlider.value,
+                        style: styleSelect.value,
+                        quality: qualitySelect.value,
+                        lighting: lightingSelect.value,
+                        color: colorSelect.value,
+                        composition: compositionSelect.value,
+                        hd: hdCheckbox.checked,
+                        enhanceDetails: enhanceDetailsCheckbox.checked,
+                        safeFilter: document.getElementById('safe-filter').checked
+                    }
+                };
+                
                 try {
                     let imageUrl;
                     
@@ -1633,24 +1660,80 @@
                 }
             }
             
-function generateWithPollinations(prompt) {
-    // Get dimensions from sliders
-    const width = widthSlider.value;
-    const height = heightSlider.value;
-    const safeFilter = document.getElementById('safe-filter').checked;
-    let ratioParam = `?width=${width}&height=${height}&nologo=true&safe=${safeFilter}`;
-    
-    // Add seed if provided
-    if (seedInput.value) {
-        ratioParam += `&seed=${seedInput.value}`;
-    }
-    
-    // Encode the prompt for URL
-    const encodedPrompt = encodeURIComponent(prompt);
-    
-    // Generate the image URL
-    return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
-}
+            async function generateVariation() {
+                if (!currentGeneration.prompt || !generatedImage.src) {
+                    showError('Please generate an image first before creating variations');
+                    return;
+                }
+                
+                // Generate a new seed for the variation
+                const newSeed = Math.floor(Math.random() * 1000000);
+                seedInput.value = newSeed;
+                
+                // Update current generation state with new seed
+                currentGeneration.seed = newSeed;
+                
+                // Hide previous image and error, show loading
+                generatedImage.style.display = 'none';
+                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+                errorMessage.style.display = 'none';
+                loadingElement.style.display = 'block';
+                
+                try {
+                    let imageUrl;
+                    
+                    if (currentGeneration.model === 'dall-e-3') {
+                        // Generate variation with DALL-E 3
+                        imageUrl = await generateWithDalle(currentGeneration.prompt);
+                    } else if (currentGeneration.model === 'stability-ai') {
+                        // Generate variation with Stability.AI
+                        imageUrl = await generateWithStability(currentGeneration.prompt);
+                    } else {
+                        // Generate variation with Pollinations AI
+                        imageUrl = generateWithPollinations(currentGeneration.prompt);
+                    }
+                    
+                    // Load the image
+                    generatedImage.onload = function() {
+                        loadingElement.style.display = 'none';
+                        generatedImage.style.display = 'block';
+                        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                        
+                        // Add to history
+                        addToHistory(currentGeneration.prompt, imageUrl);
+                    };
+                    
+                    generatedImage.onerror = function() {
+                        loadingElement.style.display = 'none';
+                        showError('Failed to generate variation. Please try again.');
+                    };
+                    
+                    generatedImage.src = imageUrl;
+                } catch (error) {
+                    console.error('Error generating variation:', error);
+                    loadingElement.style.display = 'none';
+                    showError(error.message || 'Failed to generate variation. Please try again.');
+                }
+            }
+            
+            function generateWithPollinations(prompt) {
+                // Get dimensions from sliders
+                const width = widthSlider.value;
+                const height = heightSlider.value;
+                const safeFilter = document.getElementById('safe-filter').checked;
+                let ratioParam = `?width=${width}&height=${height}&nologo=true&safe=${safeFilter}`;
+                
+                // Add seed if provided
+                if (currentGeneration.seed) {
+                    ratioParam += `&seed=${currentGeneration.seed}`;
+                }
+                
+                // Encode the prompt for URL
+                const encodedPrompt = encodeURIComponent(prompt);
+                
+                // Generate the image URL
+                return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
+            }
             
             async function generateWithDalle(prompt) {
                 const apiKey = localStorage.getItem('dalleApiKey');
@@ -1746,7 +1829,7 @@ function generateWithPollinations(prompt) {
                             width: validWidth,
                             steps: 30,
                             samples: 1,
-                            seed: seedInput.value || Math.floor(Math.random() * 1000000)
+                            seed: currentGeneration.seed || Math.floor(Math.random() * 1000000)
                         })
                     });
                     
