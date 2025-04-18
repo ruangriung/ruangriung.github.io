@@ -1140,6 +1140,19 @@ footer {
                         </div>
                         <div class="aspect-ratio-display" id="aspect-ratio-display">Aspect Ratio: 1:1</div>
                     </div>
+                    <div style="margin-top:15px; font-size:0.8em;text-align:center" class="advanced-toggle" id="model-notes-toggle">
+    <span><i class="fas fa-info-circle"></i>  Model Notes for dimensions</span>
+    <i class="fas fa-chevron-down" id="model-notes-arrow"></i>
+</div>
+
+<div class="advanced-content" id="model-notes-content">
+    <div class="note"><span style="color:red">DALL-E 3</span> only supports the following sizes: 1024×1024, 1792×1024, or 1024×1792</div>
+    <div class="note"><span style="color:red">Stability.AI</span> requires both width and height to be multiples of 64 (e.g., 512, 576, 640, 704, 768)</div>
+    <div class="note">This requirement is due to the architecture of the model, which uses layered downsampling and upsampling operations that work best with sizes divisible by 64</div>
+    <div class="note">Optimal image size range: 512–2048 pixels (for both width and height)</div>
+    <div class="note">Recommended sizes: 512×512, 768×768, 1024×1024, 1024×1536 — depending on your hardware capability</div>
+    <div class="note">Avoid non-multiples of 64 like 500×600 or 1023×1023, as they may cause errors or degraded performance</div>
+</div>
                 </div>
                 
                 <div class="setting-group">
@@ -1152,11 +1165,6 @@ footer {
                             <option value="stability-ai">Stability.AI (Requires API Key)</option>
                         </select>
                     </div>
-                    <div class="note">DALL-E 3 hanya mendukung ukuran: 1024×1024, 1792×1024, atau 1024×1792</div>
-                </div>
-                <div class="note">Stability.AI membutuhkan ukuran gambar kelipatan 64 (contoh: 512, 576, 640, 704, 768)</div>
-                <div class="note">Ukuran optimal: 512-2048 (pastikan kelipatan 64 untuk Stability.AI)</div>
-                
                 <div class="setting-group">
                     <label for="style"><i class="fas fa-paint-brush"></i> Art Style</label>
                     <div class="select-container">
@@ -1605,6 +1613,16 @@ document.getElementById('reset-all-btn').addEventListener('click', function() {
     const hdCheckbox = document.getElementById('hd');
     const enhanceDetailsCheckbox = document.getElementById('enhance-details');
     
+    const modelNotesToggle = document.getElementById('model-notes-toggle');
+const modelNotesContent = document.getElementById('model-notes-content');
+const modelNotesArrow = document.getElementById('model-notes-arrow');
+
+modelNotesToggle.addEventListener('click', () => {
+    modelNotesContent.classList.toggle('show');
+    modelNotesArrow.classList.toggle('fa-chevron-down');
+    modelNotesArrow.classList.toggle('fa-chevron-up');
+});
+    
     // Add to your elements section at the top
 const batchCountInput = document.getElementById('batch-count');
 const batchGenerateBtn = document.getElementById('batch-generate-btn');
@@ -1698,7 +1716,7 @@ async function generateBatch() {
         batchGenerateBtn.innerHTML = '<i class="fas fa-layer-group"></i> Generate Batch';
     }
 }
-    
+
     // History array
     let generationHistory = JSON.parse(localStorage.getItem('generationHistory')) || [];
     let savedPrompts = JSON.parse(localStorage.getItem('savedPrompts')) || [];
