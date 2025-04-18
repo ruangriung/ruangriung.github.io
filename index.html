@@ -1557,37 +1557,36 @@ footer {
 </a>
     <i class="fab fa-facebook-f"></i>
 </a>
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
+    <script>document.addEventListener('DOMContentLoaded', function() {
+    // Tambahkan event listener ini di bagian JavaScript (di dalam DOMContentLoaded)
+    document.getElementById('reset-all-btn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to reset ALL settings? This will clear:\n- Generation history\n- Saved prompts\n- API keys\n- Dark mode preference\n\nThis action cannot be undone.')) {
+            // Clear all localStorage items
+            localStorage.removeItem('generationHistory');
+            localStorage.removeItem('savedPrompts');
+            localStorage.removeItem('dalleApiKey');
+            localStorage.removeItem('stabilityApiKey');
+            localStorage.removeItem('darkMode');
+            
+            // Reset state variables
+            generationHistory = [];
+            savedPrompts = [];
+            
+            // Update UI
+            updateHistoryPanel();
+            updateSavedPromptsPanel();
+            
+            // Reset dark mode to default (light)
+            document.body.classList.remove('dark-mode');
+            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+            
+            // Reset model selection to default
+            modelSelect.value = 'pollinations';
+            
+            alert('All settings have been reset to defaults.');
+        }
+    });
 
-// Tambahkan event listener ini di bagian JavaScript (di dalam DOMContentLoaded)
-document.getElementById('reset-all-btn').addEventListener('click', function() {
-    if (confirm('Are you sure you want to reset ALL settings? This will clear:\n- Generation history\n- Saved prompts\n- API keys\n- Dark mode preference\n\nThis action cannot be undone.')) {
-        // Clear all localStorage items
-        localStorage.removeItem('generationHistory');
-        localStorage.removeItem('savedPrompts');
-        localStorage.removeItem('dalleApiKey');
-        localStorage.removeItem('stabilityApiKey');
-        localStorage.removeItem('darkMode');
-        
-        // Reset state variables
-        generationHistory = [];
-        savedPrompts = [];
-        
-        // Update UI
-        updateHistoryPanel();
-        updateSavedPromptsPanel();
-        
-        // Reset dark mode to default (light)
-        document.body.classList.remove('dark-mode');
-        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
-        
-        // Reset model selection to default
-        modelSelect.value = 'pollinations';
-        
-        alert('All settings have been reset to defaults.');
-    }
-});
     // Set current year in footer
     document.getElementById('current-year').textContent = new Date().getFullYear();
     
@@ -1642,108 +1641,108 @@ document.getElementById('reset-all-btn').addEventListener('click', function() {
     const enhanceDetailsCheckbox = document.getElementById('enhance-details');
     
     const modelNotesToggle = document.getElementById('model-notes-toggle');
-const modelNotesContent = document.getElementById('model-notes-content');
-const modelNotesArrow = document.getElementById('model-notes-arrow');
+    const modelNotesContent = document.getElementById('model-notes-content');
+    const modelNotesArrow = document.getElementById('model-notes-arrow');
 
-modelNotesToggle.addEventListener('click', () => {
-    modelNotesContent.classList.toggle('show');
-    modelNotesArrow.classList.toggle('fa-chevron-down');
-    modelNotesArrow.classList.toggle('fa-chevron-up');
-});
+    modelNotesToggle.addEventListener('click', () => {
+        modelNotesContent.classList.toggle('show');
+        modelNotesArrow.classList.toggle('fa-chevron-down');
+        modelNotesArrow.classList.toggle('fa-chevron-up');
+    });
     
     // Add to your elements section at the top
-const batchCountInput = document.getElementById('batch-count');
-const batchGenerateBtn = document.getElementById('batch-generate-btn');
+    const batchCountInput = document.getElementById('batch-count');
+    const batchGenerateBtn = document.getElementById('batch-generate-btn');
 
-// Add event listener for batch generation
-batchGenerateBtn.addEventListener('click', generateBatch);
+    // Add event listener for batch generation
+    batchGenerateBtn.addEventListener('click', generateBatch);
 
-// Add this function to handle batch generation
-async function generateBatch() {
-    const prompt = promptTextarea.value.trim();
-    const batchCount = parseInt(batchCountInput.value);
-    
-    if (!prompt) {
-        showError('Please enter a description for the image');
-        return;
-    }
-    
-    if (isNaN(batchCount) || batchCount < 1 || batchCount > 10) {
-        showError('Please enter a valid batch count between 1 and 10');
-        return;
-    }
-    
-    // Store original seed
-    const originalSeed = seedInput.value || Math.floor(Math.random() * 1000000);
-    
-    // Disable buttons during batch generation
-    generateBtn.disabled = true;
-    batchGenerateBtn.disabled = true;
-    batchGenerateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-    
-    try {
-        // Create a container for batch images if it doesn't exist
-        let batchContainer = document.getElementById('batch-images-container');
-        if (!batchContainer) {
-            batchContainer = document.createElement('div');
-            batchContainer.id = 'batch-images-container';
-            batchContainer.className = 'batch-images-container';
-            document.querySelector('.image-container').insertBefore(batchContainer, document.querySelector('.action-buttons'));
-        } else {
-            batchContainer.innerHTML = '';
+    // Add this function to handle batch generation
+    async function generateBatch() {
+        const prompt = promptTextarea.value.trim();
+        const batchCount = parseInt(batchCountInput.value);
+        
+        if (!prompt) {
+            showError('Please enter a description for the image');
+            return;
         }
         
-        // Generate multiple images
-        for (let i = 0; i < batchCount; i++) {
-            // Use different seeds for each image
-            seedInput.value = originalSeed + i;
-            
-            // Generate the image
-            let imageUrl;
-            if (modelSelect.value === 'dall-e-3') {
-                imageUrl = await generateWithDalle(prompt);
-            } else if (modelSelect.value === 'stability-ai') {
-                imageUrl = await generateWithStability(prompt);
+        if (isNaN(batchCount) || batchCount < 1 || batchCount > 10) {
+            showError('Please enter a valid batch count between 1 and 10');
+            return;
+        }
+        
+        // Store original seed
+        const originalSeed = seedInput.value || Math.floor(Math.random() * 1000000);
+        
+        // Disable buttons during batch generation
+        generateBtn.disabled = true;
+        batchGenerateBtn.disabled = true;
+        batchGenerateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+        
+        try {
+            // Create a container for batch images if it doesn't exist
+            let batchContainer = document.getElementById('batch-images-container');
+            if (!batchContainer) {
+                batchContainer = document.createElement('div');
+                batchContainer.id = 'batch-images-container';
+                batchContainer.className = 'batch-images-container';
+                document.querySelector('.image-container').insertBefore(batchContainer, document.querySelector('.action-buttons'));
             } else {
-                imageUrl = generateWithPollinations(prompt);
+                batchContainer.innerHTML = '';
             }
             
-            // Create image element
-            const img = document.createElement('img');
-            img.src = imageUrl;
-            img.className = 'batch-image';
-            img.alt = `Batch image ${i+1}`;
+            // Generate multiple images
+            for (let i = 0; i < batchCount; i++) {
+                // Use different seeds for each image
+                seedInput.value = originalSeed + i;
+                
+                // Generate the image
+                let imageUrl;
+                if (modelSelect.value === 'dall-e-3') {
+                    imageUrl = await generateWithDalle(prompt);
+                } else if (modelSelect.value === 'stability-ai') {
+                    imageUrl = await generateWithStability(prompt);
+                } else {
+                    imageUrl = generateWithPollinations(prompt);
+                }
+                
+                // Create image element
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.className = 'batch-image';
+                img.alt = `Batch image ${i+1}`;
+                
+                // Add download functionality
+                img.addEventListener('click', function() {
+                    generatedImage.src = this.src;
+                    generatedImage.style.display = 'block';
+                    document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                });
+                
+                batchContainer.appendChild(img);
+                
+                // Add to history
+                addToHistory(prompt, imageUrl);
+            }
             
-            // Add download functionality
-            img.addEventListener('click', function() {
-                generatedImage.src = this.src;
-                generatedImage.style.display = 'block';
-                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
-            });
+            // Hide the main generated image during batch view
+            generatedImage.style.display = 'none';
+            document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
             
-            batchContainer.appendChild(img);
+        } catch (error) {
+            console.error('Error generating batch:', error);
+            showError(error.message || 'Failed to generate batch. Please try again.');
+        } finally {
+            // Restore original seed
+            seedInput.value = originalSeed;
             
-            // Add to history
-            addToHistory(prompt, imageUrl);
+            // Re-enable buttons
+            generateBtn.disabled = false;
+            batchGenerateBtn.disabled = false;
+            batchGenerateBtn.innerHTML = '<i class="fas fa-layer-group"></i> Generate Batch';
         }
-        
-        // Hide the main generated image during batch view
-        generatedImage.style.display = 'none';
-        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
-        
-    } catch (error) {
-        console.error('Error generating batch:', error);
-        showError(error.message || 'Failed to generate batch. Please try again.');
-    } finally {
-        // Restore original seed
-        seedInput.value = originalSeed;
-        
-        // Re-enable buttons
-        generateBtn.disabled = false;
-        batchGenerateBtn.disabled = false;
-        batchGenerateBtn.innerHTML = '<i class="fas fa-layer-group"></i> Generate Batch';
     }
-}
 
     // History array
     let generationHistory = JSON.parse(localStorage.getItem('generationHistory')) || [];
@@ -2216,13 +2215,44 @@ async function generateBatch() {
             return;
         }
         
-        const link = document.createElement('a');
-        link.href = generatedImage.src;
-        const prompt = promptTextarea.value.trim().substring(0, 30).replace(/[^a-z0-9]/gi, '_').toLowerCase();
-        link.download = `ai-art-${prompt || 'generated'}-${Date.now()}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Create a temporary canvas to handle different image types
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        // Handle CORS for external images
+        img.crossOrigin = 'Anonymous';
+        
+        img.onload = function() {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            // Create download link
+            const link = document.createElement('a');
+            const prompt = promptTextarea.value.trim().substring(0, 30).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            link.download = `ai-art-${prompt || 'generated'}-${Date.now()}.png`;
+            
+            // Convert canvas to blob and trigger download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            }, 'image/png');
+        };
+        
+        img.onerror = function() {
+            showError('Failed to process image for download');
+        };
+        
+        img.src = generatedImage.src;
     }
     
     function shareImage() {
