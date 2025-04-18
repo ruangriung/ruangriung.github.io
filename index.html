@@ -1410,796 +1410,816 @@ footer {
 </footer>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set current year in footer
-            document.getElementById('current-year').textContent = new Date().getFullYear();
+document.addEventListener('DOMContentLoaded', function() {
+    // Set current year in footer
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+    
+    // Elements
+    const promptTextarea = document.getElementById('prompt-textarea');
+    const generateBtn = document.getElementById('generate-btn');
+    const enhanceBtn = document.getElementById('enhance-btn');
+    const generatedImage = document.getElementById('generated-image');
+    const loadingElement = document.querySelector('.loading');
+    const downloadBtn = document.getElementById('download-btn');
+    const shareBtn = document.getElementById('share-btn');
+    const remixBtn = document.getElementById('remix-btn');
+    const variationBtn = document.getElementById('variation-btn');
+    const savePromptBtn = document.getElementById('save-prompt-btn');
+    const errorMessage = document.getElementById('error-message');
+    const historyPanel = document.getElementById('history-panel');
+    const historyList = document.getElementById('history-list');
+    const resetHistoryBtn = document.getElementById('reset-history-btn');
+    const savedPromptsPanel = document.getElementById('saved-prompts-panel');
+    const savedPromptsList = document.getElementById('saved-prompts-list');
+    const advancedToggle = document.getElementById('advanced-toggle');
+    const advancedContent = document.getElementById('advanced-content');
+    const advancedArrow = document.getElementById('advanced-arrow');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const widthSlider = document.getElementById('width-slider');
+    const heightSlider = document.getElementById('height-slider');
+    const widthValue = document.getElementById('width-value');
+    const heightValue = document.getElementById('height-value');
+    const aspectRatioDisplay = document.getElementById('aspect-ratio-display');
+    const modelSelect = document.getElementById('model');
+    const clearBtn = document.getElementById('clear-btn');
+    
+    // Modal elements
+    const apiKeyModal = document.getElementById('api-key-modal');
+    const apiKeyModalTitle = document.getElementById('api-key-modal-title');
+    const apiKeyInstructions = document.getElementById('api-key-instructions');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const apiKeyLink = document.getElementById('api-key-link');
+    const apiKeyProviderLink = document.getElementById('api-key-provider-link');
+    const closeModalBtn = document.getElementById('close-modal');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+    
+    // Settings elements
+    const styleSelect = document.getElementById('style');
+    const qualitySelect = document.getElementById('quality');
+    const lightingSelect = document.getElementById('lighting');
+    const colorSelect = document.getElementById('color');
+    const compositionSelect = document.getElementById('composition');
+    const seedInput = document.getElementById('seed');
+    const hdCheckbox = document.getElementById('hd');
+    const enhanceDetailsCheckbox = document.getElementById('enhance-details');
+    
+    // History array
+    let generationHistory = JSON.parse(localStorage.getItem('generationHistory')) || [];
+    let savedPrompts = JSON.parse(localStorage.getItem('savedPrompts')) || [];
+    
+    // Current generation state
+    let currentGeneration = {
+        prompt: '',
+        seed: null,
+        model: '',
+        settings: {}
+    };
+    
+    // Check for saved dark mode preference
+    const darkMode = localStorage.getItem('darkMode') === 'true';
+    if (darkMode) {
+        document.body.classList.add('dark-mode');
+        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+    }
+    
+    // Check for saved API keys
+    const savedDalleApiKey = localStorage.getItem('dalleApiKey');
+    const savedStabilityApiKey = localStorage.getItem('stabilityApiKey');
+    
+    // Initialize
+    updateHistoryPanel();
+    updateSavedPromptsPanel();
+    updateSliderFill();
+    updateDimensionSliders();
+    
+    // Event listeners
+    generateBtn.addEventListener('click', generateImage);
+    enhanceBtn.addEventListener('click', enhancePrompt);
+    promptTextarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            generateImage();
+        }
+    });
+    
+    downloadBtn.addEventListener('click', downloadImage);
+    shareBtn.addEventListener('click', shareImage);
+    remixBtn.addEventListener('click', remixImage);
+    variationBtn.addEventListener('click', generateVariation);
+    savePromptBtn.addEventListener('click', savePrompt);
+    advancedToggle.addEventListener('click', toggleAdvanced);
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+    widthSlider.addEventListener('input', updateDimensionSliders);
+    heightSlider.addEventListener('input', updateDimensionSliders);
+    resetHistoryBtn.addEventListener('click', resetHistory);
+    
+    clearBtn.addEventListener('click', function() {
+        promptTextarea.value = '';
+        promptTextarea.focus();
+    });
+    
+    // Model select change listener - MODIFIED
+    modelSelect.addEventListener('change', function() {
+        const selectedModel = this.value;
+        
+        if (selectedModel === 'dall-e-3') {
+            if (!localStorage.getItem('dalleApiKey')) {
+                showApiKeyModal('DALL-E 3', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.openai.com/api-keys');
+                // Reset to FLUX Turbo if no API key
+                resetModelToDefault();
+            }
+        } else if (selectedModel === 'stability-ai') {
+            if (!localStorage.getItem('stabilityApiKey')) {
+                showApiKeyModal('Stability.AI', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.stability.ai/account/keys');
+                // Reset to FLUX Turbo if no API key
+                resetModelToDefault();
+            }
+        }
+    });
+    
+    // Modal event listeners
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    saveApiKeyBtn.addEventListener('click', saveApiKey);
+    
+    // Update slider fill for dimension sliders
+    widthSlider.addEventListener('input', updateSliderFill);
+    heightSlider.addEventListener('input', updateSliderFill);
+    
+    // NEW FUNCTION: Reset model selection to FLUX Turbo
+    function resetModelToDefault() {
+        modelSelect.value = 'pollinations';
+    }
+
+    // Functions
+    function updateDimensionSliders() {
+        const width = parseInt(widthSlider.value);
+        const height = parseInt(heightSlider.value);
+        
+        widthValue.textContent = width;
+        heightValue.textContent = height;
+        
+        // Calculate aspect ratio
+        const gcd = (a, b) => b ? gcd(b, a % b) : a;
+        const ratio = gcd(width, height);
+        const aspectRatio = `${width/ratio}:${height/ratio}`;
+        
+        aspectRatioDisplay.textContent = `Aspect Ratio: ${aspectRatio}`;
+        
+        // Update slider fill
+        updateSliderFill();
+    }
+    
+    async function generateImage() {
+        const prompt = promptTextarea.value.trim();
+        const selectedModel = modelSelect.value;
+        
+        if (!prompt) {
+            showError('Please enter a description for the image');
+            return;
+        }
+        
+        // Check if API key is required and exists
+        if (selectedModel === 'dall-e-3') {
+            const apiKey = localStorage.getItem('dalleApiKey');
+            if (!apiKey) {
+                showError('Please provide an API key for DALL-E 3');
+                showApiKeyModal('DALL-E 3', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.openai.com/api-keys');
+                resetModelToDefault();
+                return;
+            }
+        } else if (selectedModel === 'stability-ai') {
+            const apiKey = localStorage.getItem('stabilityApiKey');
+            if (!apiKey) {
+                showError('Please provide an API key for Stability.AI');
+                showApiKeyModal('Stability.AI', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.stability.ai/account/keys');
+                resetModelToDefault();
+                return;
+            }
+        }
+        
+        // Hide previous image and error, show loading
+        generatedImage.style.display = 'none';
+        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+        errorMessage.style.display = 'none';
+        loadingElement.style.display = 'block';
+        
+        // Build the prompt with additional parameters
+        let fullPrompt = prompt;
+        
+        // Add style if selected
+        if (styleSelect.value) {
+            fullPrompt += `, ${styleSelect.value}`;
+        }
+        
+        // Add lighting
+        if (lightingSelect.value) {
+            fullPrompt += `, ${lightingSelect.value} lighting`;
+        }
+        
+        // Add color palette
+        if (colorSelect.value) {
+            fullPrompt += `, ${colorSelect.value} colors`;
+        }
+        
+        // Add composition
+        if (compositionSelect.value) {
+            fullPrompt += `, ${compositionSelect.value}`;
+        }
+        
+        // Add quality
+        if (qualitySelect.value !== 'normal') {
+            fullPrompt += `, ${qualitySelect.value} quality`;
+        }
+        
+        // Add HD if checked
+        if (hdCheckbox.checked) {
+            fullPrompt += `, ultra HD`;
+        }
+        
+        // Add detail enhancement if checked
+        if (enhanceDetailsCheckbox.checked) {
+            fullPrompt += `, highly detailed`;
+        }
+        
+        // Store current generation state
+        currentGeneration = {
+            prompt: fullPrompt,
+            seed: seedInput.value || Math.floor(Math.random() * 1000000),
+            model: selectedModel,
+            settings: {
+                width: widthSlider.value,
+                height: heightSlider.value,
+                style: styleSelect.value,
+                quality: qualitySelect.value,
+                lighting: lightingSelect.value,
+                color: colorSelect.value,
+                composition: compositionSelect.value,
+                hd: hdCheckbox.checked,
+                enhanceDetails: enhanceDetailsCheckbox.checked,
+                safeFilter: document.getElementById('safe-filter').checked
+            }
+        };
+        
+        try {
+            let imageUrl;
             
-            // Elements
-            const promptTextarea = document.getElementById('prompt-textarea');
-            const generateBtn = document.getElementById('generate-btn');
-            const enhanceBtn = document.getElementById('enhance-btn');
-            const generatedImage = document.getElementById('generated-image');
-            const loadingElement = document.querySelector('.loading');
-            const downloadBtn = document.getElementById('download-btn');
-            const shareBtn = document.getElementById('share-btn');
-            const remixBtn = document.getElementById('remix-btn');
-            const variationBtn = document.getElementById('variation-btn');
-            const savePromptBtn = document.getElementById('save-prompt-btn');
-            const errorMessage = document.getElementById('error-message');
-            const historyPanel = document.getElementById('history-panel');
-            const historyList = document.getElementById('history-list');
-            const resetHistoryBtn = document.getElementById('reset-history-btn');
-            const savedPromptsPanel = document.getElementById('saved-prompts-panel');
-            const savedPromptsList = document.getElementById('saved-prompts-list');
-            const advancedToggle = document.getElementById('advanced-toggle');
-            const advancedContent = document.getElementById('advanced-content');
-            const advancedArrow = document.getElementById('advanced-arrow');
-            const darkModeToggle = document.getElementById('dark-mode-toggle');
-            const widthSlider = document.getElementById('width-slider');
-            const heightSlider = document.getElementById('height-slider');
-            const widthValue = document.getElementById('width-value');
-            const heightValue = document.getElementById('height-value');
-            const aspectRatioDisplay = document.getElementById('aspect-ratio-display');
-            const modelSelect = document.getElementById('model');
-            const clearBtn = document.getElementById('clear-btn');
-            
-            // Modal elements
-            const apiKeyModal = document.getElementById('api-key-modal');
-            const apiKeyModalTitle = document.getElementById('api-key-modal-title');
-            const apiKeyInstructions = document.getElementById('api-key-instructions');
-            const apiKeyInput = document.getElementById('api-key-input');
-            const apiKeyLink = document.getElementById('api-key-link');
-            const apiKeyProviderLink = document.getElementById('api-key-provider-link');
-            const closeModalBtn = document.getElementById('close-modal');
-            const cancelBtn = document.getElementById('cancel-btn');
-            const saveApiKeyBtn = document.getElementById('save-api-key-btn');
-            
-            // Settings elements
-            const styleSelect = document.getElementById('style');
-            const qualitySelect = document.getElementById('quality');
-            const lightingSelect = document.getElementById('lighting');
-            const colorSelect = document.getElementById('color');
-            const compositionSelect = document.getElementById('composition');
-            const seedInput = document.getElementById('seed');
-            const hdCheckbox = document.getElementById('hd');
-            const enhanceDetailsCheckbox = document.getElementById('enhance-details');
-            
-            // History array
-            let generationHistory = JSON.parse(localStorage.getItem('generationHistory')) || [];
-            let savedPrompts = JSON.parse(localStorage.getItem('savedPrompts')) || [];
-            
-            // Current generation state
-            let currentGeneration = {
-                prompt: '',
-                seed: null,
-                model: '',
-                settings: {}
-            };
-            
-            // Check for saved dark mode preference
-            const darkMode = localStorage.getItem('darkMode') === 'true';
-            if (darkMode) {
-                document.body.classList.add('dark-mode');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+            if (selectedModel === 'dall-e-3') {
+                // Generate with DALL-E 3
+                imageUrl = await generateWithDalle(fullPrompt);
+            } else if (selectedModel === 'stability-ai') {
+                // Generate with Stability.AI
+                imageUrl = await generateWithStability(fullPrompt);
+            } else {
+                // Generate with Pollinations AI
+                imageUrl = generateWithPollinations(fullPrompt);
             }
             
-            // Check for saved API keys
-            const savedDalleApiKey = localStorage.getItem('dalleApiKey');
-            const savedStabilityApiKey = localStorage.getItem('stabilityApiKey');
-            
-            // Initialize
-            updateHistoryPanel();
-            updateSavedPromptsPanel();
-            updateSliderFill();
-            updateDimensionSliders();
-            
-            // Event listeners
-            generateBtn.addEventListener('click', generateImage);
-            enhanceBtn.addEventListener('click', enhancePrompt);
-            promptTextarea.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    generateImage();
+            // Load the image
+            generatedImage.onload = function() {
+                loadingElement.style.display = 'none';
+                generatedImage.style.display = 'block';
+                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                
+                // Add to history only if this is a new generation, not from history click
+                if (!generatedImage.dataset.fromHistory) {
+                    addToHistory(fullPrompt, imageUrl);
+                } else {
+                    delete generatedImage.dataset.fromHistory;
                 }
+            };
+            
+            generatedImage.onerror = function() {
+                loadingElement.style.display = 'none';
+                showError('Failed to generate image. Please try a different prompt.');
+            };
+            
+            generatedImage.src = imageUrl;
+        } catch (error) {
+            console.error('Error generating image:', error);
+            loadingElement.style.display = 'none';
+            showError(error.message || 'Failed to generate image. Please try again.');
+        }
+    }
+    
+    async function generateVariation() {
+        if (!currentGeneration.prompt || !generatedImage.src) {
+            showError('Please generate an image first before creating variations');
+            return;
+        }
+        
+        // Generate a new seed for the variation
+        const newSeed = Math.floor(Math.random() * 1000000);
+        seedInput.value = newSeed;
+        
+        // Update current generation state with new seed
+        currentGeneration.seed = newSeed;
+        
+        // Hide previous image and error, show loading
+        generatedImage.style.display = 'none';
+        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+        errorMessage.style.display = 'none';
+        loadingElement.style.display = 'block';
+        
+        try {
+            let imageUrl;
+            
+            if (currentGeneration.model === 'dall-e-3') {
+                // Generate variation with DALL-E 3
+                imageUrl = await generateWithDalle(currentGeneration.prompt);
+            } else if (currentGeneration.model === 'stability-ai') {
+                // Generate variation with Stability.AI
+                imageUrl = await generateWithStability(currentGeneration.prompt);
+            } else {
+                // Generate variation with Pollinations AI
+                imageUrl = generateWithPollinations(currentGeneration.prompt);
+            }
+            
+            // Load the image
+            generatedImage.onload = function() {
+                loadingElement.style.display = 'none';
+                generatedImage.style.display = 'block';
+                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                
+                // Add to history
+                addToHistory(currentGeneration.prompt, imageUrl);
+            };
+            
+            generatedImage.onerror = function() {
+                loadingElement.style.display = 'none';
+                showError('Failed to generate variation. Please try again.');
+            };
+            
+            generatedImage.src = imageUrl;
+        } catch (error) {
+            console.error('Error generating variation:', error);
+            loadingElement.style.display = 'none';
+            showError(error.message || 'Failed to generate variation. Please try again.');
+        }
+    }
+    
+    function generateWithPollinations(prompt) {
+        // Get dimensions from sliders
+        const width = widthSlider.value;
+        const height = heightSlider.value;
+        const safeFilter = document.getElementById('safe-filter').checked;
+        let ratioParam = `?width=${width}&height=${height}&nologo=true&safe=${safeFilter}`;
+        
+        // Add seed if provided
+        if (currentGeneration.seed) {
+            ratioParam += `&seed=${currentGeneration.seed}`;
+        }
+        
+        // Encode the prompt for URL
+        const encodedPrompt = encodeURIComponent(prompt);
+        
+        // Generate the image URL
+        return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
+    }
+    
+    async function generateWithDalle(prompt) {
+        const apiKey = localStorage.getItem('dalleApiKey');
+        if (!apiKey) {
+            throw new Error('No API key provided for DALL-E 3');
+        }
+        
+        // Get dimensions from sliders
+        const width = parseInt(widthSlider.value);
+        const height = parseInt(heightSlider.value);
+        
+        // DALL-E 3 only supports certain sizes
+        let dalleSize;
+        if (width === 1024 && height === 1024) {
+            dalleSize = "1024x1024";
+        } else if (width === 1792 && height === 1024) {
+            dalleSize = "1792x1024";
+        } else if (width === 1024 && height === 1792) {
+            dalleSize = "1024x1792";
+        } else {
+            // Default to 1024x1024 if unsupported size
+            dalleSize = "1024x1024";
+        }
+        
+        try {
+            const response = await fetch('https://api.openai.com/v1/images/generations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "dall-e-3",
+                    prompt: prompt,
+                    n: 1,
+                    size: dalleSize,
+                    quality: hdCheckbox.checked ? "hd" : "standard"
+                })
             });
             
-            downloadBtn.addEventListener('click', downloadImage);
-            shareBtn.addEventListener('click', shareImage);
-            remixBtn.addEventListener('click', remixImage);
-            variationBtn.addEventListener('click', generateVariation);
-            savePromptBtn.addEventListener('click', savePrompt);
-            advancedToggle.addEventListener('click', toggleAdvanced);
-            darkModeToggle.addEventListener('click', toggleDarkMode);
-            widthSlider.addEventListener('input', updateDimensionSliders);
-            heightSlider.addEventListener('input', updateDimensionSliders);
-            resetHistoryBtn.addEventListener('click', resetHistory);
+            const data = await response.json();
             
-            clearBtn.addEventListener('click', function() {
-                promptTextarea.value = '';
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'Failed to generate image with DALL-E 3');
+            }
+            
+            if (data.data && data.data[0] && data.data[0].url) {
+                return data.data[0].url;
+            } else {
+                throw new Error('No image URL returned from DALL-E 3');
+            }
+        } catch (error) {
+            console.error('DALL-E 3 API error:', error);
+            throw error;
+        }
+    }
+    
+    async function generateWithStability(prompt) {
+        const apiKey = localStorage.getItem('stabilityApiKey');
+        if (!apiKey) {
+            throw new Error('No API key provided for Stability.AI');
+        }
+        
+        // Get dimensions from sliders
+        const width = parseInt(widthSlider.value);
+        const height = parseInt(heightSlider.value);
+        
+        // Stability.AI has some size restrictions
+        let validWidth = Math.min(Math.max(width, 512), 2048);
+        let validHeight = Math.min(Math.max(height, 512), 2048);
+        
+        // Must be divisible by 64
+        validWidth = Math.floor(validWidth / 64) * 64;
+        validHeight = Math.floor(validHeight / 64) * 64;
+        
+        try {
+            const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    text_prompts: [
+                        {
+                            text: prompt,
+                            weight: 1
+                        }
+                    ],
+                    cfg_scale: 7,
+                    height: validHeight,
+                    width: validWidth,
+                    steps: 30,
+                    samples: 1,
+                    seed: currentGeneration.seed || Math.floor(Math.random() * 1000000)
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to generate image with Stability.AI');
+            }
+            
+            if (data.artifacts && data.artifacts[0] && data.artifacts[0].base64) {
+                return `data:image/png;base64,${data.artifacts[0].base64}`;
+            } else {
+                throw new Error('No image data returned from Stability.AI');
+            }
+        } catch (error) {
+            console.error('Stability.AI API error:', error);
+            throw error;
+        }
+    }
+    
+    async function enhancePrompt() {
+        const prompt = promptTextarea.value.trim();
+        
+        if (!prompt) {
+            showError('Please enter a description to enhance');
+            return;
+        }
+        
+        // Show loading state
+        const originalButtonHTML = enhanceBtn.innerHTML;
+        enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
+        enhanceBtn.disabled = true;
+        
+        try {
+            // Encode the prompt for URL
+            const encodedPrompt = encodeURIComponent(prompt);
+            
+            // Call the Pollinations AI text API
+            const response = await fetch(`https://text.pollinations.ai/${encodedPrompt}`);
+            
+            if (!response.ok) {
+                throw new Error('Failed to enhance prompt');
+            }
+            
+            const enhancedPrompt = await response.text();
+            promptTextarea.value = enhancedPrompt;
+        } catch (error) {
+            console.error('Error enhancing prompt:', error);
+            showError('Failed to enhance prompt. Please try again.');
+        } finally {
+            // Restore button state
+            enhanceBtn.innerHTML = originalButtonHTML;
+            enhanceBtn.disabled = false;
+        }
+    }
+    
+    function downloadImage() {
+        if (!generatedImage.src) {
+            showError('No image to download');
+            return;
+        }
+        
+        const link = document.createElement('a');
+        link.href = generatedImage.src;
+        const prompt = promptTextarea.value.trim().substring(0, 30).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        link.download = `ai-art-${prompt || 'generated'}-${Date.now()}.jpg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    function shareImage() {
+        if (!generatedImage.src) {
+            showError('No image to share');
+            return;
+        }
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'AI Generated Art',
+                text: 'Check out this image I created with AI: ' + promptTextarea.value.trim(),
+                url: generatedImage.src
+            }).catch(err => {
+                console.error('Error sharing:', err);
+                copyToClipboard(generatedImage.src);
+            });
+        } else {
+            copyToClipboard(generatedImage.src);
+        }
+    }
+    
+    function copyToClipboard(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        alert('Image URL copied to clipboard!');
+    }
+    
+    function remixImage() {
+        if (!generatedImage.src) {
+            showError('No image to remix');
+            return;
+        }
+        
+        // Add some randomness to the prompt
+        const currentPrompt = promptTextarea.value.trim();
+        const modifiers = [
+            'in a different style',
+            'with a new color scheme',
+            'from a different angle',
+            'with dramatic lighting',
+            'as a surreal interpretation',
+            'in a fantasy version'
+        ];
+        
+        const randomModifier = modifiers[Math.floor(Math.random() * modifiers.length)];
+        promptTextarea.value = currentPrompt + ', ' + randomModifier;
+        
+        // Generate new image
+        generateImage();
+    }
+    
+    function savePrompt() {
+        const prompt = promptTextarea.value.trim();
+        if (!prompt) {
+            showError('Please enter a prompt to save');
+            return;
+        }
+        
+        // Check if prompt already exists
+        const existingPrompt = savedPrompts.find(p => p.prompt === prompt);
+        if (existingPrompt) {
+            alert('This prompt is already saved!');
+            return;
+        }
+        
+        const promptItem = {
+            prompt: prompt,
+            timestamp: new Date().toISOString()
+        };
+        
+        savedPrompts.unshift(promptItem);
+        localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts));
+        updateSavedPromptsPanel();
+        
+        alert('Prompt saved! You can find it in the Saved Prompts section.');
+    }
+    
+    function addToHistory(prompt, imageUrl) {
+        // Check if this prompt already exists in history
+        const existingIndex = generationHistory.findIndex(item => item.prompt === prompt);
+        
+        if (existingIndex >= 0) {
+            // Remove the old entry if it exists
+            generationHistory.splice(existingIndex, 1);
+        }
+        
+        const historyItem = {
+            prompt: prompt,
+            imageUrl: imageUrl,
+            timestamp: new Date().toISOString()
+        };
+        
+        generationHistory.unshift(historyItem);
+        if (generationHistory.length > 10) {
+            generationHistory = generationHistory.slice(0, 10);
+        }
+        
+        localStorage.setItem('generationHistory', JSON.stringify(generationHistory));
+        updateHistoryPanel();
+    }
+    
+    function updateHistoryPanel() {
+        if (generationHistory.length === 0) {
+            historyPanel.style.display = 'none';
+            return;
+        }
+        
+        historyPanel.style.display = 'block';
+        historyList.innerHTML = '';
+        
+        generationHistory.forEach((item, index) => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <img src="${item.imageUrl}" alt="Generated image" class="history-thumbnail">
+                <div class="history-prompt">${item.prompt.substring(0, 50)}${item.prompt.length > 50 ? '...' : ''}</div>
+                <div class="history-date">${new Date(item.timestamp).toLocaleDateString()}</div>
+            `;
+            
+            historyItem.addEventListener('click', () => {
+                promptTextarea.value = item.prompt;
+                generatedImage.dataset.fromHistory = 'true';
+                generatedImage.src = item.imageUrl;
+                generatedImage.style.display = 'block';
+                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+            });
+            
+            historyList.appendChild(historyItem);
+        });
+    }
+    
+    function resetHistory() {
+        if (confirm('Are you sure you want to clear your generation history? This cannot be undone.')) {
+            generationHistory = [];
+            localStorage.setItem('generationHistory', JSON.stringify(generationHistory));
+            updateHistoryPanel();
+        }
+    }
+    
+    function updateSavedPromptsPanel() {
+        if (savedPrompts.length === 0) {
+            savedPromptsPanel.style.display = 'none';
+            return;
+        }
+        
+        savedPromptsPanel.style.display = 'block';
+        savedPromptsList.innerHTML = '';
+        
+        savedPrompts.forEach((item, index) => {
+            const promptItem = document.createElement('div');
+            promptItem.className = 'saved-prompt-item';
+            promptItem.innerHTML = `
+                <div class="saved-prompt-text">${item.prompt.substring(0, 50)}${item.prompt.length > 50 ? '...' : ''}</div>
+                <div class="saved-prompt-actions">
+                    <i class="fas fa-copy saved-prompt-action" title="Copy to prompt"></i>
+                    <i class="fas fa-trash saved-prompt-action" title="Delete"></i>
+                </div>
+            `;
+            
+            // Add click handler for copy action
+            promptItem.querySelector('.fa-copy').addEventListener('click', (e) => {
+                e.stopPropagation();
+                promptTextarea.value = item.prompt;
                 promptTextarea.focus();
             });
             
-            // Model select change listener
-            modelSelect.addEventListener('change', function() {
-                const selectedModel = this.value;
-                
-                if (selectedModel === 'dall-e-3' && !localStorage.getItem('dalleApiKey')) {
-                    showApiKeyModal('DALL-E 3', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.openai.com/api-keys');
-                } else if (selectedModel === 'stability-ai' && !localStorage.getItem('stabilityApiKey')) {
-                    showApiKeyModal('Stability.AI', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.stability.ai/account/keys');
-                }
-            });
-            
-            // Modal event listeners
-            closeModalBtn.addEventListener('click', closeModal);
-            cancelBtn.addEventListener('click', closeModal);
-            saveApiKeyBtn.addEventListener('click', saveApiKey);
-            
-            // Update slider fill for dimension sliders
-            widthSlider.addEventListener('input', updateSliderFill);
-            heightSlider.addEventListener('input', updateSliderFill);
-            
-            // Functions
-            function updateDimensionSliders() {
-                const width = parseInt(widthSlider.value);
-                const height = parseInt(heightSlider.value);
-                
-                widthValue.textContent = width;
-                heightValue.textContent = height;
-                
-                // Calculate aspect ratio
-                const gcd = (a, b) => b ? gcd(b, a % b) : a;
-                const ratio = gcd(width, height);
-                const aspectRatio = `${width/ratio}:${height/ratio}`;
-                
-                aspectRatioDisplay.textContent = `Aspect Ratio: ${aspectRatio}`;
-                
-                // Update slider fill
-                updateSliderFill();
-            }
-            
-            async function generateImage() {
-                const prompt = promptTextarea.value.trim();
-                const selectedModel = modelSelect.value;
-                
-                if (!prompt) {
-                    showError('Please enter a description for the image');
-                    return;
-                }
-                
-                // Check if API key is required and exists
-                if (selectedModel === 'dall-e-3') {
-                    const apiKey = localStorage.getItem('dalleApiKey');
-                    if (!apiKey) {
-                        showError('Please provide an API key for DALL-E 3');
-                        showApiKeyModal('DALL-E 3', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.openai.com/api-keys');
-                        return;
-                    }
-                } else if (selectedModel === 'stability-ai') {
-                    const apiKey = localStorage.getItem('stabilityApiKey');
-                    if (!apiKey) {
-                        showError('Please provide an API key for Stability.AI');
-                        showApiKeyModal('Stability.AI', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.stability.ai/account/keys');
-                        return;
-                    }
-                }
-                
-                // Hide previous image and error, show loading
-                generatedImage.style.display = 'none';
-                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
-                errorMessage.style.display = 'none';
-                loadingElement.style.display = 'block';
-                
-                // Build the prompt with additional parameters
-                let fullPrompt = prompt;
-                
-                // Add style if selected
-                if (styleSelect.value) {
-                    fullPrompt += `, ${styleSelect.value}`;
-                }
-                
-                // Add lighting
-                if (lightingSelect.value) {
-                    fullPrompt += `, ${lightingSelect.value} lighting`;
-                }
-                
-                // Add color palette
-                if (colorSelect.value) {
-                    fullPrompt += `, ${colorSelect.value} colors`;
-                }
-                
-                // Add composition
-                if (compositionSelect.value) {
-                    fullPrompt += `, ${compositionSelect.value}`;
-                }
-                
-                // Add quality
-                if (qualitySelect.value !== 'normal') {
-                    fullPrompt += `, ${qualitySelect.value} quality`;
-                }
-                
-                // Add HD if checked
-                if (hdCheckbox.checked) {
-                    fullPrompt += `, ultra HD`;
-                }
-                
-                // Add detail enhancement if checked
-                if (enhanceDetailsCheckbox.checked) {
-                    fullPrompt += `, highly detailed`;
-                }
-                
-                // Store current generation state
-                currentGeneration = {
-                    prompt: fullPrompt,
-                    seed: seedInput.value || Math.floor(Math.random() * 1000000),
-                    model: selectedModel,
-                    settings: {
-                        width: widthSlider.value,
-                        height: heightSlider.value,
-                        style: styleSelect.value,
-                        quality: qualitySelect.value,
-                        lighting: lightingSelect.value,
-                        color: colorSelect.value,
-                        composition: compositionSelect.value,
-                        hd: hdCheckbox.checked,
-                        enhanceDetails: enhanceDetailsCheckbox.checked,
-                        safeFilter: document.getElementById('safe-filter').checked
-                    }
-                };
-                
-                try {
-                    let imageUrl;
-                    
-                    if (selectedModel === 'dall-e-3') {
-                        // Generate with DALL-E 3
-                        imageUrl = await generateWithDalle(fullPrompt);
-                    } else if (selectedModel === 'stability-ai') {
-                        // Generate with Stability.AI
-                        imageUrl = await generateWithStability(fullPrompt);
-                    } else {
-                        // Generate with Pollinations AI
-                        imageUrl = generateWithPollinations(fullPrompt);
-                    }
-                    
-                    // Load the image
-                    generatedImage.onload = function() {
-                        loadingElement.style.display = 'none';
-                        generatedImage.style.display = 'block';
-                        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
-                        
-                        // Add to history only if this is a new generation, not from history click
-                        if (!generatedImage.dataset.fromHistory) {
-                            addToHistory(fullPrompt, imageUrl);
-                        } else {
-                            delete generatedImage.dataset.fromHistory;
-                        }
-                    };
-                    
-                    generatedImage.onerror = function() {
-                        loadingElement.style.display = 'none';
-                        showError('Failed to generate image. Please try a different prompt.');
-                    };
-                    
-                    generatedImage.src = imageUrl;
-                } catch (error) {
-                    console.error('Error generating image:', error);
-                    loadingElement.style.display = 'none';
-                    showError(error.message || 'Failed to generate image. Please try again.');
-                }
-            }
-            
-            async function generateVariation() {
-                if (!currentGeneration.prompt || !generatedImage.src) {
-                    showError('Please generate an image first before creating variations');
-                    return;
-                }
-                
-                // Generate a new seed for the variation
-                const newSeed = Math.floor(Math.random() * 1000000);
-                seedInput.value = newSeed;
-                
-                // Update current generation state with new seed
-                currentGeneration.seed = newSeed;
-                
-                // Hide previous image and error, show loading
-                generatedImage.style.display = 'none';
-                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
-                errorMessage.style.display = 'none';
-                loadingElement.style.display = 'block';
-                
-                try {
-                    let imageUrl;
-                    
-                    if (currentGeneration.model === 'dall-e-3') {
-                        // Generate variation with DALL-E 3
-                        imageUrl = await generateWithDalle(currentGeneration.prompt);
-                    } else if (currentGeneration.model === 'stability-ai') {
-                        // Generate variation with Stability.AI
-                        imageUrl = await generateWithStability(currentGeneration.prompt);
-                    } else {
-                        // Generate variation with Pollinations AI
-                        imageUrl = generateWithPollinations(currentGeneration.prompt);
-                    }
-                    
-                    // Load the image
-                    generatedImage.onload = function() {
-                        loadingElement.style.display = 'none';
-                        generatedImage.style.display = 'block';
-                        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
-                        
-                        // Add to history
-                        addToHistory(currentGeneration.prompt, imageUrl);
-                    };
-                    
-                    generatedImage.onerror = function() {
-                        loadingElement.style.display = 'none';
-                        showError('Failed to generate variation. Please try again.');
-                    };
-                    
-                    generatedImage.src = imageUrl;
-                } catch (error) {
-                    console.error('Error generating variation:', error);
-                    loadingElement.style.display = 'none';
-                    showError(error.message || 'Failed to generate variation. Please try again.');
-                }
-            }
-            
-            function generateWithPollinations(prompt) {
-                // Get dimensions from sliders
-                const width = widthSlider.value;
-                const height = heightSlider.value;
-                const safeFilter = document.getElementById('safe-filter').checked;
-                let ratioParam = `?width=${width}&height=${height}&nologo=true&safe=${safeFilter}`;
-                
-                // Add seed if provided
-                if (currentGeneration.seed) {
-                    ratioParam += `&seed=${currentGeneration.seed}`;
-                }
-                
-                // Encode the prompt for URL
-                const encodedPrompt = encodeURIComponent(prompt);
-                
-                // Generate the image URL
-                return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
-            }
-            
-            async function generateWithDalle(prompt) {
-                const apiKey = localStorage.getItem('dalleApiKey');
-                if (!apiKey) {
-                    throw new Error('No API key provided for DALL-E 3');
-                }
-                
-                // Get dimensions from sliders
-                const width = parseInt(widthSlider.value);
-                const height = parseInt(heightSlider.value);
-                
-                // DALL-E 3 only supports certain sizes
-                let dalleSize;
-                if (width === 1024 && height === 1024) {
-                    dalleSize = "1024x1024";
-                } else if (width === 1792 && height === 1024) {
-                    dalleSize = "1792x1024";
-                } else if (width === 1024 && height === 1792) {
-                    dalleSize = "1024x1792";
-                } else {
-                    // Default to 1024x1024 if unsupported size
-                    dalleSize = "1024x1024";
-                }
-                
-                try {
-                    const response = await fetch('https://api.openai.com/v1/images/generations', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${apiKey}`
-                        },
-                        body: JSON.stringify({
-                            model: "dall-e-3",
-                            prompt: prompt,
-                            n: 1,
-                            size: dalleSize,
-                            quality: hdCheckbox.checked ? "hd" : "standard"
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (!response.ok) {
-                        throw new Error(data.error?.message || 'Failed to generate image with DALL-E 3');
-                    }
-                    
-                    if (data.data && data.data[0] && data.data[0].url) {
-                        return data.data[0].url;
-                    } else {
-                        throw new Error('No image URL returned from DALL-E 3');
-                    }
-                } catch (error) {
-                    console.error('DALL-E 3 API error:', error);
-                    throw error;
-                }
-            }
-            
-            async function generateWithStability(prompt) {
-                const apiKey = localStorage.getItem('stabilityApiKey');
-                if (!apiKey) {
-                    throw new Error('No API key provided for Stability.AI');
-                }
-                
-                // Get dimensions from sliders
-                const width = parseInt(widthSlider.value);
-                const height = parseInt(heightSlider.value);
-                
-                // Stability.AI has some size restrictions
-                let validWidth = Math.min(Math.max(width, 512), 2048);
-                let validHeight = Math.min(Math.max(height, 512), 2048);
-                
-                // Must be divisible by 64
-                validWidth = Math.floor(validWidth / 64) * 64;
-                validHeight = Math.floor(validHeight / 64) * 64;
-                
-                try {
-                    const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${apiKey}`,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            text_prompts: [
-                                {
-                                    text: prompt,
-                                    weight: 1
-                                }
-                            ],
-                            cfg_scale: 7,
-                            height: validHeight,
-                            width: validWidth,
-                            steps: 30,
-                            samples: 1,
-                            seed: currentGeneration.seed || Math.floor(Math.random() * 1000000)
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (!response.ok) {
-                        throw new Error(data.message || 'Failed to generate image with Stability.AI');
-                    }
-                    
-                    if (data.artifacts && data.artifacts[0] && data.artifacts[0].base64) {
-                        return `data:image/png;base64,${data.artifacts[0].base64}`;
-                    } else {
-                        throw new Error('No image data returned from Stability.AI');
-                    }
-                } catch (error) {
-                    console.error('Stability.AI API error:', error);
-                    throw error;
-                }
-            }
-            
-            async function enhancePrompt() {
-                const prompt = promptTextarea.value.trim();
-                
-                if (!prompt) {
-                    showError('Please enter a description to enhance');
-                    return;
-                }
-                
-                // Show loading state
-                const originalButtonHTML = enhanceBtn.innerHTML;
-                enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
-                enhanceBtn.disabled = true;
-                
-                try {
-                    // Encode the prompt for URL
-                    const encodedPrompt = encodeURIComponent(prompt);
-                    
-                    // Call the Pollinations AI text API
-                    const response = await fetch(`https://text.pollinations.ai/${encodedPrompt}`);
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to enhance prompt');
-                    }
-                    
-                    const enhancedPrompt = await response.text();
-                    promptTextarea.value = enhancedPrompt;
-                } catch (error) {
-                    console.error('Error enhancing prompt:', error);
-                    showError('Failed to enhance prompt. Please try again.');
-                } finally {
-                    // Restore button state
-                    enhanceBtn.innerHTML = originalButtonHTML;
-                    enhanceBtn.disabled = false;
-                }
-            }
-            
-            function downloadImage() {
-                if (!generatedImage.src) {
-                    showError('No image to download');
-                    return;
-                }
-                
-                const link = document.createElement('a');
-                link.href = generatedImage.src;
-                const prompt = promptTextarea.value.trim().substring(0, 30).replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                link.download = `ai-art-${prompt || 'generated'}-${Date.now()}.jpg`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-            
-            function shareImage() {
-                if (!generatedImage.src) {
-                    showError('No image to share');
-                    return;
-                }
-                
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'AI Generated Art',
-                        text: 'Check out this image I created with AI: ' + promptTextarea.value.trim(),
-                        url: generatedImage.src
-                    }).catch(err => {
-                        console.error('Error sharing:', err);
-                        copyToClipboard(generatedImage.src);
-                    });
-                } else {
-                    copyToClipboard(generatedImage.src);
-                }
-            }
-            
-            function copyToClipboard(text) {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                
-                alert('Image URL copied to clipboard!');
-            }
-            
-            function remixImage() {
-                if (!generatedImage.src) {
-                    showError('No image to remix');
-                    return;
-                }
-                
-                // Add some randomness to the prompt
-                const currentPrompt = promptTextarea.value.trim();
-                const modifiers = [
-                    'in a different style',
-                    'with a new color scheme',
-                    'from a different angle',
-                    'with dramatic lighting',
-                    'as a surreal interpretation',
-                    'in a fantasy version'
-                ];
-                
-                const randomModifier = modifiers[Math.floor(Math.random() * modifiers.length)];
-                promptTextarea.value = currentPrompt + ', ' + randomModifier;
-                
-                // Generate new image
-                generateImage();
-            }
-            
-            function savePrompt() {
-                const prompt = promptTextarea.value.trim();
-                if (!prompt) {
-                    showError('Please enter a prompt to save');
-                    return;
-                }
-                
-                // Check if prompt already exists
-                const existingPrompt = savedPrompts.find(p => p.prompt === prompt);
-                if (existingPrompt) {
-                    alert('This prompt is already saved!');
-                    return;
-                }
-                
-                const promptItem = {
-                    prompt: prompt,
-                    timestamp: new Date().toISOString()
-                };
-                
-                savedPrompts.unshift(promptItem);
+            // Add click handler for delete action
+            promptItem.querySelector('.fa-trash').addEventListener('click', (e) => {
+                e.stopPropagation();
+                savedPrompts.splice(index, 1);
                 localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts));
                 updateSavedPromptsPanel();
-                
-                alert('Prompt saved! You can find it in the Saved Prompts section.');
-            }
+            });
             
-            function addToHistory(prompt, imageUrl) {
-                // Check if this prompt already exists in history
-                const existingIndex = generationHistory.findIndex(item => item.prompt === prompt);
-                
-                if (existingIndex >= 0) {
-                    // Remove the old entry if it exists
-                    generationHistory.splice(existingIndex, 1);
-                }
-                
-                const historyItem = {
-                    prompt: prompt,
-                    imageUrl: imageUrl,
-                    timestamp: new Date().toISOString()
-                };
-                
-                generationHistory.unshift(historyItem);
-                if (generationHistory.length > 10) {
-                    generationHistory = generationHistory.slice(0, 10);
-                }
-                
-                localStorage.setItem('generationHistory', JSON.stringify(generationHistory));
-                updateHistoryPanel();
-            }
+            // Add click handler to use the prompt
+            promptItem.addEventListener('click', () => {
+                promptTextarea.value = item.prompt;
+            });
             
-            function updateHistoryPanel() {
-                if (generationHistory.length === 0) {
-                    historyPanel.style.display = 'none';
-                    return;
-                }
-                
-                historyPanel.style.display = 'block';
-                historyList.innerHTML = '';
-                
-                generationHistory.forEach((item, index) => {
-                    const historyItem = document.createElement('div');
-                    historyItem.className = 'history-item';
-                    historyItem.innerHTML = `
-                        <img src="${item.imageUrl}" alt="Generated image" class="history-thumbnail">
-                        <div class="history-prompt">${item.prompt.substring(0, 50)}${item.prompt.length > 50 ? '...' : ''}</div>
-                        <div class="history-date">${new Date(item.timestamp).toLocaleDateString()}</div>
-                    `;
-                    
-                    historyItem.addEventListener('click', () => {
-                        promptTextarea.value = item.prompt;
-                        generatedImage.dataset.fromHistory = 'true';
-                        generatedImage.src = item.imageUrl;
-                        generatedImage.style.display = 'block';
-                        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
-                    });
-                    
-                    historyList.appendChild(historyItem);
-                });
-            }
-            
-            function resetHistory() {
-                if (confirm('Are you sure you want to clear your generation history? This cannot be undone.')) {
-                    generationHistory = [];
-                    localStorage.setItem('generationHistory', JSON.stringify(generationHistory));
-                    updateHistoryPanel();
-                }
-            }
-            
-            function updateSavedPromptsPanel() {
-                if (savedPrompts.length === 0) {
-                    savedPromptsPanel.style.display = 'none';
-                    return;
-                }
-                
-                savedPromptsPanel.style.display = 'block';
-                savedPromptsList.innerHTML = '';
-                
-                savedPrompts.forEach((item, index) => {
-                    const promptItem = document.createElement('div');
-                    promptItem.className = 'saved-prompt-item';
-                    promptItem.innerHTML = `
-                        <div class="saved-prompt-text">${item.prompt.substring(0, 50)}${item.prompt.length > 50 ? '...' : ''}</div>
-                        <div class="saved-prompt-actions">
-                            <i class="fas fa-copy saved-prompt-action" title="Copy to prompt"></i>
-                            <i class="fas fa-trash saved-prompt-action" title="Delete"></i>
-                        </div>
-                    `;
-                    
-                    // Add click handler for copy action
-                    promptItem.querySelector('.fa-copy').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        promptTextarea.value = item.prompt;
-                        promptTextarea.focus();
-                    });
-                    
-                    // Add click handler for delete action
-                    promptItem.querySelector('.fa-trash').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        savedPrompts.splice(index, 1);
-                        localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts));
-                        updateSavedPromptsPanel();
-                    });
-                    
-                    // Add click handler to use the prompt
-                    promptItem.addEventListener('click', () => {
-                        promptTextarea.value = item.prompt;
-                    });
-                    
-                    savedPromptsList.appendChild(promptItem);
-                });
-            }
-            
-            function toggleAdvanced() {
-                advancedContent.classList.toggle('show');
-                advancedArrow.classList.toggle('fa-chevron-down');
-                advancedArrow.classList.toggle('fa-chevron-up');
-            }
-            
-            function updateSliderFill() {
-                // Update dimension sliders
-                const widthValue = widthSlider.value;
-                const widthPercent = (widthValue - widthSlider.min) / (widthSlider.max - widthSlider.min) * 100;
-                widthSlider.style.setProperty('--range-percent', `${widthPercent}%`);
-                
-                const heightValue = heightSlider.value;
-                const heightPercent = (heightValue - heightSlider.min) / (heightSlider.max - heightSlider.min) * 100;
-                heightSlider.style.setProperty('--range-percent', `${heightPercent}%`);
-            }
-            
-            function toggleDarkMode() {
-                document.body.classList.toggle('dark-mode');
-                const isDarkMode = document.body.classList.contains('dark-mode');
-                
-                if (isDarkMode) {
-                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
-                } else {
-                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
-                }
-                
-                localStorage.setItem('darkMode', isDarkMode);
-            }
-            
-            function showError(message) {
-                errorMessage.textContent = message;
-                errorMessage.style.display = 'block';
-                loadingElement.style.display = 'none';
-            }
-            
-            // Modal functions
-            function showApiKeyModal(modelName, placeholder, link) {
-                apiKeyModalTitle.innerHTML = `<i class="fas fa-key"></i> ${modelName} API Key`;
-                apiKeyInstructions.textContent = `To use ${modelName}, please enter your API key. Your key will be stored locally in your browser and never sent to our servers.`;
-                apiKeyInput.placeholder = placeholder;
-                apiKeyProviderLink.textContent = modelName;
-                apiKeyProviderLink.href = link;
-                
-                // Clear the input field
-                apiKeyInput.value = '';
-                
-                apiKeyModal.style.display = 'flex';
-            }
-            
-            function closeModal() {
-                apiKeyModal.style.display = 'none';
-            }
-            
-            function saveApiKey() {
-                const apiKey = apiKeyInput.value.trim();
-                const selectedModel = modelSelect.value;
-                
-                if (!apiKey) {
-                    alert('Please enter your API key');
-                    return;
-                }
-                
-                // Simple validation for API key format
-                if (!apiKey.startsWith('sk-')) {
-                    alert('Please enter a valid API key (should start with "sk-")');
-                    return;
-                }
-                
-                // Save the API key based on the selected model
-                if (selectedModel === 'dall-e-3') {
-                    localStorage.setItem('dalleApiKey', apiKey);
-                } else if (selectedModel === 'stability-ai') {
-                    localStorage.setItem('stabilityApiKey', apiKey);
-                }
-                
-                closeModal();
-                
-                // If the user was trying to generate an image, trigger it now
-                if (promptTextarea.value.trim()) {
-                    generateImage();
-                }
-            }
+            savedPromptsList.appendChild(promptItem);
         });
+    }
+    
+    function toggleAdvanced() {
+        advancedContent.classList.toggle('show');
+        advancedArrow.classList.toggle('fa-chevron-down');
+        advancedArrow.classList.toggle('fa-chevron-up');
+    }
+    
+    function updateSliderFill() {
+        // Update dimension sliders
+        const widthValue = widthSlider.value;
+        const widthPercent = (widthValue - widthSlider.min) / (widthSlider.max - widthSlider.min) * 100;
+        widthSlider.style.setProperty('--range-percent', `${widthPercent}%`);
+        
+        const heightValue = heightSlider.value;
+        const heightPercent = (heightValue - heightSlider.min) / (heightSlider.max - heightSlider.min) * 100;
+        heightSlider.style.setProperty('--range-percent', `${heightPercent}%`);
+    }
+    
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        
+        if (isDarkMode) {
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+        } else {
+            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+        }
+        
+        localStorage.setItem('darkMode', isDarkMode);
+    }
+    
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+        loadingElement.style.display = 'none';
+    }
+    
+    // Modal functions
+    function showApiKeyModal(modelName, placeholder, link) {
+        apiKeyModalTitle.innerHTML = `<i class="fas fa-key"></i> ${modelName} API Key`;
+        apiKeyInstructions.textContent = `To use ${modelName}, please enter your API key. Your key will be stored locally in your browser and never sent to our servers.`;
+        apiKeyInput.placeholder = placeholder;
+        apiKeyProviderLink.textContent = modelName;
+        apiKeyProviderLink.href = link;
+        
+        // Clear the input field
+        apiKeyInput.value = '';
+        
+        apiKeyModal.style.display = 'flex';
+    }
+    
+    function closeModal() {
+        apiKeyModal.style.display = 'none';
+        // Reset to FLUX Turbo when modal is closed without saving API key
+        if (!(localStorage.getItem('dalleApiKey') && modelSelect.value === 'dall-e-3') || 
+            !(localStorage.getItem('stabilityApiKey') && modelSelect.value === 'stability-ai')) {
+            resetModelToDefault();
+        }
+    }
+    
+    function saveApiKey() {
+        const apiKey = apiKeyInput.value.trim();
+        const selectedModel = modelSelect.value;
+        
+        if (!apiKey) {
+            alert('Please enter your API key');
+            return;
+        }
+        
+        // Simple validation for API key format
+        if (!apiKey.startsWith('sk-')) {
+            alert('Please enter a valid API key (should start with "sk-")');
+            return;
+        }
+        
+        // Save the API key based on the selected model
+        if (selectedModel === 'dall-e-3') {
+            localStorage.setItem('dalleApiKey', apiKey);
+        } else if (selectedModel === 'stability-ai') {
+            localStorage.setItem('stabilityApiKey', apiKey);
+        }
+        
+        closeModal();
+        
+        // If the user was trying to generate an image, trigger it now
+        if (promptTextarea.value.trim()) {
+            generateImage();
+        }
+    }
+});
     </script>
 </body>
 </html>
