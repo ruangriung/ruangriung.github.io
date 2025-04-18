@@ -1018,6 +1018,72 @@ footer {
 .footer-reset-btn i {
     margin-right: 5px;
 }
+.batch-controls {
+    margin-bottom: 25px;
+    padding: 15px;
+    border-radius: 15px;
+    background: var(--bg);
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+}
+
+.batch-input-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.batch-input-container input {
+    flex: 1;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 15px;
+    background: var(--bg);
+    box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
+    color: var(--text);
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .batch-input-container {
+        flex-direction: column;
+    }
+    
+    .batch-input-container input {
+        width: 100%;
+    }
+    
+    #batch-generate-btn {
+        width: 100%;
+    }
+}
+.batch-images-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    width: 100%;
+    margin: 20px 0;
+}
+
+.batch-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+}
+
+.batch-image:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    .batch-images-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
     </style>
 </head>
 <body>
@@ -1041,6 +1107,21 @@ footer {
                     <button id="enhance-btn" title="Enhance Prompt"><i class="fas fa-brain"></i> Enhance</button>
                     <button id="generate-btn"><i class="fas fa-magic-wand-sparkles"></i> Generate</button>
                 </div>
+                <div class="input-group">
+    <!-- Existing input group code -->
+</div>
+
+<!-- Add this right after the input group -->
+<div class="batch-controls">
+    <label for="batch-count"><i class="fas fa-copy"></i> Batch Count</label>
+    <div class="batch-input-container">
+        <input type="number" id="batch-count" min="1" max="10" value="1">
+        <button id="batch-generate-btn" class="btn btn-secondary">
+            <i class="fas fa-layer-group"></i> Generate Batch
+        </button>
+    </div>
+    <div class="note">Generate multiple variations at once (max 10)</div>
+</div>
             </div>
             
             <div class="settings-grid">
@@ -1433,10 +1514,10 @@ footer {
         </div>
     </div>
     
-<footer>
+<footer> 
     &copy; <span id="current-year"></span> RuangRiung AI Image Generator. All rights reserved | 
     powered by <a href="https://pollinations.ai" target="_blank" class="footer-link">Pollinations.ai</a> | 
-    Develop with ♥️ by <a href="https://ariftirtana.my.id" target="_blank" class="footer-link">Arif Tirtana</a>
+    Develop with ♥️ by <a href="https://ariftirtana.my.id" target="_blank" class="footer-link">Arif Tirtana</a> | Thanks to <i class="fab fa-github"></i><a href="https://github.com" target="_blank" class="footer-link"> GitHub</a> &  <a href="https://www.cloudflare.com/" target="_blank" class="footer-link">Cloudflare</a> <i class="fas fa-cloud"></i>
 <button id="reset-all-btn" class="footer-reset-btn"><i class="fas fa-trash"></i> Reset All Settings</button>
 </footer>
     
@@ -1523,6 +1604,100 @@ document.getElementById('reset-all-btn').addEventListener('click', function() {
     const seedInput = document.getElementById('seed');
     const hdCheckbox = document.getElementById('hd');
     const enhanceDetailsCheckbox = document.getElementById('enhance-details');
+    
+    // Add to your elements section at the top
+const batchCountInput = document.getElementById('batch-count');
+const batchGenerateBtn = document.getElementById('batch-generate-btn');
+
+// Add event listener for batch generation
+batchGenerateBtn.addEventListener('click', generateBatch);
+
+// Add this function to handle batch generation
+async function generateBatch() {
+    const prompt = promptTextarea.value.trim();
+    const batchCount = parseInt(batchCountInput.value);
+    
+    if (!prompt) {
+        showError('Please enter a description for the image');
+        return;
+    }
+    
+    if (isNaN(batchCount) || batchCount < 1 || batchCount > 10) {
+        showError('Please enter a valid batch count between 1 and 10');
+        return;
+    }
+    
+    // Store original seed
+    const originalSeed = seedInput.value || Math.floor(Math.random() * 1000000);
+    
+    // Disable buttons during batch generation
+    generateBtn.disabled = true;
+    batchGenerateBtn.disabled = true;
+    batchGenerateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    
+    try {
+        // Create a container for batch images if it doesn't exist
+        let batchContainer = document.getElementById('batch-images-container');
+        if (!batchContainer) {
+            batchContainer = document.createElement('div');
+            batchContainer.id = 'batch-images-container';
+            batchContainer.className = 'batch-images-container';
+            document.querySelector('.image-container').insertBefore(batchContainer, document.querySelector('.action-buttons'));
+        } else {
+            batchContainer.innerHTML = '';
+        }
+        
+        // Generate multiple images
+        for (let i = 0; i < batchCount; i++) {
+            // Use different seeds for each image
+            seedInput.value = originalSeed + i;
+            
+            // Generate the image
+            let imageUrl;
+            if (modelSelect.value === 'dall-e-3') {
+                imageUrl = await generateWithDalle(prompt);
+            } else if (modelSelect.value === 'stability-ai') {
+                imageUrl = await generateWithStability(prompt);
+            } else {
+                imageUrl = generateWithPollinations(prompt);
+            }
+            
+            // Create image element
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.className = 'batch-image';
+            img.alt = `Batch image ${i+1}`;
+            
+            // Add download functionality
+            img.addEventListener('click', function() {
+                generatedImage.src = this.src;
+                generatedImage.style.display = 'block';
+                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+            });
+            
+            batchContainer.appendChild(img);
+            
+            // Add to history
+            addToHistory(prompt, imageUrl);
+        }
+        
+        // Hide the main generated image during batch view
+        generatedImage.style.display = 'none';
+        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+        
+    } catch (error) {
+        console.error('Error generating batch:', error);
+        showError(error.message || 'Failed to generate batch. Please try again.');
+    } finally {
+        // Restore original seed
+        seedInput.value = originalSeed;
+        
+        // Re-enable buttons
+        generateBtn.disabled = false;
+        batchGenerateBtn.disabled = false;
+        batchGenerateBtn.innerHTML = '<i class="fas fa-layer-group"></i> Generate Batch';
+    }
+}
     
     // History array
     let generationHistory = JSON.parse(localStorage.getItem('generationHistory')) || [];
