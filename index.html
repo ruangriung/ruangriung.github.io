@@ -962,6 +962,32 @@
     transform: translateY(0);
     box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.1);
 }
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.footer-link {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+.dark-mode .footer-link {
+    color: var(--primary-light);
+}
+
+.dark-mode .footer-link:hover {
+    color: var(--primary);
+}
     </style>
 </head>
 <body>
@@ -1377,9 +1403,11 @@
         </div>
     </div>
     
-    <footer>
-        &copy; <span id="current-year"></span> RuangRiung AI Image Generator. All rights reserved | powered by <a href="https://pollinations.ai" target="_blank">Pollinations.ai</a> | Develop with ♥️ by<a href="https://ariftirtana.my.id" target="_blank">Arif Tirtana</a>
-    </footer>
+<footer>
+    &copy; <span id="current-year"></span> RuangRiung AI Image Generator. All rights reserved | 
+    powered by <a href="https://pollinations.ai" target="_blank" class="footer-link">Pollinations.ai</a> | 
+    Develop with ♥️ by <a href="https://ariftirtana.my.id" target="_blank" class="footer-link">Arif Tirtana</a>
+</footer>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
