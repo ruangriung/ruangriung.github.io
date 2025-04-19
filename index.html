@@ -1211,6 +1211,32 @@ html {
     font-size: 16px;
     outline: none;
 }
+        @media (max-width: 768px) {
+    #prompt-textarea {
+        min-height: 150px; /* Tinggi minimum yang lebih besar untuk mobile */
+        padding-right: 15px; /* Ruang untuk tombol expand */
+    }
+
+    .input-group {
+        position: relative; /* Untuk positioning tombol expand */
+    }
+
+    .expand-btn {
+        display: block; /* Tampilkan tombol expand */
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        background: var(--primary);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 2px 2px 5px var(--shadow-dark);
+    }
+        }
     </style>
 </head>
 <body>
