@@ -1237,6 +1237,45 @@ html {
         box-shadow: 2px 2px 5px var(--shadow-dark);
     }
         }
+
+/* Language Toggle Styles */
+.language-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 15px;
+    background: var(--bg);
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    transition: all 0.3s ease;
+}
+
+.language-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+}
+
+.language-toggle i {
+    font-size: 16px;
+}
+
+.language-option {
+    padding: 5px 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.language-option.active {
+    background: var(--primary);
+    color: white;
+}
+
+.language-option:not(.active):hover {
+    background: var(--shadow-light);
+}
     </style>
 </head>
 <body>
@@ -1249,6 +1288,15 @@ html {
         <div class="dark-mode-toggle" id="dark-mode-toggle">
             <i class="fas fa-moon"></i>
             <span>Dark Mode</span>
+        </div>
+        
+        <div class="language-toggle" id="language-toggle">
+            <div class="language-option active" id="lang-en">
+                <i class="fas fa-language"></i> English
+            </div>
+            <div class="language-option" id="lang-id">
+                <i class="fas fa-language"></i> Bahasa
+            </div>
         </div>
         
         <div class="card">
@@ -1640,7 +1688,7 @@ html {
             
             <div class="loading">
                 <div class="spinner"></div>
-                <p>Kami sedang menyiapkan hasil terbaik untuk Anda... Tunggu sejenak</p>
+                <p id="loading-text">Kami sedang menyiapkan hasil terbaik untuk Anda... Tunggu sejenak</p>
             </div>
             
             <div class="error-message" id="error-message"></div>
@@ -1649,24 +1697,24 @@ html {
         <div class="image-container" id="generated-image-container">
             <img id="generated-image" alt="Your AI generated image will appear here">
             <div class="action-buttons">
-                <button class="btn btn-primary" id="download-btn"><i class="fas fa-download"></i> Download</button>
-                <button class="btn btn-secondary" id="share-btn"><i class="fas fa-share-alt"></i> Share</button>
-                <button class="btn btn-secondary" id="remix-btn"><i class="fas fa-random"></i> Remix</button>
-                <button class="btn btn-secondary" id="variation-btn"><i class="fas fa-clone"></i> Variation</button>
-                <button class="btn btn-secondary" id="save-prompt-btn"><i class="fas fa-bookmark"></i> Save Prompt</button>
+                <button class="btn btn-primary" id="download-btn"><i class="fas fa-download"></i> <span class="download-text">Download</span></button>
+                <button class="btn btn-secondary" id="share-btn"><i class="fas fa-share-alt"></i> <span class="share-text">Share</span></button>
+                <button class="btn btn-secondary" id="remix-btn"><i class="fas fa-random"></i> <span class="remix-text">Remix</span></button>
+                <button class="btn btn-secondary" id="variation-btn"><i class="fas fa-clone"></i> <span class="variation-text">Variation</span></button>
+                <button class="btn btn-secondary" id="save-prompt-btn"><i class="fas fa-bookmark"></i> <span class="save-text">Save Prompt</span></button>
             </div>
         </div>
         
         <div class="card history-panel" id="history-panel">
             <div class="history-header">
-                <h3><i class="fas fa-history"></i> Generation History</h3>
-                <button class="btn btn-danger" id="reset-history-btn"><i class="fas fa-trash"></i> Clear History</button>
+                <h3><i class="fas fa-history"></i> <span class="history-text">Generation History</span></h3>
+                <button class="btn btn-danger" id="reset-history-btn"><i class="fas fa-trash"></i> <span class="clear-history-text">Clear History</span></button>
             </div>
             <div id="history-list"></div>
         </div>
         
         <div class="card saved-prompts-panel" id="saved-prompts-panel">
-            <h3><i class="fas fa-bookmark"></i> Saved Prompts</h3>
+            <h3><i class="fas fa-bookmark"></i> <span class="saved-prompts-text">Saved Prompts</span></h3>
             <div id="saved-prompts-list"></div>
         </div>
     </div>
@@ -1708,7 +1756,7 @@ html {
     &copy; <span id="current-year"></span> RuangRiung AI Image Generator Ver.4.1.3. All rights reserved | 
     powered by <a href="https://pollinations.ai" target="_blank" class="footer-link">Pollinations.ai</a> | 
     Develop with ♥️ by <a href="https://ariftirtana.my.id" target="_blank" class="footer-link">Arif Tirtana</a> | Thanks to <i class="fab fa-github"></i><a href="https://github.com" target="_blank" class="footer-link"> GitHub</a> &  <a href="https://www.cloudflare.com/" target="_blank" class="footer-link">Cloudflare</a> <i class="fas fa-cloud"></i>
-<button id="reset-all-btn" class="footer-reset-btn"><i class="fas fa-trash"></i> Reset All Settings</button>
+<button id="reset-all-btn" class="footer-reset-btn"><i class="fas fa-trash"></i> <span class="reset-all-text">Reset All Settings</span></button>
 <!-- Histats.com  (div with counter) --><div id="histats_counter"></div>
 <!-- Histats.com  START  (aync)-->
 <script type="text/javascript">var _Hasync= _Hasync|| [];
@@ -1727,6 +1775,106 @@ hs.src = ('//s10.histats.com/js15_as.js');
     <i class="fab fa-facebook-f"></i>
 </a>
     <script>
+// Language translations
+const translations = {
+    en: {
+        title: "RuangRiung AI Image Generator",
+        subtitle: "Transform your imagination into stunning visuals with AI",
+        darkMode: "Dark Mode",
+        lightMode: "Light Mode",
+        promptPlaceholder: "Describe your dream image in detail... (e.g. A cyberpunk cityscape at night with neon lights, 8k ultra detailed, cinematic lighting)",
+        enhanceBtn: "Enhance",
+        generateBtn: "Generate",
+        batchCount: "Batch Count",
+        batchGenerate: "Generate Batch",
+        batchNote: "Generate multiple variations at once (max 10)",
+        imageDimensions: "Image Dimensions",
+        width: "Width:",
+        height: "Height:",
+        aspectRatio: "Aspect Ratio:",
+        modelNotes: "Model Notes for dimensions",
+        aiModel: "AI Model",
+        artStyle: "Art Style",
+        quality: "Quality",
+        advancedSettings: "Advanced Settings",
+        lighting: "Lighting",
+        colorPalette: "Color Palette",
+        composition: "Composition",
+        seed: "Seed (for consistency)",
+        hd: "HD Resolution",
+        safeFilter: "Safe Filter (NSFW protection)",
+        enhanceDetails: "Enhance Details",
+        loadingText: "Preparing the best results for you... Please wait",
+        download: "Download",
+        share: "Share",
+        remix: "Remix",
+        variation: "Variation",
+        savePrompt: "Save Prompt",
+        history: "Generation History",
+        clearHistory: "Clear History",
+        savedPrompts: "Saved Prompts",
+        resetAll: "Reset All Settings",
+        englishNote: "Write in English for accurate results",
+        clear: "Clear",
+        modelNotesContent: [
+            "<span style='color:red'>DALL-E 3</span> only supports the following sizes: 1024×1024, 1792×1024, or 1024×1792",
+            "<span style='color:red'>Stability.AI</span> requires both width and height to be multiples of 64 (e.g., 512, 576, 640, 704, 768)",
+            "This requirement is due to the architecture of the model, which uses layered downsampling and upsampling operations that work best with sizes divisible by 64",
+            "Optimal image size range: 512–2048 pixels (for both width and height)",
+            "Recommended sizes: 512×512, 768×768, 1024×1024, 1024×1536 — depending on your hardware capability",
+            "Avoid non-multiples of 64 like 500×600 or 1023×1023, as they may cause errors or degraded performance"
+        ]
+    },
+    id: {
+        title: "RuangRiung Generator Gambar AI",
+        subtitle: "Ubah imajinasi Anda menjadi visual menakjubkan dengan AI",
+        darkMode: "Mode Gelap",
+        lightMode: "Mode Terang",
+        promptPlaceholder: "Jelaskan gambar impian Anda secara detail... (contoh: Pemandangan kota cyberpunk di malam hari dengan lampu neon, detail ultra 8k, pencahayaan sinematik)",
+        enhanceBtn: "Tingkatkan",
+        generateBtn: "Hasilkan",
+        batchCount: "Jumlah Batch",
+        batchGenerate: "Hasilkan Batch",
+        batchNote: "Hasilkan beberapa variasi sekaligus (maks 10)",
+        imageDimensions: "Dimensi Gambar",
+        width: "Lebar:",
+        height: "Tinggi:",
+        aspectRatio: "Rasio Aspek:",
+        modelNotes: "Catatan Model untuk dimensi",
+        aiModel: "Model AI",
+        artStyle: "Gaya Seni",
+        quality: "Kualitas",
+        advancedSettings: "Pengaturan Lanjutan",
+        lighting: "Pencahayaan",
+        colorPalette: "Palet Warna",
+        composition: "Komposisi",
+        seed: "Seed (untuk konsistensi)",
+        hd: "Resolusi HD",
+        safeFilter: "Filter Aman (perlindungan NSFW)",
+        enhanceDetails: "Tingkatkan Detail",
+        loadingText: "Mempersiapkan hasil terbaik untuk Anda... Mohon tunggu",
+        download: "Unduh",
+        share: "Bagikan",
+        remix: "Remix",
+        variation: "Variasi",
+        savePrompt: "Simpan Prompt",
+        history: "Riwayat Generasi",
+        clearHistory: "Hapus Riwayat",
+        savedPrompts: "Prompt Tersimpan",
+        resetAll: "Atur Ulang Semua Pengaturan",
+        englishNote: "Tulis dalam bahasa Inggris untuk hasil yang akurat",
+        clear: "Hapus",
+        modelNotesContent: [
+            "<span style='color:red'>DALL-E 3</span> hanya mendukung ukuran berikut: 1024×1024, 1792×1024, atau 1024×1792",
+            "<span style='color:red'>Stability.AI</span> membutuhkan lebar dan tinggi yang merupakan kelipatan 64 (misalnya, 512, 576, 640, 704, 768)",
+            "Persyaratan ini disebabkan oleh arsitektur model yang menggunakan operasi downsampling dan upsampling berlapis yang bekerja paling baik dengan ukuran yang dapat dibagi 64",
+            "Rentang ukuran gambar optimal: 512–2048 piksel (untuk lebar dan tinggi)",
+            "Ukuran yang direkomendasikan: 512×512, 768×768, 1024×1024, 1024×1536 — tergantung kemampuan perangkat keras Anda",
+            "Hindari kelipatan non-64 seperti 500×600 atau 1023×1023, karena dapat menyebabkan kesalahan atau penurunan performa"
+        ]
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     // Set current year in footer
     document.getElementById('current-year').textContent = new Date().getFullYear();
@@ -1767,6 +1915,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const promptSuggestionsContainer = document.getElementById('prompt-suggestions');
     const suggestionsLoading = document.getElementById('suggestions-loading');
     const refreshSuggestionsBtn = document.getElementById('refresh-suggestions');
+    const loadingText = document.getElementById('loading-text');
+    const englishNote = document.querySelector('.note');
+    const languageToggle = document.getElementById('language-toggle');
+    const langEn = document.getElementById('lang-en');
+    const langId = document.getElementById('lang-id');
 
     // Modal elements
     const apiKeyModal = document.getElementById('api-key-modal');
@@ -1859,6 +2012,10 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
     }
     
+    // Check for saved language preference
+    let currentLanguage = localStorage.getItem('language') || 'en';
+    updateLanguage(currentLanguage);
+    
     // Check for saved API keys
     const savedDalleApiKey = localStorage.getItem('dalleApiKey');
     const savedStabilityApiKey = localStorage.getItem('stabilityApiKey');
@@ -1896,6 +2053,23 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
     modelSelect.addEventListener('change', handleModelChange);
     refreshSuggestionsBtn.addEventListener('click', generatePromptSuggestions);
     
+    // Language toggle event listeners
+    langEn.addEventListener('click', function() {
+        if (currentLanguage !== 'en') {
+            currentLanguage = 'en';
+            localStorage.setItem('language', 'en');
+            updateLanguage('en');
+        }
+    });
+    
+    langId.addEventListener('click', function() {
+        if (currentLanguage !== 'id') {
+            currentLanguage = 'id';
+            localStorage.setItem('language', 'id');
+            updateLanguage('id');
+        }
+    });
+    
     // Modal event listeners
     closeModalBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
@@ -1907,6 +2081,63 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
     
     // Reset all settings button
     document.getElementById('reset-all-btn').addEventListener('click', resetAllSettings);
+
+    // Function to update language
+    function updateLanguage(lang) {
+        const t = translations[lang];
+        
+        // Update UI elements
+        document.querySelector('h1').innerHTML = `<i class="fas fa-magic-wand-sparkles"></i> ${t.title}`;
+        document.querySelector('.subtitle').textContent = t.subtitle;
+        darkModeToggle.querySelector('span').textContent = darkMode ? t.lightMode : t.darkMode;
+        promptTextarea.placeholder = t.promptPlaceholder;
+        enhanceBtn.innerHTML = `<i class="fas fa-brain"></i> ${t.enhanceBtn}`;
+        generateBtn.innerHTML = `<i class="fas fa-magic-wand-sparkles"></i> ${t.generateBtn}`;
+        document.querySelector('label[for="batch-count"]').innerHTML = `<i class="fas fa-copy"></i> ${t.batchCount}`;
+        batchGenerateBtn.innerHTML = `<i class="fas fa-layer-group"></i> ${t.batchGenerate}`;
+        document.querySelector('.batch-controls .note').textContent = t.batchNote;
+        document.querySelector('label[for="model"]').innerHTML = `<i class="fas fa-microchip"></i> ${t.aiModel}`;
+        document.querySelector('label[for="style"]').innerHTML = `<i class="fas fa-paint-brush"></i> ${t.artStyle}`;
+        document.querySelector('label[for="quality"]').innerHTML = `<i class="fas fa-star"></i> ${t.quality}`;
+        advancedToggle.querySelector('span').innerHTML = `<i class="fas fa-cogs"></i> ${t.advancedSettings}`;
+        document.querySelector('label[for="lighting"]').innerHTML = `<i class="fas fa-lightbulb"></i> ${t.lighting}`;
+        document.querySelector('label[for="color"]').innerHTML = `<i class="fas fa-palette"></i> ${t.colorPalette}`;
+        document.querySelector('label[for="composition"]').innerHTML = `<i class="fas fa-th-large"></i> ${t.composition}`;
+        document.querySelector('label[for="seed"]').innerHTML = `<i class="fas fa-seedling"></i> ${t.seed}`;
+        document.querySelector('label[for="hd"]').innerHTML = `<i class="fas fa-expand"></i> ${t.hd}`;
+        document.querySelector('label[for="safe-filter"]').innerHTML = `<i class="fas fa-shield-alt"></i> ${t.safeFilter}`;
+        document.querySelector('label[for="enhance-details"]').innerHTML = `<i class="fas fa-search-plus"></i> ${t.enhanceDetails}`;
+        loadingText.textContent = t.loadingText;
+        document.querySelector('.download-text').textContent = t.download;
+        document.querySelector('.share-text').textContent = t.share;
+        document.querySelector('.remix-text').textContent = t.remix;
+        document.querySelector('.variation-text').textContent = t.variation;
+        document.querySelector('.save-text').textContent = t.savePrompt;
+        document.querySelector('.history-text').textContent = t.history;
+        document.querySelector('.clear-history-text').textContent = t.clearHistory;
+        document.querySelector('.saved-prompts-text').textContent = t.savedPrompts;
+        document.querySelector('.reset-all-text').textContent = t.resetAll;
+        document.querySelector('.note').innerHTML = `<i class="fas fa-circle-info"></i> ${t.englishNote}`;
+        clearBtn.innerHTML = `<i class="fas fa-trash"></i> ${t.clear}`;
+        modelNotesToggle.querySelector('span').innerHTML = `<i class="fas fa-info-circle"></i> ${t.modelNotes}`;
+        
+        // Update model notes content
+        const notesContent = modelNotesContent.querySelectorAll('.note');
+        t.modelNotesContent.forEach((note, index) => {
+            if (notesContent[index]) {
+                notesContent[index].innerHTML = note;
+            }
+        });
+        
+        // Update language toggle active state
+        if (lang === 'en') {
+            langEn.classList.add('active');
+            langId.classList.remove('active');
+        } else {
+            langEn.classList.remove('active');
+            langId.classList.add('active');
+        }
+    }
 
     // Function to generate AI-powered prompt suggestions
     async function generatePromptSuggestions() {
@@ -1962,7 +2193,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         prompts.forEach((prompt, index) => {
             const button = document.createElement('button');
             button.className = 'prompt-suggestion';
-            button.innerHTML = `<i class="fas fa-lightbulb"></i> Suggestion ${index + 1}`;
+            button.innerHTML = `<i class="fas fa-lightbulb"></i> ${currentLanguage === 'en' ? 'Suggestion' : 'Saran'} ${index + 1}`;
             button.setAttribute('data-prompt', prompt);
             
             button.addEventListener('click', function() {
@@ -2050,7 +2281,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         const ratio = gcd(width, height);
         const aspectRatio = `${width/ratio}:${height/ratio}`;
         
-        aspectRatioDisplay.textContent = `Aspect Ratio: ${aspectRatio}`;
+        aspectRatioDisplay.textContent = `${translations[currentLanguage].aspectRatio} ${aspectRatio}`;
         
         // Update slider fill
         updateSliderFill();
@@ -2061,7 +2292,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         const selectedModel = modelSelect.value;
         
         if (!prompt) {
-            showError('Please enter a description for the image');
+            showError(currentLanguage === 'en' ? 'Please enter a description for the image' : 'Silakan masukkan deskripsi untuk gambar');
             return;
         }
         
@@ -2069,7 +2300,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         if (selectedModel === 'dall-e-3') {
             const apiKey = localStorage.getItem('dalleApiKey');
             if (!apiKey) {
-                showError('Please provide an API key for DALL-E 3');
+                showError(currentLanguage === 'en' ? 'Please provide an API key for DALL-E 3' : 'Harap berikan kunci API untuk DALL-E 3');
                 showApiKeyModal('DALL-E 3', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.openai.com/api-keys');
                 resetModelToDefault();
                 return;
@@ -2077,7 +2308,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         } else if (selectedModel === 'stability-ai') {
             const apiKey = localStorage.getItem('stabilityApiKey');
             if (!apiKey) {
-                showError('Please provide an API key for Stability.AI');
+                showError(currentLanguage === 'en' ? 'Please provide an API key for Stability.AI' : 'Harap berikan kunci API untuk Stability.AI');
                 showApiKeyModal('Stability.AI', 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'https://platform.stability.ai/account/keys');
                 resetModelToDefault();
                 return;
@@ -2145,14 +2376,14 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
             
             generatedImage.onerror = function() {
                 loadingElement.style.display = 'none';
-                showError('Failed to generate image. Please try a different prompt.');
+                showError(currentLanguage === 'en' ? 'Failed to generate image. Please try a different prompt.' : 'Gagal menghasilkan gambar. Silakan coba dengan deskripsi yang berbeda.');
             };
             
             generatedImage.src = imageUrl;
         } catch (error) {
             console.error('Error generating image:', error);
             loadingElement.style.display = 'none';
-            showError(error.message || 'Failed to generate image. Please try again.');
+            showError(error.message || (currentLanguage === 'en' ? 'Failed to generate image. Please try again.' : 'Gagal menghasilkan gambar. Silakan coba lagi.'));
         }
     }
     
@@ -2212,12 +2443,12 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         const batchCount = parseInt(batchCountInput.value);
         
         if (!prompt) {
-            showError('Please enter a description for the image');
+            showError(currentLanguage === 'en' ? 'Please enter a description for the image' : 'Silakan masukkan deskripsi untuk gambar');
             return;
         }
         
         if (isNaN(batchCount) || batchCount < 1 || batchCount > 10) {
-            showError('Please enter a valid batch count between 1 and 10');
+            showError(currentLanguage === 'en' ? 'Please enter a valid batch count between 1 and 10' : 'Masukkan jumlah batch yang valid antara 1 dan 10');
             return;
         }
         
@@ -2230,7 +2461,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         // Disable buttons during batch generation
         generateBtn.disabled = true;
         batchGenerateBtn.disabled = true;
-        batchGenerateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+        batchGenerateBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${currentLanguage === 'en' ? 'Generating...' : 'Memproses...'}`;
         
         try {
             // Create a container for batch images if it doesn't exist
@@ -2263,7 +2494,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.className = 'batch-image';
-                img.alt = `Batch image ${i+1}`;
+                img.alt = `${currentLanguage === 'en' ? 'Batch image' : 'Gambar batch'} ${i+1}`;
                 
                 // Add download functionality
                 img.addEventListener('click', function() {
@@ -2284,7 +2515,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
             
         } catch (error) {
             console.error('Error generating batch:', error);
-            showError(error.message || 'Failed to generate batch. Please try again.');
+            showError(error.message || (currentLanguage === 'en' ? 'Failed to generate batch. Please try again.' : 'Gagal menghasilkan batch. Silakan coba lagi.'));
         } finally {
             // Restore original seed
             seedInput.value = originalSeed;
@@ -2292,13 +2523,13 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
             // Re-enable buttons
             generateBtn.disabled = false;
             batchGenerateBtn.disabled = false;
-            batchGenerateBtn.innerHTML = '<i class="fas fa-layer-group"></i> Generate Batch';
+            batchGenerateBtn.innerHTML = `<i class="fas fa-layer-group"></i> ${translations[currentLanguage].batchGenerate}`;
         }
     }
     
     async function generateVariation() {
         if (!currentGeneration.prompt || !generatedImage.src) {
-            showError('Please generate an image first before creating variations');
+            showError(currentLanguage === 'en' ? 'Please generate an image first before creating variations' : 'Harap hasilkan gambar terlebih dahulu sebelum membuat variasi');
             return;
         }
         
@@ -2344,14 +2575,14 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
             
             generatedImage.onerror = function() {
                 loadingElement.style.display = 'none';
-                showError('Failed to generate variation. Please try again.');
+                showError(currentLanguage === 'en' ? 'Failed to generate variation. Please try again.' : 'Gagal menghasilkan variasi. Silakan coba lagi.');
             };
             
             generatedImage.src = imageUrl;
         } catch (error) {
             console.error('Error generating variation:', error);
             loadingElement.style.display = 'none';
-            showError(error.message || 'Failed to generate variation. Please try again.');
+            showError(error.message || (currentLanguage === 'en' ? 'Failed to generate variation. Please try again.' : 'Gagal menghasilkan variasi. Silakan coba lagi.'));
         }
     }
     
@@ -2377,7 +2608,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
     async function generateWithDalle(prompt) {
         const apiKey = localStorage.getItem('dalleApiKey');
         if (!apiKey) {
-            throw new Error('No API key provided for DALL-E 3');
+            throw new Error(currentLanguage === 'en' ? 'No API key provided for DALL-E 3' : 'Tidak ada kunci API yang diberikan untuk DALL-E 3');
         }
         
         // Get dimensions from sliders
@@ -2416,13 +2647,13 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
             const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.error?.message || 'Failed to generate image with DALL-E 3');
+                throw new Error(data.error?.message || (currentLanguage === 'en' ? 'Failed to generate image with DALL-E 3' : 'Gagal menghasilkan gambar dengan DALL-E 3'));
             }
             
             if (data.data && data.data[0] && data.data[0].url) {
                 return data.data[0].url;
             } else {
-                throw new Error('No image URL returned from DALL-E 3');
+                throw new Error(currentLanguage === 'en' ? 'No image URL returned from DALL-E 3' : 'Tidak ada URL gambar yang dikembalikan dari DALL-E 3');
             }
         } catch (error) {
             console.error('DALL-E 3 API error:', error);
@@ -2433,7 +2664,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
     async function generateWithStability(prompt) {
         const apiKey = localStorage.getItem('stabilityApiKey');
         if (!apiKey) {
-            throw new Error('No API key provided for Stability.AI');
+            throw new Error(currentLanguage === 'en' ? 'No API key provided for Stability.AI' : 'Tidak ada kunci API yang diberikan untuk Stability.AI');
         }
         
         // Get dimensions from sliders
@@ -2475,13 +2706,13 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
             const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to generate image with Stability.AI');
+                throw new Error(data.message || (currentLanguage === 'en' ? 'Failed to generate image with Stability.AI' : 'Gagal menghasilkan gambar dengan Stability.AI'));
             }
             
             if (data.artifacts && data.artifacts[0] && data.artifacts[0].base64) {
                 return `data:image/png;base64,${data.artifacts[0].base64}`;
             } else {
-                throw new Error('No image data returned from Stability.AI');
+                throw new Error(currentLanguage === 'en' ? 'No image data returned from Stability.AI' : 'Tidak ada data gambar yang dikembalikan dari Stability.AI');
             }
         } catch (error) {
             console.error('Stability.AI API error:', error);
@@ -2493,13 +2724,13 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         const prompt = promptTextarea.value.trim();
         
         if (!prompt) {
-            showError('Please enter a description to enhance');
+            showError(currentLanguage === 'en' ? 'Please enter a description to enhance' : 'Silakan masukkan deskripsi untuk ditingkatkan');
             return;
         }
         
         // Show loading state
         const originalButtonHTML = enhanceBtn.innerHTML;
-        enhanceBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enhancing...';
+        enhanceBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${currentLanguage === 'en' ? 'Enhancing...' : 'Meningkatkan...'}`;
         enhanceBtn.disabled = true;
         
         // Store original prompt
@@ -2540,7 +2771,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
             console.error('Error enhancing prompt:', error);
             // Restore original prompt if error occurs
             promptTextarea.value = originalPrompt;
-            showError('Failed to enhance prompt. Please try again.');
+            showError(currentLanguage === 'en' ? 'Failed to enhance prompt. Please try again.' : 'Gagal meningkatkan prompt. Silakan coba lagi.');
         } finally {
             // Restore button state
             enhanceBtn.innerHTML = originalButtonHTML;
@@ -2550,7 +2781,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
     
     function downloadImage() {
         if (!generatedImage.src) {
-            showError('No image to download');
+            showError(currentLanguage === 'en' ? 'No image to download' : 'Tidak ada gambar untuk diunduh');
             return;
         }
         
@@ -2588,7 +2819,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         };
         
         img.onerror = function() {
-            showError('Failed to process image for download');
+            showError(currentLanguage === 'en' ? 'Failed to process image for download' : 'Gagal memproses gambar untuk diunduh');
         };
         
         img.src = generatedImage.src;
@@ -2596,14 +2827,14 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
     
     function shareImage() {
         if (!generatedImage.src) {
-            showError('No image to share');
+            showError(currentLanguage === 'en' ? 'No image to share' : 'Tidak ada gambar untuk dibagikan');
             return;
         }
         
         if (navigator.share) {
             navigator.share({
-                title: 'AI Generated Art',
-                text: 'Check out this image I created with AI: ' + promptTextarea.value.trim(),
+                title: currentLanguage === 'en' ? 'AI Generated Art' : 'Seni Hasil AI',
+                text: currentLanguage === 'en' ? 'Check out this image I created with AI: ' : 'Lihat gambar yang saya buat dengan AI: ' + promptTextarea.value.trim(),
                 url: generatedImage.src
             }).catch(err => {
                 console.error('Error sharing:', err);
@@ -2622,24 +2853,31 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         document.execCommand('copy');
         document.body.removeChild(textarea);
         
-        alert('Image URL copied to clipboard!');
+        alert(currentLanguage === 'en' ? 'Image URL copied to clipboard!' : 'URL gambar disalin ke clipboard!');
     }
     
     function remixImage() {
         if (!generatedImage.src) {
-            showError('No image to remix');
+            showError(currentLanguage === 'en' ? 'No image to remix' : 'Tidak ada gambar untuk di-remix');
             return;
         }
         
         // Add some randomness to the prompt
         const currentPrompt = promptTextarea.value.trim();
-        const modifiers = [
+        const modifiers = currentLanguage === 'en' ? [
             'in a different style',
             'with a new color scheme',
             'from a different angle',
             'with dramatic lighting',
             'as a surreal interpretation',
             'in a fantasy version'
+        ] : [
+            'dalam gaya yang berbeda',
+            'dengan skema warna baru',
+            'dari sudut yang berbeda',
+            'dengan pencahayaan dramatis',
+            'sebagai interpretasi surealis',
+            'dalam versi fantasi'
         ];
         
         const randomModifier = modifiers[Math.floor(Math.random() * modifiers.length)];
@@ -2652,14 +2890,14 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
     function savePrompt() {
         const prompt = promptTextarea.value.trim();
         if (!prompt) {
-            showError('Please enter a prompt to save');
+            showError(currentLanguage === 'en' ? 'Please enter a prompt to save' : 'Silakan masukkan prompt untuk disimpan');
             return;
         }
         
         // Check if prompt already exists
         const existingPrompt = savedPrompts.find(p => p.prompt === prompt);
         if (existingPrompt) {
-            alert('This prompt is already saved!');
+            alert(currentLanguage === 'en' ? 'This prompt is already saved!' : 'Prompt ini sudah disimpan!');
             return;
         }
         
@@ -2672,7 +2910,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts));
         updateSavedPromptsPanel();
         
-        alert('Prompt saved! You can find it in the Saved Prompts section.');
+        alert(currentLanguage === 'en' ? 'Prompt saved! You can find it in the Saved Prompts section.' : 'Prompt disimpan! Anda dapat menemukannya di bagian Prompt Tersimpan.');
     }
     
     function addToHistory(prompt, imageUrl) {
@@ -2730,7 +2968,7 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
     }
     
     function resetHistory() {
-        if (confirm('Are you sure you want to clear your generation history? This cannot be undone.')) {
+        if (confirm(currentLanguage === 'en' ? 'Are you sure you want to clear your generation history? This cannot be undone.' : 'Apakah Anda yakin ingin menghapus riwayat generasi? Tindakan ini tidak dapat dibatalkan.')) {
             generationHistory = [];
             localStorage.setItem('generationHistory', JSON.stringify(generationHistory));
             updateHistoryPanel();
@@ -2752,8 +2990,8 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
             promptItem.innerHTML = `
                 <div class="saved-prompt-text">${item.prompt.substring(0, 50)}${item.prompt.length > 50 ? '...' : ''}</div>
                 <div class="saved-prompt-actions">
-                    <i class="fas fa-copy saved-prompt-action" title="Copy to prompt"></i>
-                    <i class="fas fa-trash saved-prompt-action" title="Delete"></i>
+                    <i class="fas fa-copy saved-prompt-action" title="${currentLanguage === 'en' ? 'Copy to prompt' : 'Salin ke prompt'}"></i>
+                    <i class="fas fa-trash saved-prompt-action" title="${currentLanguage === 'en' ? 'Delete' : 'Hapus'}"></i>
                 </div>
             `;
             
@@ -2809,9 +3047,9 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         const isDarkMode = document.body.classList.contains('dark-mode');
         
         if (isDarkMode) {
-            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+            darkModeToggle.innerHTML = `<i class="fas fa-sun"></i><span>${translations[currentLanguage].lightMode}</span>`;
         } else {
-            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+            darkModeToggle.innerHTML = `<i class="fas fa-moon"></i><span>${translations[currentLanguage].darkMode}</span>`;
         }
         
         localStorage.setItem('darkMode', isDarkMode);
@@ -2851,40 +3089,52 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
     }
     
     function resetAllSettings() {
-        if (confirm('Are you sure you want to reset ALL settings? This will clear:\n- Generation history\n- Saved prompts\n- API keys\n- Dark mode preference\n\nThis action cannot be undone.')) {
+        if (confirm(currentLanguage === 'en' ? 'Are you sure you want to reset ALL settings? This will clear:\n- Generation history\n- Saved prompts\n- API keys\n- Dark mode preference\n\nThis action cannot be undone.' : 'Apakah Anda yakin ingin mengatur ulang SEMUA pengaturan? Ini akan menghapus:\n- Riwayat generasi\n- Prompt tersimpan\n- Kunci API\n- Preferensi mode gelap\n\nTindakan ini tidak dapat dibatalkan.')) {
             // Clear all localStorage items
             localStorage.removeItem('generationHistory');
             localStorage.removeItem('savedPrompts');
             localStorage.removeItem('dalleApiKey');
             localStorage.removeItem('stabilityApiKey');
             localStorage.removeItem('darkMode');
+            localStorage.removeItem('language');
             
             // Reset state variables
             generationHistory = [];
             savedPrompts = [];
+            currentLanguage = 'en';
             
             // Update UI
             updateHistoryPanel();
             updateSavedPromptsPanel();
+            updateLanguage('en');
             
             // Reset dark mode to default (light)
             document.body.classList.remove('dark-mode');
-            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+            darkModeToggle.innerHTML = `<i class="fas fa-moon"></i><span>${translations.en.darkMode}</span>`;
             
             // Reset model selection to default
             modelSelect.value = 'pollinations';
             
-            alert('All settings have been reset to defaults.');
+            alert(currentLanguage === 'en' ? 'All settings have been reset to defaults.' : 'Semua pengaturan telah diatur ulang ke default.');
         }
     }
     
     // Modal functions
     function showApiKeyModal(modelName, placeholder, link) {
-        apiKeyModalTitle.innerHTML = `<i class="fas fa-key"></i> ${modelName} API Key`;
-        apiKeyInstructions.textContent = `To use ${modelName}, please enter your API key. Your key will be stored locally in your browser and never sent to our servers.`;
+        apiKeyModalTitle.innerHTML = `<i class="fas fa-key"></i> ${modelName} ${currentLanguage === 'en' ? 'API Key' : 'Kunci API'}`;
+        apiKeyInstructions.textContent = currentLanguage === 'en' 
+            ? `To use ${modelName}, please enter your API key. Your key will be stored locally in your browser and never sent to our servers.`
+            : `Untuk menggunakan ${modelName}, harap masukkan kunci API Anda. Kunci Anda akan disimpan secara lokal di browser Anda dan tidak pernah dikirim ke server kami.`;
         apiKeyInput.placeholder = placeholder;
         apiKeyProviderLink.textContent = modelName;
         apiKeyProviderLink.href = link;
+        saveApiKeyBtn.textContent = currentLanguage === 'en' ? 'Save API Key' : 'Simpan Kunci API';
+        cancelBtn.textContent = currentLanguage === 'en' ? 'Cancel' : 'Batal';
+        
+        // Update API key link text
+        apiKeyLink.innerHTML = currentLanguage === 'en' 
+            ? `<small>Don't have an API key? Get one from <a href="#" target="_blank" id="api-key-provider-link">the provider</a></small>`
+            : `<small>Tidak punya kunci API? Dapatkan dari <a href="#" target="_blank" id="api-key-provider-link">penyedia</a></small>`;
         
         // Clear the input field
         apiKeyInput.value = '';
@@ -2906,13 +3156,13 @@ fullscreenTextarea.addEventListener('keydown', function(e) {
         const selectedModel = modelSelect.value;
         
         if (!apiKey) {
-            alert('Please enter your API key');
+            alert(currentLanguage === 'en' ? 'Please enter your API key' : 'Silakan masukkan kunci API Anda');
             return;
         }
         
         // Simple validation for API key format
         if (!apiKey.startsWith('sk-')) {
-            alert('Please enter a valid API key (should start with "sk-")');
+            alert(currentLanguage === 'en' ? 'Please enter a valid API key (should start with "sk-")' : 'Silakan masukkan kunci API yang valid (harus dimulai dengan "sk-")');
             return;
         }
         
