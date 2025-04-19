@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuangRiung AI - Changelog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c0;
+            --primary-light: #a29bfe;
+            --bg: #e0e5ec;
+            --shadow-light: #ffffff;
+            --shadow-dark: #a3b1c6;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+        }
+        
+        .dark-mode {
+            --primary: #a29bfe;
+            --primary-dark: #847bd1;
+            --primary-light: #6c5ce7;
+            --bg: #2d3436;
+            --shadow-light: #3c4245;
+            --shadow-dark: #1e2224;
+            --text: #dfe6e9;
+            --text-light: #b2bec3;
+            --success: #55efc4;
+            --danger: #ff7675;
+            --warning: #ffeaa7;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+        
+        h1 {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: var(--text-light);
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .changelog-container {
+            background: var(--bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+            margin-bottom: 30px;
+        }
+        
+        .version {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--shadow-dark);
+        }
+        
+        .version:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .version-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .version-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .changes-list {
+            list-style-type: none;
+        }
+        
+        .change-item {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .change-item:before {
+            content: "•";
+            color: var(--primary);
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+        
+        .change-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        .new {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .improved {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .fixed {
+            background-color: var(--warning);
+            color: var(--text);
+        }
+        
+        .removed {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .dark-mode-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 15px;
+            background: var(--bg);
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .footer-link {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .version-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-clipboard-list"></i> RuangRiung Changelog</h1>
+            <p class="subtitle">History of updates and improvements</p>
+            <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Back to Generator</a>
+            
+            <div class="dark-mode-toggle" id="dark-mode-toggle">
+                <i class="fas fa-moon"></i>
+                <span>Dark Mode</span>
+            </div>
+        </header>
+        
+        <div class="changelog-container">
+            <div class="version">
+                <h2 class="version-title"><i class="fas fa-globe"></i> Version 5.0.0</h2>
+                <div class="version-date">April 20, 2025</div>
+                <ul class="changes-list">
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Added 2 new language options (English & Bahasa)
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Expanded textarea with adjustable height for better prompt editing
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Added 60 new art styles covering various contemporary techniques
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type removed">REMOVED</span> Removed support for Dall-E 3, Stability AI, and Leonardo models
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type improved">IMPROVED</span> Optimized language switching performance
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="version">
+                <h2 class="version-title"><i class="fas fa-rocket"></i> Version 4.1.3</h2>
+                <div class="version-date">10, April, 2025</div>
+                <ul class="changes-list">
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Added batch generation feature (generate multiple variations at once)
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type improved">IMPROVED</span> Enhanced prompt suggestions with AI-generated creative prompts
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type improved">IMPROVED</span> Better mobile experience with expanded textarea option
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type fixed">FIXED</span> Fixed aspect ratio calculation for custom dimensions
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="version">
+                <h2 class="version-title"><i class="fas fa-star"></i> Version 4.0.0</h2>
+                <div class="version-date">15 April, 2025</div>
+                <ul class="changes-list">
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Complete UI redesign with neumorphic styling
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Added dark mode support
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Implemented generation history with thumbnails
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type improved">IMPROVED</span> Optimized image generation performance
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="version">
+                <h2 class="version-title"><i class="fas fa-language"></i> Version 3.2.0</h2>
+                <div class="version-date">25 Maret, 2025</div>
+                <ul class="changes-list">
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Added bilingual support (English/Indonesian)
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type improved">IMPROVED</span> Enhanced prompt enhancement feature with streaming AI
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type fixed">FIXED</span> Fixed several UI bugs on mobile devices
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="version">
+                <h2 class="version-title"><i class="fas fa-paint-brush"></i> Version 3.0.0</h2>
+                <div class="version-date">11 Maret, 2025</div>
+                <ul class="changes-list">
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Added 150+ art style options organized by categories
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Implemented saved prompts feature
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type improved">IMPROVED</span> Redesigned settings panel with advanced options
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="version">
+                <h2 class="version-title"><i class="fas fa-magic"></i> Version 2.0.0</h2>
+                <div class="version-date">10 Maret, 2025</div>
+                <ul class="changes-list">
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Initial release of RuangRiung AI Image Generator
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Basic image generation with FLUX Turbo model
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Core features: prompt input, dimension sliders, quality settings
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <footer>
+            &copy; <span id="current-year"></span> RuangRiung AI Image Generator. All rights reserved | 
+            Develop with ♥️ by <a href="https://ariftirtana.my.id" target="_blank" class="footer-link">Arif Tirtana</a>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Dark mode toggle
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+            }
+            
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                
+                if (isDarkMode) {
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+                } else {
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+                }
+                
+                localStorage.setItem('darkMode', isDarkMode);
+            });
+        });
+    </script>
+</body>
+</html>
