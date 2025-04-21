@@ -377,6 +377,7 @@
             margin-bottom: 15px;
         }
         
+        /* Updated range input styling for dynamic track fill */
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
@@ -384,8 +385,8 @@
             border-radius: 4px;
             outline: none;
             margin: 10px 0;
-            --range-percent: 50%;
-            background: linear-gradient(to right, var(--primary) 0%, var(--primary) var(--range-percent), var(--shadow-dark) var(--range-percent), var(--shadow-dark) 100%);
+            background: var(--shadow-dark);
+            position: relative;
         }
         
         input[type="range"]::-webkit-slider-thumb {
@@ -398,6 +399,8 @@
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             border: 3px solid white;
+            position: relative;
+            z-index: 2;
         }
         
         input[type="range"]::-moz-range-thumb {
@@ -408,6 +411,21 @@
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             border: 3px solid white;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* This is the track fill element that will be dynamically updated */
+        input[type="range"]::before {
+            content: '';
+            position: absolute;
+            height: 8px;
+            left: 0;
+            top: 0;
+            background: var(--primary);
+            border-radius: 4px 0 0 4px;
+            pointer-events: none;
+            z-index: 1;
         }
         
         .slider-value-container {
@@ -527,6 +545,7 @@
             flex-direction: column;
             align-items: center;
             margin-bottom: 30px;
+            position: relative;
         }
         
         #generated-image {
@@ -538,6 +557,7 @@
             object-fit: contain;
             background: rgba(255, 255, 255, 0.3);
             padding: 10px;
+            transition: filter 0.3s ease;
         }
         
         .loading {
@@ -1360,6 +1380,301 @@ html {
             background: var(--primary-dark);
             transform: translateY(-2px);
         }
+
+        /* New Filter Controls Styles */
+        .filter-controls {
+            margin-top: 20px;
+            width: 100%;
+            display: none;
+        }
+
+        .filter-sliders {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-slider {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-slider label {
+            font-size: 12px;
+            margin-bottom: 5px;
+            color: var(--text-light);
+        }
+
+        .filter-slider input[type="range"] {
+            width: 100%;
+        }
+
+        .filter-presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .filter-preset {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            background: var(--bg);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .filter-preset:hover {
+            transform: translateY(-2px);
+        }
+
+        .filter-preset.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Image Info Panel */
+        .image-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-container:hover .image-info {
+            opacity: 1;
+        }
+
+        /* AI Enhance Panel */
+        .ai-enhance-panel {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .enhance-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .enhance-option {
+            padding: 8px;
+            border-radius: 10px;
+            background: var(--bg);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .enhance-option:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 5px;
+            background: var(--shadow-light);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* New Toggle Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-left: 10px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--shadow-dark);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* New Tooltip Styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--bg);
+            color: var(--text);
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* New Badge Styles */
+        .badge {
+            display: inline-block;
+            padding: 3px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 1;
+            color: white;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 10px;
+            background: var(--primary);
+            margin-left: 5px;
+        }
+
+        /* New Loading Animation */
+        .loading-dots {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            margin: 0 2px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% { 
+                transform: scale(0);
+            }
+            40% { 
+                transform: scale(1.0);
+            }
+        }
+
+        /* New Image Comparison Slider */
+        .image-comparison {
+            position: relative;
+            width: 100%;
+            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+        }
+
+        .image-comparison img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-comparison .img-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .image-comparison .slider {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: white;
+            cursor: ew-resize;
+        }
+
+        .image-comparison .slider:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -1841,13 +2156,58 @@ html {
         </div>
         
         <div class="image-container" id="generated-image-container">
+            <div class="image-info" id="image-info"></div>
             <img id="generated-image" alt="Your AI generated image will appear here">
+            <div class="filter-controls" id="filter-controls">
+                <h3><i class="fas fa-sliders-h"></i> Image Filters</h3>
+                <div class="filter-sliders">
+                    <div class="filter-slider">
+                        <label for="brightness-filter">Brightness</label>
+                        <input type="range" id="brightness-filter" min="0" max="200" value="100">
+                    </div>
+                    <div class="filter-slider">
+                        <label for="contrast-filter">Contrast</label>
+                        <input type="range" id="contrast-filter" min="0" max="200" value="100">
+                    </div>
+                    <div class="filter-slider">
+                        <label for="saturation-filter">Saturation</label>
+                        <input type="range" id="saturation-filter" min="0" max="200" value="100">
+                    </div>
+                    <div class="filter-slider">
+                        <label for="blur-filter">Blur</label>
+                        <input type="range" id="blur-filter" min="0" max="10" value="0">
+                    </div>
+                </div>
+                <div class="filter-presets">
+                    <div class="filter-preset" data-brightness="120" data-contrast="110" data-saturation="120" data-blur="0">Vibrant</div>
+                    <div class="filter-preset" data-brightness="90" data-contrast="120" data-saturation="80" data-blur="0">Moody</div>
+                    <div class="filter-preset" data-brightness="100" data-contrast="100" data-saturation="0" data-blur="0">Grayscale</div>
+                    <div class="filter-preset" data-brightness="100" data-contrast="100" data-saturation="150" data-blur="0">Color Pop</div>
+                    <div class="filter-preset" data-brightness="100" data-contrast="100" data-saturation="100" data-blur="2">Soft Focus</div>
+                    <div class="filter-preset" data-brightness="100" data-contrast="100" data-saturation="100" data-blur="0">Reset</div>
+                </div>
+            </div>
+            <div class="ai-enhance-panel" id="ai-enhance-panel">
+                <h3><i class="fas fa-magic"></i> AI Enhancements</h3>
+                <div class="enhance-options">
+                    <div class="enhance-option" data-enhance="face">Enhance Faces</div>
+                    <div class="enhance-option" data-enhance="background">Enhance Background</div>
+                    <div class="enhance-option" data-enhance="sharpness">Increase Sharpness</div>
+                    <div class="enhance-option" data-enhance="color">Color Correction</div>
+                    <div class="enhance-option" data-enhance="noise">Reduce Noise</div>
+                </div>
+                <div class="progress-container" id="enhance-progress">
+                    <div class="progress-bar" id="enhance-progress-bar"></div>
+                </div>
+            </div>
             <div class="action-buttons">
                 <button class="btn btn-primary" id="download-btn"><i class="fas fa-download"></i> <span class="download-text">Download</span></button>
                 <button class="btn btn-secondary" id="share-btn"><i class="fas fa-share-alt"></i> <span class="share-text">Share</span></button>
                 <button class="btn btn-secondary" id="remix-btn"><i class="fas fa-random"></i> <span class="remix-text">Remix</span></button>
                 <button class="btn btn-secondary" id="variation-btn"><i class="fas fa-clone"></i> <span class="variation-text">Variation</span></button>
                 <button class="btn btn-secondary" id="save-prompt-btn"><i class="fas fa-bookmark"></i> <span class="save-text">Save Prompt</span></button>
+                <button class="btn btn-secondary" id="filter-toggle-btn"><i class="fas fa-sliders-h"></i> <span class="filter-text">Filters</span></button>
+                <button class="btn btn-secondary" id="enhance-toggle-btn"><i class="fas fa-magic"></i> <span class="enhance-text">AI Enhance</span></button>
             </div>
         </div>
         
@@ -1880,6 +2240,7 @@ html {
         </div>
     </div>
 </div>
+
 <!-- Back to Top Button -->
 <div class="back-to-top" id="backToTop" title="Back to Top">
     <i class="fas fa-arrow-up"></i>
@@ -1953,7 +2314,14 @@ const translations = {
             "Optimal image size range: 512–2048 pixels (for both width and height)",
             "Recommended sizes: 512×512, 768×768, 1024×1024, 1024×1536 — depending on your hardware capability",
             "Avoid non-multiples of 64 like 500×600 or 1023×1023, as they may cause errors or degraded performance"
-        ]
+        ],
+        filters: "Filters",
+        aiEnhance: "AI Enhance",
+        enhanceFaces: "Enhance Faces",
+        enhanceBackground: "Enhance Background",
+        increaseSharpness: "Increase Sharpness",
+        colorCorrection: "Color Correction",
+        reduceNoise: "Reduce Noise"
     },
     id: {
         title: "RuangRiung Generator Gambar AI",
@@ -1998,7 +2366,14 @@ const translations = {
             "Rentang ukuran gambar optimal: 512–2048 piksel (untuk lebar dan tinggi)",
             "Ukuran yang direkomendasikan: 512×512, 768×768, 1024×1024, 1024×1536 — tergantung kemampuan perangkat keras Anda",
             "Hindari kelipatan non-64 seperti 500×600 atau 1023×1023, karena dapat menyebabkan kesalahan atau penurunan performa"
-        ]
+        ],
+        filters: "Filter",
+        aiEnhance: "Peningkatan AI",
+        enhanceFaces: "Tingkatkan Wajah",
+        enhanceBackground: "Tingkatkan Latar Belakang",
+        increaseSharpness: "Tingkatkan Ketajaman",
+        colorCorrection: "Koreksi Warna",
+        reduceNoise: "Kurangi Noise"
     }
 };
 
@@ -2047,6 +2422,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const languageToggle = document.getElementById('language-toggle');
     const langEn = document.getElementById('lang-en');
     const langId = document.getElementById('lang-id');
+    const filterControls = document.getElementById('filter-controls');
+    const filterToggleBtn = document.getElementById('filter-toggle-btn');
+    const enhanceToggleBtn = document.getElementById('enhance-toggle-btn');
+    const aiEnhancePanel = document.getElementById('ai-enhance-panel');
+    const brightnessFilter = document.getElementById('brightness-filter');
+    const contrastFilter = document.getElementById('contrast-filter');
+    const saturationFilter = document.getElementById('saturation-filter');
+    const blurFilter = document.getElementById('blur-filter');
+    const filterPresets = document.querySelectorAll('.filter-preset');
+    const enhanceOptions = document.querySelectorAll('.enhance-option');
+    const imageInfo = document.getElementById('image-info');
+    const enhanceProgress = document.getElementById('enhance-progress');
+    const enhanceProgressBar = document.getElementById('enhance-progress-bar');
 
     // Textarea expansion elements
     const expandTextareaBtn = document.getElementById('expand-textarea-btn');
@@ -2080,6 +2468,14 @@ document.addEventListener('DOMContentLoaded', function() {
         model: '',
         settings: {}
     };
+
+    // Filter state
+    let currentFilters = {
+        brightness: 100,
+        contrast: 100,
+        saturation: 100,
+        blur: 0
+    };
     
     // Default prompts in case AI generation fails
     const defaultPrompts = [
@@ -2107,6 +2503,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateSliderFill();
     updateDimensionSliders();
     generatePromptSuggestions();
+    applyFilters();
 
     // Event listeners
     generateBtn.addEventListener('click', generateImage);
@@ -2132,6 +2529,24 @@ document.addEventListener('DOMContentLoaded', function() {
     batchGenerateBtn.addEventListener('click', generateBatch);
     modelNotesToggle.addEventListener('click', toggleModelNotes);
     refreshSuggestionsBtn.addEventListener('click', generatePromptSuggestions);
+    
+    // Filter controls
+    filterToggleBtn.addEventListener('click', toggleFilters);
+    enhanceToggleBtn.addEventListener('click', toggleEnhancePanel);
+    brightnessFilter.addEventListener('input', updateFilters);
+    contrastFilter.addEventListener('input', updateFilters);
+    saturationFilter.addEventListener('input', updateFilters);
+    blurFilter.addEventListener('input', updateFilters);
+    
+    // Filter presets
+    filterPresets.forEach(preset => {
+        preset.addEventListener('click', applyFilterPreset);
+    });
+    
+    // Enhance options
+    enhanceOptions.forEach(option => {
+        option.addEventListener('click', applyEnhancement);
+    });
     
     // Textarea expansion events
     expandTextareaBtn.addEventListener('click', function() {
@@ -2183,9 +2598,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Update slider fill for dimension sliders
+    // Update slider fill for dimension sliders and filter sliders
     widthSlider.addEventListener('input', updateSliderFill);
     heightSlider.addEventListener('input', updateSliderFill);
+    brightnessFilter.addEventListener('input', updateSliderFill);
+    contrastFilter.addEventListener('input', updateSliderFill);
+    saturationFilter.addEventListener('input', updateSliderFill);
+    blurFilter.addEventListener('input', updateSliderFill);
     
     // Reset all settings button
     document.getElementById('reset-all-btn').addEventListener('click', resetAllSettings);
@@ -2256,6 +2675,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.note').innerHTML = `<i class="fas fa-circle-info"></i> ${t.englishNote}`;
         clearBtn.innerHTML = `<i class="fas fa-trash"></i> ${t.clear}`;
         modelNotesToggle.querySelector('span').innerHTML = `<i class="fas fa-info-circle"></i> ${t.modelNotes}`;
+        filterToggleBtn.querySelector('span').textContent = t.filters;
+        enhanceToggleBtn.querySelector('span').textContent = t.aiEnhance;
         
         // Update model notes content
         const notesContent = modelNotesContent.querySelectorAll('.note');
@@ -2264,6 +2685,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 notesContent[index].innerHTML = note;
             }
         });
+        
+        // Update enhance options
+        if (enhanceOptions.length >= 5) {
+            enhanceOptions[0].textContent = t.enhanceFaces;
+            enhanceOptions[1].textContent = t.enhanceBackground;
+            enhanceOptions[2].textContent = t.increaseSharpness;
+            enhanceOptions[3].textContent = t.colorCorrection;
+            enhanceOptions[4].textContent = t.reduceNoise;
+        }
         
         // Update language toggle active state
         if (lang === 'en') {
@@ -2439,6 +2869,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
         errorMessage.style.display = 'none';
         loadingElement.style.display = 'block';
+        filterControls.style.display = 'none';
+        aiEnhancePanel.style.display = 'none';
         
         // Build the prompt with additional parameters
         let fullPrompt = buildFullPrompt(prompt);
@@ -2470,6 +2902,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadingElement.style.display = 'none';
                 generatedImage.style.display = 'block';
                 document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                
+                // Update image info
+                updateImageInfo();
                 
                 // Scroll to image container again after image loads
                 scrollToImageContainer();
@@ -2602,6 +3037,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     generatedImage.src = this.src;
                     generatedImage.style.display = 'block';
                     document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                    updateImageInfo();
                 });
                 
                 batchContainer.appendChild(img);
@@ -2649,6 +3085,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
         errorMessage.style.display = 'none';
         loadingElement.style.display = 'block';
+        filterControls.style.display = 'none';
+        aiEnhancePanel.style.display = 'none';
         
         try {
             const imageUrl = generateWithPollinations(currentGeneration.prompt);
@@ -2658,6 +3096,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadingElement.style.display = 'none';
                 generatedImage.style.display = 'block';
                 document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                
+                // Update image info
+                updateImageInfo();
                 
                 // Scroll to image container again after image loads
                 scrollToImageContainer();
@@ -2774,6 +3215,9 @@ document.addEventListener('DOMContentLoaded', function() {
         img.onload = function() {
             canvas.width = img.width;
             canvas.height = img.height;
+            
+            // Apply filters before downloading
+            ctx.filter = getCurrentFilterCSS();
             ctx.drawImage(img, 0, 0);
             
             // Create download link
@@ -2939,6 +3383,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 generatedImage.src = item.imageUrl;
                 generatedImage.style.display = 'block';
                 document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                updateImageInfo();
             });
             
             historyList.appendChild(historyItem);
@@ -3009,15 +3454,39 @@ document.addEventListener('DOMContentLoaded', function() {
         modelNotesArrow.classList.toggle('fa-chevron-up');
     }
     
+    function toggleFilters() {
+        if (filterControls.style.display === 'block') {
+            filterControls.style.display = 'none';
+        } else {
+            filterControls.style.display = 'block';
+            aiEnhancePanel.style.display = 'none';
+        }
+    }
+    
+    function toggleEnhancePanel() {
+        if (aiEnhancePanel.style.display === 'block') {
+            aiEnhancePanel.style.display = 'none';
+        } else {
+            aiEnhancePanel.style.display = 'block';
+            filterControls.style.display = 'none';
+        }
+    }
+    
+    // Function to update the slider fill dynamically
     function updateSliderFill() {
-        // Update dimension sliders
-        const widthValue = widthSlider.value;
-        const widthPercent = (widthValue - widthSlider.min) / (widthSlider.max - widthSlider.min) * 100;
-        widthSlider.style.setProperty('--range-percent', `${widthPercent}%`);
-        
-        const heightValue = heightSlider.value;
-        const heightPercent = (heightValue - heightSlider.min) / (heightSlider.max - heightSlider.min) * 100;
-        heightSlider.style.setProperty('--range-percent', `${heightPercent}%`);
+        // Update all range inputs
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            const min = parseFloat(slider.min) || 0;
+            const max = parseFloat(slider.max) || 100;
+            const value = parseFloat(slider.value) || 0;
+            const percentage = ((value - min) / (max - min)) * 100;
+            
+            // Set the width of the ::before pseudo-element
+            slider.style.setProperty('--range-percent', `${percentage}%`);
+            
+            // Apply the dynamic fill using the ::before pseudo-element
+            slider.style.background = `linear-gradient(to right, var(--primary) 0%, var(--primary) ${percentage}%, var(--shadow-dark) ${percentage}%, var(--shadow-dark) 100%)`;
+        });
     }
     
     function toggleDarkMode() {
@@ -3068,6 +3537,163 @@ document.addEventListener('DOMContentLoaded', function() {
             
             alert(currentLanguage === 'en' ? 'All settings have been reset to defaults.' : 'Semua pengaturan telah diatur ulang ke default.');
         }
+    }
+
+    // Filter functions
+    function updateFilters() {
+        currentFilters = {
+            brightness: parseInt(brightnessFilter.value),
+            contrast: parseInt(contrastFilter.value),
+            saturation: parseInt(saturationFilter.value),
+            blur: parseInt(blurFilter.value)
+        };
+        
+        applyFilters();
+        updateSliderFill(); // Update slider fill when filter values change
+    }
+    
+    function applyFilters() {
+        generatedImage.style.filter = getCurrentFilterCSS();
+    }
+    
+    function getCurrentFilterCSS() {
+        return `brightness(${currentFilters.brightness}%) contrast(${currentFilters.contrast}%) saturate(${currentFilters.saturation}%) blur(${currentFilters.blur}px)`;
+    }
+    
+    function applyFilterPreset() {
+        const brightness = this.getAttribute('data-brightness');
+        const contrast = this.getAttribute('data-contrast');
+        const saturation = this.getAttribute('data-saturation');
+        const blur = this.getAttribute('data-blur');
+        
+        brightnessFilter.value = brightness;
+        contrastFilter.value = contrast;
+        saturationFilter.value = saturation;
+        blurFilter.value = blur;
+        
+        currentFilters = {
+            brightness: parseInt(brightness),
+            contrast: parseInt(contrast),
+            saturation: parseInt(saturation),
+            blur: parseInt(blur)
+        };
+        
+        applyFilters();
+        updateSliderFill(); // Update slider fill when applying presets
+        
+        // Update active state
+        filterPresets.forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+    }
+    
+    // AI Enhance functions
+    function applyEnhancement() {
+        const enhancement = this.getAttribute('data-enhance');
+        enhanceProgress.style.display = 'block';
+        enhanceProgressBar.style.width = '0%';
+        
+        // Simulate enhancement progress
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            enhanceProgressBar.style.width = `${progress}%`;
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                enhanceProgress.style.display = 'none';
+                
+                // Apply the enhancement (simulated)
+                let newFilters = {...currentFilters};
+                
+                switch(enhancement) {
+                    case 'face':
+                        newFilters.contrast = Math.min(newFilters.contrast + 10, 200);
+                        newFilters.brightness = Math.min(newFilters.brightness + 5, 200);
+                        break;
+                    case 'background':
+                        newFilters.saturation = Math.max(newFilters.saturation - 10, 0);
+                        newFilters.blur = Math.min(newFilters.blur + 1, 10);
+                        break;
+                    case 'sharpness':
+                        newFilters.contrast = Math.min(newFilters.contrast + 15, 200);
+                        break;
+                    case 'color':
+                        newFilters.saturation = Math.min(newFilters.saturation + 20, 200);
+                        break;
+                    case 'noise':
+                        newFilters.blur = Math.min(newFilters.blur + 1, 10);
+                        break;
+                }
+                
+                // Smooth transition to new filter values
+                animateFilterTransition(currentFilters, newFilters);
+            }
+        }, 50);
+    }
+    
+    function animateFilterTransition(startFilters, endFilters) {
+        const duration = 500; // ms
+        const startTime = performance.now();
+        
+        function updateFilters(timestamp) {
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            currentFilters = {
+                brightness: startFilters.brightness + (endFilters.brightness - startFilters.brightness) * progress,
+                contrast: startFilters.contrast + (endFilters.contrast - startFilters.contrast) * progress,
+                saturation: startFilters.saturation + (endFilters.saturation - startFilters.saturation) * progress,
+                blur: startFilters.blur + (endFilters.blur - startFilters.blur) * progress
+            };
+            
+            applyFilters();
+            
+            // Update slider positions to match current filters
+            brightnessFilter.value = currentFilters.brightness;
+            contrastFilter.value = currentFilters.contrast;
+            saturationFilter.value = currentFilters.saturation;
+            blurFilter.value = currentFilters.blur;
+            
+            // Update slider fill
+            updateSliderFill();
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateFilters);
+            }
+        }
+        
+        requestAnimationFrame(updateFilters);
+    }
+    
+    // Image info functions
+    function updateImageInfo() {
+        if (!generatedImage.src) return;
+        
+        const width = generatedImage.naturalWidth;
+        const height = generatedImage.naturalHeight;
+        const size = formatFileSize(estimateImageSize(generatedImage.src));
+        
+        imageInfo.textContent = `${width}×${height} • ${size}`;
+    }
+    
+    function estimateImageSize(url) {
+        // This is a rough estimation - actual size may vary
+        if (url.includes('image.pollinations.ai')) {
+            const width = currentGeneration.settings.width || 1024;
+            const height = currentGeneration.settings.height || 1024;
+            
+            // Estimate ~1 byte per pixel for compressed PNG
+            return width * height;
+        }
+        
+        // Default estimate for unknown sources
+        return 1024 * 1024; // 1MB
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' bytes';
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        else return (bytes / 1048576).toFixed(1) + ' MB';
     }
 });
     </script>
