@@ -549,6 +549,33 @@
                 align-self: flex-start;
             }
         }
+                .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--gray);
+        }
+
+        .status-dot.connected {
+            background-color: var(--success);
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-dot.warning {
+            background-color: var(--warning);
+        }
+
+        .status-dot.error {
+            background-color: var(--error);
+        }
     </style>
 </head>
 <body>
@@ -563,6 +590,10 @@
                     <p class="subtitle">Hasilkan jawaban instan dengan berbagai model AI canggih</p>
                 </div>
             </div>
+                    <div class="status-indicator" id="statusIndicator">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Menyiapkan sistem...</span>
+        </div>            
         </header>
 
         <div class="dark-mode-toggle" id="darkModeToggle">
@@ -1082,6 +1113,37 @@
             logCount++;
             logCounter.textContent = `${logCount} ${currentLanguage === 'en' ? 'messages' : 'pesan'}`;
         }
+                // Status Indicator
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+
+        function updateStatus(status, message) {
+            statusDot.className = 'status-dot';
+            
+            switch(status) {
+                case 'connected':
+                    statusDot.classList.add('connected');
+                    statusText.textContent = message || 'Terhubung ke sistem AI';
+                    break;
+                case 'warning':
+                    statusDot.classList.add('warning');
+                    statusText.textContent = message || 'Peringatan: Masalah koneksi';
+                    break;
+                case 'error':
+                    statusDot.classList.add('error');
+                    statusText.textContent = message || 'Error: Tidak terhubung';
+                    break;
+                default:
+                    statusText.textContent = message || 'Status tidak diketahui';
+            }
+            
+            logToConsole(`Status sistem diperbarui: ${status} - ${message || ''}`);
+        }
+
+        // Simulate connection status
+        setTimeout(() => {
+            updateStatus('connected', 'Sistem siap digunakan');
+        }, 1500);
     </script>
 </body>
 </html>
