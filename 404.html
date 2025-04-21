@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta Description -->
+    <meta name="description" content="Halaman tidak ditemukan - RuangRiung AI Image Generator">
+    
+    <!-- Meta Theme Color (sesuai warna primary di CSS) -->
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="msapplication-navbutton-color" content="#6c5ce7">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#6c5ce7">
+
+    <!-- Open Graph / Social Media Meta -->
+    <meta property="og:title" content="Halaman Tidak Ditemukan - RuangRiung AI">
+    <meta property="og:description" content="Maaf, halaman yang Anda cari tidak ditemukan di RuangRiung AI Image Generator">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ruangriung.my.id/404.html">
+    <meta property="og:image" content="https://ruangriung.my.id/assets/ruangriung.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo.png">
+    
+    <title>404 Halaman Tidak Ditemukan - RuangRiung AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c0;
+            --primary-light: #a29bfe;
+            --bg: #e0e5ec;
+            --shadow-light: #ffffff;
+            --shadow-dark: #a3b1c6;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --success: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+        }
+        
+        .dark-mode {
+            --primary: #a29bfe;
+            --primary-dark: #847bd1;
+            --primary-light: #6c5ce7;
+            --bg: #2d3436;
+            --shadow-light: #3c4245;
+            --shadow-dark: #1e2224;
+            --text: #dfe6e9;
+            --text-light: #b2bec3;
+            --success: #55efc4;
+            --danger: #ff7675;
+            --warning: #ffeaa7;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+        
+        .error-message {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--text-light);
+        }
+        
+        .error-description {
+            margin-bottom: 30px;
+            color: var(--text-light);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .home-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+        }
+        
+        .home-link:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-3px);
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+        }
+        
+        .home-link:active {
+            transform: translateY(0);
+            box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.1);
+        }
+        
+        .error-image {
+            max-width: 300px;
+            margin: 0 auto 30px;
+            display: block;
+            filter: drop-shadow(5px 5px 10px var(--shadow-dark)) drop-shadow(-5px -5px 10px var(--shadow-light));
+        }
+        
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg);
+            color: var(--text);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        .footer-link {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .dark-mode .footer-link {
+            color: var(--primary-light);
+        }
+        
+        .dark-mode .footer-link:hover {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 5rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .error-message {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* Animasi */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        
+        .error-image {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="dark-mode-toggle" id="dark-mode-toggle">
+        <i class="fas fa-moon"></i>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-magic-wand-sparkles"></i> RuangRiung AI Image Generator</h1>
+        </header>
+        
+        <div class="error-code">404</div>
+        <div class="error-message">Halaman Tidak Ditemukan</div>
+        <div class="error-description">
+            Maaf, halaman yang Anda cari tidak ada atau telah dipindahkan. Mungkin Anda ingin mencoba generator gambar AI kami?
+        </div>
+        
+        <img src="https://image.pollinations.ai/prompt/a%20friendly%20robot%20showing%20a%20404%20sign%2C%20digital%20art%2C%20colorful%2C%20cartoon%20style?width=300&height=300&nologo=true" alt="404 Error Illustration" class="error-image">
+        
+        <a href="/" class="home-link">
+            <i class="fas fa-home"></i> Kembali ke Beranda
+        </a>
+    </div>
+    
+    <footer>
+        &copy; <span id="current-year"></span> RuangRiung AI Image Generator. All rights reserved | 
+        powered by <a href="https://pollinations.ai" target="_blank" class="footer-link">Pollinations.ai</a> | 
+        Develop with ♥️ by <a href="https://ariftirtana.my.id" target="_blank" class="footer-link">Arif Tirtana</a>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Dark mode toggle
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            
+            // Check for saved dark mode preference
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                
+                if (isDarkMode) {
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+                
+                localStorage.setItem('darkMode', isDarkMode);
+            });
+        });
+    </script>
+</body>
+</html>
