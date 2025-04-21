@@ -1676,6 +1676,41 @@ html {
             transform: translateY(-50%);
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
+        /* Style untuk tombol AI Text Generator */
+.ai-text-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 15px;
+    background: var(--bg);
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    transition: all 0.3s ease;
+    color: var(--primary);
+    border: none;
+    width: auto;
+}
+
+.ai-text-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+    background: var(--primary-light);
+    color: white;
+}
+
+/* Dark mode styles */
+.dark-mode .ai-text-toggle {
+    background: var(--bg);
+    color: var(--primary-light);
+}
+
+.dark-mode .ai-text-toggle:hover {
+    background: var(--primary);
+    color: white;
+}
     </style>
 </head>
 <body>
@@ -1723,6 +1758,11 @@ html {
         <button id="generate-btn"><i class="fas fa-magic-wand-sparkles"></i> Generate</button>
     </div>
 </div>
+<!-- Ganti kode sebelumnya dengan ini -->
+<a href="ai-text-generator/" class="ai-text-toggle" style="margin-top: 10px; text-decoration: none;">
+    <i class="fas fa-comment-dots"></i>
+    <span>AI Text Generation</span>
+</a>
                 <div class="input-group">
     <!-- Existing input group code -->
 </div>
