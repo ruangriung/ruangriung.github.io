@@ -3,6 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta Description -->
+    <meta name="description" content="RuangRiung AI Image Generator changelog - History of updates and improvements to our AI art generation tool">
+    
+    <!-- Meta Theme Color -->
+    <meta name="theme-color" content="#6c5ce7">
+    <meta name="msapplication-navbutton-color" content="#6c5ce7">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#6c5ce7">
+
+    <!-- Open Graph / Social Media Meta -->
+    <meta property="og:title" content="RuangRiung AI - Changelog">
+    <meta property="og:description" content="History of updates and improvements to RuangRiung AI Image Generator">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ruangriung.my.id/changelog.html">
+    <meta property="og:image" content="https://ruangriung.my.id/assets/ruangriung.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo.png">
+    
     <title>RuangRiung AI - Changelog</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -68,6 +89,7 @@
             color: var(--primary);
             margin-bottom: 10px;
             font-size: 2.2rem;
+            text-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
         
         .subtitle {
@@ -85,11 +107,13 @@
             text-decoration: none;
             border-radius: 15px;
             transition: all 0.3s ease;
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
         }
         
         .back-button:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
         }
         
         .changelog-container {
@@ -98,6 +122,7 @@
             padding: 30px;
             box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
             margin-bottom: 30px;
+            transition: all 0.3s ease;
         }
         
         .version {
@@ -213,6 +238,62 @@
             text-decoration: underline;
         }
         
+        .dark-mode .footer-link {
+            color: var(--primary-light);
+        }
+        
+        .dark-mode .footer-link:hover {
+            color: var(--primary);
+        }
+        
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+        
+        /* Pulse Animation */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(108, 92, 231, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(108, 92, 231, 0);
+            }
+        }
+        
+        .back-to-top.pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -225,6 +306,10 @@
             .version-title {
                 font-size: 1.3rem;
             }
+            
+            .changelog-container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -233,7 +318,7 @@
         <header>
             <h1><i class="fas fa-clipboard-list"></i> RuangRiung Changelog</h1>
             <p class="subtitle">History of updates and improvements</p>
-            <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Back to Generator</a>
+            <a href="https://ruangriung.my.id/" class="back-button"><i class="fas fa-arrow-left"></i> Back to Generator</a>
             
             <div class="dark-mode-toggle" id="dark-mode-toggle">
                 <i class="fas fa-moon"></i>
@@ -243,11 +328,46 @@
         
         <div class="changelog-container">
             <div class="version">
-                <h2 class="version-title"><i class="fas fa-globe"></i> Version 5.0.0</h2>
-                <div class="version-date">April 20, 2025</div>
+                <h2 class="version-title"><i class="fas fa-globe"></i> Version 5.1.0</h2>
+                <div class="version-date">April 21, 2025</div>
                 <ul class="changes-list">
                     <li class="change-item">
-                        <span class="change-type new">NEW</span> Added 2 new language options (English & Bahasa)
+                        <span class="change-type new">NEW</span> Added real-time image filters with adjustable parameters
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Implemented AI-powered image enhancement options
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type improved">IMPROVED</span> Optimized language switching for faster transitions
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type fixed">FIXED</span> Resolved mobile textarea expansion issues
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="version">
+                <h2 class="version-title"><i class="fas fa-language"></i> Version 5.0.2</h2>
+                <div class="version-date">April 18, 2025</div>
+                <ul class="changes-list">
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Added 40+ specialized art techniques (etching, lithography, etc.)
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type improved">IMPROVED</span> Enhanced prompt suggestions with more diverse examples
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type fixed">FIXED</span> Fixed aspect ratio calculation for non-square images
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="version">
+                <h2 class="version-title"><i class="fas fa-globe"></i> Version 5.0.0</h2>
+                <div class="version-date">April 14, 2025</div>
+                <ul class="changes-list">
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Added bilingual support (English & Bahasa)
                     </li>
                     <li class="change-item">
                         <span class="change-type new">NEW</span> Expanded textarea with adjustable height for better prompt editing
@@ -256,17 +376,14 @@
                         <span class="change-type new">NEW</span> Added 60 new art styles covering various contemporary techniques
                     </li>
                     <li class="change-item">
-                        <span class="change-type removed">REMOVED</span> Removed support for Dall-E 3, Stability AI, and Leonardo models
-                    </li>
-                    <li class="change-item">
                         <span class="change-type improved">IMPROVED</span> Optimized language switching performance
                     </li>
                 </ul>
             </div>
             
             <div class="version">
-                <h2 class="version-title"><i class="fas fa-rocket"></i> Version 4.1.3</h2>
-                <div class="version-date">10, April, 2025</div>
+                <h2 class="version-title"><i class="fas fa-rocket"></i> Version 4.2.0</h2>
+                <div class="version-date">April 10, 2025</div>
                 <ul class="changes-list">
                     <li class="change-item">
                         <span class="change-type new">NEW</span> Added batch generation feature (generate multiple variations at once)
@@ -275,17 +392,30 @@
                         <span class="change-type improved">IMPROVED</span> Enhanced prompt suggestions with AI-generated creative prompts
                     </li>
                     <li class="change-item">
-                        <span class="change-type improved">IMPROVED</span> Better mobile experience with expanded textarea option
-                    </li>
-                    <li class="change-item">
-                        <span class="change-type fixed">FIXED</span> Fixed aspect ratio calculation for custom dimensions
+                        <span class="change-type fixed">FIXED</span> Fixed mobile layout issues with new batch controls
                     </li>
                 </ul>
             </div>
             
             <div class="version">
-                <h2 class="version-title"><i class="fas fa-star"></i> Version 4.0.0</h2>
-                <div class="version-date">15 April, 2025</div>
+                <h2 class="version-title"><i class="fas fa-star"></i> Version 4.1.0</h2>
+                <div class="version-date">April 5, 2025</div>
+                <ul class="changes-list">
+                    <li class="change-item">
+                        <span class="change-type new">NEW</span> Added prompt history with thumbnail previews
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type improved">IMPROVED</span> Redesigned settings panel with better organization
+                    </li>
+                    <li class="change-item">
+                        <span class="change-type fixed">FIXED</span> Resolved dark mode transition flickering
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="version">
+                <h2 class="version-title"><i class="fas fa-magic"></i> Version 4.0.0</h2>
+                <div class="version-date">March 28, 2025</div>
                 <ul class="changes-list">
                     <li class="change-item">
                         <span class="change-type new">NEW</span> Complete UI redesign with neumorphic styling
@@ -294,58 +424,39 @@
                         <span class="change-type new">NEW</span> Added dark mode support
                     </li>
                     <li class="change-item">
-                        <span class="change-type new">NEW</span> Implemented generation history with thumbnails
-                    </li>
-                    <li class="change-item">
-                        <span class="change-type improved">IMPROVED</span> Optimized image generation performance
+                        <span class="change-type improved">IMPROVED</span> Optimized image generation performance by 30%
                     </li>
                 </ul>
             </div>
             
             <div class="version">
-                <h2 class="version-title"><i class="fas fa-language"></i> Version 3.2.0</h2>
-                <div class="version-date">25 Maret, 2025</div>
+                <h2 class="version-title"><i class="fas fa-paint-brush"></i> Version 3.5.0</h2>
+                <div class="version-date">March 20, 2025</div>
                 <ul class="changes-list">
                     <li class="change-item">
-                        <span class="change-type new">NEW</span> Added bilingual support (English/Indonesian)
+                        <span class="change-type new">NEW</span> Added 50+ regional and ethnic art styles
                     </li>
                     <li class="change-item">
-                        <span class="change-type improved">IMPROVED</span> Enhanced prompt enhancement feature with streaming AI
+                        <span class="change-type improved">IMPROVED</span> Enhanced prompt enhancement algorithm
                     </li>
                     <li class="change-item">
-                        <span class="change-type fixed">FIXED</span> Fixed several UI bugs on mobile devices
+                        <span class="change-type fixed">FIXED</span> Fixed image quality issues with certain aspect ratios
                     </li>
                 </ul>
             </div>
             
             <div class="version">
-                <h2 class="version-title"><i class="fas fa-paint-brush"></i> Version 3.0.0</h2>
-                <div class="version-date">11 Maret, 2025</div>
+                <h2 class="version-title"><i class="fas fa-bug"></i> Version 3.2.1</h2>
+                <div class="version-date">March 14, 2025</div>
                 <ul class="changes-list">
                     <li class="change-item">
-                        <span class="change-type new">NEW</span> Added 150+ art style options organized by categories
+                        <span class="change-type fixed">FIXED</span> Resolved mobile keyboard covering textarea issue
                     </li>
                     <li class="change-item">
-                        <span class="change-type new">NEW</span> Implemented saved prompts feature
+                        <span class="change-type fixed">FIXED</span> Fixed seed randomization not working properly
                     </li>
                     <li class="change-item">
-                        <span class="change-type improved">IMPROVED</span> Redesigned settings panel with advanced options
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="version">
-                <h2 class="version-title"><i class="fas fa-magic"></i> Version 2.0.0</h2>
-                <div class="version-date">10 Maret, 2025</div>
-                <ul class="changes-list">
-                    <li class="change-item">
-                        <span class="change-type new">NEW</span> Initial release of RuangRiung AI Image Generator
-                    </li>
-                    <li class="change-item">
-                        <span class="change-type new">NEW</span> Basic image generation with FLUX Turbo model
-                    </li>
-                    <li class="change-item">
-                        <span class="change-type new">NEW</span> Core features: prompt input, dimension sliders, quality settings
+                        <span class="change-type improved">IMPROVED</span> Better error handling for failed generations
                     </li>
                 </ul>
             </div>
@@ -353,8 +464,14 @@
         
         <footer>
             &copy; <span id="current-year"></span> RuangRiung AI Image Generator. All rights reserved | 
+            powered by <a href="https://pollinations.ai" target="_blank" class="footer-link">Pollinations.ai</a> | 
             Develop with ♥️ by <a href="https://ariftirtana.my.id" target="_blank" class="footer-link">Arif Tirtana</a>
         </footer>
+    </div>
+
+    <!-- Back to Top Button -->
+    <div class="back-to-top" id="backToTop" title="Back to Top">
+        <i class="fas fa-arrow-up"></i>
     </div>
 
     <script>
@@ -382,6 +499,24 @@
                 }
                 
                 localStorage.setItem('darkMode', isDarkMode);
+            });
+            
+            // Back to top button
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    document.getElementById('backToTop').classList.add('visible');
+                    setTimeout(() => document.getElementById('backToTop').classList.add('pulse'), 500);
+                } else {
+                    document.getElementById('backToTop').classList.remove('visible', 'pulse');
+                }
+            });
+            
+            document.getElementById('backToTop').addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                this.classList.remove('pulse');
             });
         });
     </script>
