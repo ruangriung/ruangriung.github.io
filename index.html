@@ -131,9 +131,11 @@
                     <label for="model"><i class="fas fa-microchip"></i> AI Model</label>
                     <div class="select-container">
                         <i class="fas fa-microchip"></i>
-                        <select id="model">
-                            <option value="pollinations">FLUX Turbo</option>
-                        </select>
+<select id="model">
+    <option value="pollinations">FLUX Turbo</option>
+    <option value="dalle3">DALL-E 3 (OpenAI)</option>
+    <option value="stability">Stability AI</option>
+</select>
                     </div>
                 <div class="setting-group">
                     <label for="style"><i class="fas fa-paint-brush"></i> Art Style</label>
@@ -610,6 +612,24 @@
 <div class="back-to-top" id="backToTop" title="Back to Top">
     <i class="fas fa-arrow-up"></i>
 </div>
+<!-- Add this modal before the footer -->
+<div class="modal" id="api-key-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="api-key-modal-title"><i class="fas fa-key"></i> API Key Required</h3>
+            <button class="close-modal" id="close-api-key-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="api-key-instructions">Please enter your API key to use this model.</p>
+            <input type="password" id="api-key-input" class="api-key-input" placeholder="Enter your API key here">
+            <p class="text-muted" id="api-key-note">Your API key will be stored locally in your browser and not sent to our servers.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" id="cancel-api-key-btn">Cancel</button>
+            <button class="modal-btn modal-btn-primary" id="validate-api-key-btn">Validate & Save</button>
+        </div>
+    </div>
+</div>
 <footer>
     &copy; <span id="current-year"></span> RuangRiung AI Image Generator Ver.5.1.0. All rights reserved | 
     powered by <a href="https://pollinations.ai" target="_blank" class="footer-link">Pollinations.ai</a> | 
@@ -643,6 +663,7 @@ hs.src = ('//s10.histats.com/js15_as.js');
         </div>
     </div>
 </div>
-    <script src="assets/ruangriung.js"></script>
+<script src="assets/models.js"></script>
+<script src="assets/ruangriung.js"></script>
 </body>
 </html>
