@@ -582,82 +582,91 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSliderFill();
     }
     
-    async function generateImage() {
-        const prompt = promptTextarea.value.trim();
+    // Replace the generateImage function with this:
+async function generateImage() {
+    const prompt = promptTextarea.value.trim();
+    
+    if (!prompt) {
+        showError(currentLanguage === 'en' ? 'Please enter a description for the image' : 'Silakan masukkan deskripsi untuk gambar');
+        return;
+    }
+    
+    // Scroll to image container before generation starts
+    scrollToImageContainer();
+    
+    // Hide previous image and error, show loading
+    generatedImage.style.display = 'none';
+    document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+    errorMessage.style.display = 'none';
+    loadingElement.style.display = 'block';
+    filterControls.style.display = 'none';
+    aiEnhancePanel.style.display = 'none';
+    
+    // Build the prompt with additional parameters
+    let fullPrompt = buildFullPrompt(prompt);
+    
+    // Store current generation state
+    currentGeneration = {
+        prompt: fullPrompt,
+        seed: seedInput.value || Math.floor(Math.random() * 1000000),
+        model: modelSelect.value,
+        settings: {
+            width: widthSlider.value,
+            height: heightSlider.value,
+            style: styleSelect.value,
+            quality: qualitySelect.value,
+            lighting: lightingSelect.value,
+            color: colorSelect.value,
+            composition: compositionSelect.value,
+            hd: hdCheckbox.checked,
+            enhanceDetails: enhanceDetailsCheckbox.checked,
+            safeFilter: safeFilterCheckbox.checked
+        }
+    };
+    
+    try {
+        const imageUrl = await AIModelManager.generateImage(fullPrompt, currentGeneration.settings);
         
-        if (!prompt) {
-            showError(currentLanguage === 'en' ? 'Please enter a description for the image' : 'Silakan masukkan deskripsi untuk gambar');
+        if (!imageUrl) {
+            // API key not validated, already handled
+            loadingElement.style.display = 'none';
             return;
         }
         
-        // Scroll to image container before generation starts
-        scrollToImageContainer();
-        
-        // Hide previous image and error, show loading
-        generatedImage.style.display = 'none';
-        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
-        errorMessage.style.display = 'none';
-        loadingElement.style.display = 'block';
-        filterControls.style.display = 'none';
-        aiEnhancePanel.style.display = 'none';
-        
-        // Build the prompt with additional parameters
-        let fullPrompt = buildFullPrompt(prompt);
-        
-        // Store current generation state
-        currentGeneration = {
-            prompt: fullPrompt,
-            seed: seedInput.value || Math.floor(Math.random() * 1000000),
-            model: 'pollinations',
-            settings: {
-                width: widthSlider.value,
-                height: heightSlider.value,
-                style: styleSelect.value,
-                quality: qualitySelect.value,
-                lighting: lightingSelect.value,
-                color: colorSelect.value,
-                composition: compositionSelect.value,
-                hd: hdCheckbox.checked,
-                enhanceDetails: enhanceDetailsCheckbox.checked,
-                safeFilter: safeFilterCheckbox.checked
+        // Load the image
+        generatedImage.onload = function() {
+            loadingElement.style.display = 'none';
+            generatedImage.style.display = 'block';
+            document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+            
+            // Update image info
+            updateImageInfo();
+            
+            // Scroll to image container again after image loads
+            scrollToImageContainer();
+            
+            // Add to history only if this is a new generation, not from history click
+            if (!generatedImage.dataset.fromHistory) {
+                addToHistory(fullPrompt, imageUrl);
+            } else {
+                delete generatedImage.dataset.fromHistory;
             }
         };
         
-        try {
-            const imageUrl = generateWithPollinations(fullPrompt);
-            
-            // Load the image
-            generatedImage.onload = function() {
-                loadingElement.style.display = 'none';
-                generatedImage.style.display = 'block';
-                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
-                
-                // Update image info
-                updateImageInfo();
-                
-                // Scroll to image container again after image loads
-                scrollToImageContainer();
-                
-                // Add to history only if this is a new generation, not from history click
-                if (!generatedImage.dataset.fromHistory) {
-                    addToHistory(fullPrompt, imageUrl);
-                } else {
-                    delete generatedImage.dataset.fromHistory;
-                }
-            };
-            
-            generatedImage.onerror = function() {
-                loadingElement.style.display = 'none';
-                showError(currentLanguage === 'en' ? 'Failed to generate image. Please try a different prompt.' : 'Gagal menghasilkan gambar. Silakan coba dengan deskripsi yang berbeda.');
-            };
-            
-            generatedImage.src = imageUrl;
-        } catch (error) {
-            console.error('Error generating image:', error);
+        generatedImage.onerror = function() {
             loadingElement.style.display = 'none';
-            showError(error.message || (currentLanguage === 'en' ? 'Failed to generate image. Please try again.' : 'Gagal menghasilkan gambar. Silakan coba lagi.'));
-        }
+            showError(currentLanguage === 'en' ? 'Failed to generate image. Please try a different prompt.' : 'Gagal menghasilkan gambar. Silakan coba dengan deskripsi yang berbeda.');
+        };
+        
+        generatedImage.src = imageUrl;
+    } catch (error) {
+        console.error('Error generating image:', error);
+        loadingElement.style.display = 'none';
+        showError(error.message || (currentLanguage === 'en' ? 'Failed to generate image. Please try again.' : 'Gagal menghasilkan gambar. Silakan coba lagi.'));
     }
+}
+
+// Also update the generateBatch function similarly to use AIModelManager.generateImage()
     
     function scrollToImageContainer() {
         const imageContainer = document.getElementById('generated-image-container');

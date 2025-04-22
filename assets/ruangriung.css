@@ -1874,3 +1874,26 @@ html {
     .faq-item.active .faq-toggle {
         transform: rotate(180deg);
     }
+    /* API Key Modal Specific Styles */
+.api-key-input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 15px;
+    border: none;
+    background: var(--bg);
+    box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
+    color: var(--text);
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 15px;
+}
+
+.api-key-input:focus {
+    outline: none;
+    box-shadow: inset 5px 5px 8px var(--shadow-dark), inset -5px -5px 8px var(--shadow-light);
+}
+
+#api-key-note {
+    font-size: 12px;
+    margin-top: 10px;
+    text-align: center;
+}
