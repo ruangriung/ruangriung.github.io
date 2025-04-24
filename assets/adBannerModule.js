@@ -14,7 +14,7 @@ const AdvancedAdBannerModule = (function() {
                 localImage: '',
                 width: 300,
                 height: 150,
-                clickUrl: "https://ruangriung.png",
+                clickUrl: "https://ruangriung.my.id",
                 overlayText: "Iklan by RuangRiung"
             },
             {
