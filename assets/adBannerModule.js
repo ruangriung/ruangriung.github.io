@@ -34,7 +34,7 @@ const AdvancedAdBannerModule = (function() {
                 id: 'adBanner3',
                 imageId: 'adImage3',
                 currentType: 'ai', // Default to AI-generated
-                enabled: true,
+                enabled: false,
                 aiPrompt: "Modern workspace with laptop and coffee, professional photo",
                 localImage: '',
                 width: 300,
