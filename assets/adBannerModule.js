@@ -1,5 +1,5 @@
 /**
- * AdvancedAdBannerModule - Complete ad banner solution with AI/local image support
+ * AdvancedAdBannerModule - Complete Solution with Manual Control
  */
 const AdvancedAdBannerModule = (function() {
     // Private configuration
@@ -8,20 +8,22 @@ const AdvancedAdBannerModule = (function() {
             {
                 id: 'adBanner1',
                 imageId: 'adImage1',
-                currentType: 'ai', // 'ai' or 'local'
-                aiPrompt: "Beautiful tropical beach vacation, advertisement style",
-                localImage: 'assets/ruangriung.png',
+                currentType: 'lokal',
+                enabled: true,
+                aiPrompt: "Quantum computer with glowing quantum bits, sci-fi laboratory setting",
+                localImage: '',
                 width: 300,
                 height: 150,
-                clickUrl: "https://pollinations.ai",
+                clickUrl: "https://ruangriung.png",
                 overlayText: "Iklan by RuangRiung"
             },
             {
                 id: 'adBanner2',
                 imageId: 'adImage2',
                 currentType: 'local',
+                enabled: true,
                 aiPrompt: "",
-                localImage: 'assets/ruangriung.png',
+                localImage: '',
                 width: 300,
                 height: 150,
                 clickUrl: "https://ruangriung.my.id",
@@ -29,14 +31,24 @@ const AdvancedAdBannerModule = (function() {
             }
         ],
         aiPrompts: [
-            "Latest smartphone floating in space, product display, futuristic",
-            "Delicious gourmet burger with melted cheese, food photography",
-            "Luxury car on coastal road at sunset, cinematic, 8k",
-             "Laptop illustration futuristic, cinematic, 8k",
-            "Happy people using app on smartphones, social media ad"
+            "High-end gaming laptop with RGB lighting, cyberpunk style, holographic interface, product shot",
+        "Wireless earbuds with glowing effects, floating in mid-air, studio lighting, commercial photography",
+        "Smartwatch with futuristic UI display, macro shot, water droplets, reflective surface",
+        "VR headset in a digital metaverse environment, neon grid, cyberpunk aesthetic",
+        "Drone flying over mountain landscape at golden hour, 8k cinematic photography",
+        "Robot assistant serving coffee in modern office, futuristic technology, warm lighting",
+        "3D printer creating intricate object, glowing filament, macro photography",
+        "Gaming console with colorful particle effects, dynamic lighting, product display",
+        "Futuristic electric car dashboard with holographic navigation, night scene",
+        "Satellite orbiting Earth with solar panels extended, space background, ultra HD",
+        "Augmented reality glasses projecting interface, tech-savvy person using them",
+        "Mechanical keyboard with customizable RGB lighting, macro shot, bokeh background",
+        "Security camera with AI recognition, glowing red light, cyberpunk atmosphere",
+        "Quantum computer with glowing quantum bits, sci-fi laboratory setting"
         ],
         rotationInterval: 30000,
-        currentLanguage: localStorage.getItem('language') || 'en'
+        currentLanguage: localStorage.getItem('language') || 'en',
+        moduleEnabled: true // Global enable/disable switch
     };
 
     // DOM elements cache
@@ -50,6 +62,8 @@ const AdvancedAdBannerModule = (function() {
     /* Private Methods */
 
     function init() {
+        if (!config.moduleEnabled) return;
+
         // Initialize each banner
         config.banners.forEach((banner, index) => {
             setupBanner(banner, index);
@@ -65,6 +79,12 @@ const AdvancedAdBannerModule = (function() {
         
         if (!elements[banner.id] || !elements[banner.imageId]) {
             console.warn(`AdvancedAdBannerModule: Elements for banner ${banner.id} not found`);
+            return;
+        }
+
+        // Set initial state
+        if (!banner.enabled) {
+            elements[banner.id].style.display = 'none';
             return;
         }
 
@@ -93,12 +113,17 @@ const AdvancedAdBannerModule = (function() {
         loadAd(banner, index);
         
         // Set up rotation if AI banner
-        if (banner.currentType === 'ai') {
+        if (banner.currentType === 'ai' && banner.enabled) {
             startRotation(banner.id, index);
         }
     }
 
     function loadAd(banner, index) {
+        if (!banner.enabled) {
+            elements[banner.id].style.display = 'none';
+            return;
+        }
+
         const container = elements[banner.id];
         const loadingElement = container.querySelector('.ad-loading');
         const imageElement = elements[banner.imageId];
@@ -106,6 +131,7 @@ const AdvancedAdBannerModule = (function() {
         // Show loading state
         loadingElement.style.display = 'flex';
         imageElement.style.display = 'none';
+        container.style.display = 'block';
 
         if (banner.currentType === 'ai') {
             loadAiAd(banner, loadingElement, imageElement);
@@ -163,7 +189,7 @@ const AdvancedAdBannerModule = (function() {
 
     function rotateAd(index) {
         const banner = config.banners[index];
-        if (banner.currentType !== 'ai') return;
+        if (banner.currentType !== 'ai' || !banner.enabled) return;
 
         banner.aiPrompt = getRandomPrompt(banner.aiPrompt);
         loadAd(banner, index);
@@ -202,10 +228,65 @@ const AdvancedAdBannerModule = (function() {
         }
     }
 
+    function cleanupBanner(bannerId) {
+        // Clear timer
+        if (state.rotationTimers[bannerId]) {
+            clearInterval(state.rotationTimers[bannerId]);
+            delete state.rotationTimers[bannerId];
+        }
+        
+        // Hide banner
+        const bannerElement = document.getElementById(bannerId);
+        if (bannerElement) {
+            bannerElement.style.display = 'none';
+        }
+    }
+
     /* Public API */
     return {
         init: function() {
             document.addEventListener('DOMContentLoaded', init);
+        },
+        
+        // Enable/disable entire module
+        setModuleEnabled: function(enabled) {
+            config.moduleEnabled = enabled;
+            if (enabled) {
+                this.init();
+            } else {
+                this.disableAllBanners();
+            }
+        },
+        
+        // Enable/disable specific banner
+        setBannerEnabled: function(bannerIndex, enabled) {
+            if (bannerIndex >= 0 && bannerIndex < config.banners.length) {
+                const banner = config.banners[bannerIndex];
+                banner.enabled = enabled;
+                
+                if (enabled) {
+                    loadAd(banner, bannerIndex);
+                    if (banner.currentType === 'ai') {
+                        startRotation(banner.id, bannerIndex);
+                    }
+                } else {
+                    cleanupBanner(banner.id);
+                }
+            }
+        },
+        
+        // Disable all banners
+        disableAllBanners: function() {
+            config.banners.forEach((banner, index) => {
+                this.setBannerEnabled(index, false);
+            });
+        },
+        
+        // Enable all banners
+        enableAllBanners: function() {
+            config.banners.forEach((banner, index) => {
+                this.setBannerEnabled(index, true);
+            });
         },
         
         setLanguage: function(lang) {
@@ -231,7 +312,9 @@ const AdvancedAdBannerModule = (function() {
                     if (options.rotationInterval) {
                         config.rotationInterval = options.rotationInterval;
                     }
-                    startRotation(banner.id, bannerIndex);
+                    if (banner.enabled) {
+                        startRotation(banner.id, bannerIndex);
+                    }
                 } else {
                     banner.localImage = getLocalImagePath(options.imagePath || 'ruangriung.png');
                 }
@@ -246,7 +329,9 @@ const AdvancedAdBannerModule = (function() {
                     banner.clickUrl = options.clickUrl;
                 }
                 
-                loadAd(banner, bannerIndex);
+                if (banner.enabled) {
+                    loadAd(banner, bannerIndex);
+                }
             }
         },
         
@@ -262,9 +347,38 @@ const AdvancedAdBannerModule = (function() {
             Object.values(state.rotationTimers).forEach(timer => {
                 clearInterval(timer);
             });
+            
+            config.banners.forEach(banner => {
+                const imageElement = document.getElementById(banner.imageId);
+                if (imageElement) {
+                    imageElement.removeEventListener('click', () => {});
+                }
+            });
         }
     };
 })();
 
 // Initialize the module
 AdvancedAdBannerModule.init();
+
+/* 
+Contoh penggunaan kontrol manual:
+
+1. Nonaktifkan seluruh modul iklan:
+AdvancedAdBannerModule.setModuleEnabled(false);
+
+2. Aktifkan kembali seluruh modul iklan:
+AdvancedAdBannerModule.setModuleEnabled(true);
+
+3. Nonaktifkan banner spesifik (0 untuk banner pertama, 1 untuk kedua):
+AdvancedAdBannerModule.setBannerEnabled(0, false);
+
+4. Aktifkan kembali banner spesifik:
+AdvancedAdBannerModule.setBannerEnabled(0, true);
+
+5. Nonaktifkan semua banner:
+AdvancedAdBannerModule.disableAllBanners();
+
+6. Aktifkan semua banner:
+AdvancedAdBannerModule.enableAllBanners();
+*/
