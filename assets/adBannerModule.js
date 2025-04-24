@@ -8,7 +8,7 @@ const AdvancedAdBannerModule = (function() {
             {
                 id: 'adBanner1',
                 imageId: 'adImage1',
-                currentType: 'lokal',
+                currentType: 'ai',
                 enabled: true,
                 aiPrompt: "Quantum computer with glowing quantum bits, sci-fi laboratory setting",
                 localImage: '',
@@ -23,7 +23,7 @@ const AdvancedAdBannerModule = (function() {
                 currentType: 'local',
                 enabled: true,
                 aiPrompt: "",
-                localImage: '',
+                localImage: 'ruangriung.png',
                 width: 300,
                 height: 150,
                 clickUrl: "https://ruangriung.my.id",
