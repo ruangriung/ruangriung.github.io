@@ -28,6 +28,19 @@ const AdvancedAdBannerModule = (function() {
                 height: 150,
                 clickUrl: "https://ruangriung.my.id",
                 overlayText: "Iklan by RuangRiung"
+            },
+                          // New Banner 3
+            {
+                id: 'adBanner3',
+                imageId: 'adImage3',
+                currentType: 'ai', // Default to AI-generated
+                enabled: true,
+                aiPrompt: "Modern workspace with laptop and coffee, professional photo",
+                localImage: '',
+                width: 300,
+                height: 150,
+                clickUrl: "https://ruangriung.my.id/",
+                overlayText: "Tampilkan produkmu Disini!"
             }
         ],
         aiPrompts: [
