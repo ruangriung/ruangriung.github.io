@@ -9,7 +9,7 @@ const AdvancedAdBannerModule = (function() {
                 id: 'adBanner1',
                 imageId: 'adImage1',
                 currentType: 'ai',
-                enabled: true,
+                enabled: false,
                 aiPrompt: "Quantum computer with glowing quantum bits, sci-fi laboratory setting",
                 localImage: '',
                 width: 300,
