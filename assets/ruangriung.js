@@ -368,6 +368,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to update language
     function updateLanguage(lang) {
+    	  // Update coin reset button title if it exists
+    const coinResetBtn = document.querySelector('.coin-reset-btn');
+    if (coinResetBtn) {
+        coinResetBtn.title = lang === 'en' ? 'Reset coins (admin only)' : 'Reset koin (hanya admin)';
+    }
+    
+      // Update coin reset info
+    if (window.updateResetTimer) {
+        window.updateResetTimer();
+    }
         const t = translations[lang];
         
         // Update UI elements
@@ -583,16 +593,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Replace the generateImage function with this:
+// Modify the generateImage function
 async function generateImage() {
-    const prompt = promptTextarea.value.trim();
-    
-    if (!prompt) {
-        showError(currentLanguage === 'en' ? 'Please enter a description for the image' : 'Silakan masukkan deskripsi untuk gambar');
+    // Coin check
+    if (window.canGenerateImage && !window.canGenerateImage()) {
+        showError(currentLanguage === 'en' 
+            ? 'You have no coins left. Coins will reset in 24 hours.' 
+            : 'Koin Anda sudah habis. Koin akan direset dalam 24 jam.');
         return;
     }
-    
-    // Scroll to image container before generation starts
+
+    const prompt = promptTextarea.value.trim();
+    if (!prompt) {
+        showError(currentLanguage === 'en' 
+            ? 'Please enter a description for the image' 
+            : 'Silakan masukkan deskripsi untuk gambar');
+        return;
+    }
+
+    // Spend coin
+    if (window.spendCoin && !window.spendCoin()) {
+        showError(currentLanguage === 'en' 
+            ? 'Failed to spend coin. Please try again.' 
+            : 'Gagal menggunakan koin. Silakan coba lagi.');
+        return;
+    }
+
+    // Rest of your existing generateImage code...
     scrollToImageContainer();
+    generatedImage.style.display = 'none';
+
     
     // Hide previous image and error, show loading
     generatedImage.style.display = 'none';

@@ -1974,3 +1974,192 @@ html {
     object-fit: contain;
     background-color: var(--bg);
 }
+
+/* ============================================= */
+/* COIN SYSTEM STYLES */
+/* ============================================= */
+
+.coin-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0 10px 15px;
+}
+
+.coin-display-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.coin-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 15px;
+    background: var(--bg);
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+    font-weight: 600;
+    color: var(--primary);
+    min-width: 90px;
+    height: 40px;
+    justify-content: center;
+}
+
+.coin-display i {
+    color: #FFD700;
+    font-size: 16px;
+}
+
+.coin-reset-btn {
+    background: var(--bg);
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+    position: relative;
+}
+
+.coin-reset-btn:hover {
+    background: var(--primary-light);
+    color: white;
+    transform: rotate(180deg) scale(1.05);
+}
+
+.coin-reset-btn:active {
+    transform: rotate(180deg) scale(0.95);
+}
+
+.coin-reset-btn i {
+    transition: transform 0.3s ease;
+}
+
+.coin-reset-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-left: 5px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    background: rgba(108, 92, 231, 0.1);
+}
+
+.coin-reset-info i {
+    font-size: 0.7rem;
+    color: var(--primary);
+}
+
+/* Coin Notification */
+.coin-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--danger);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease, bottom 0.3s ease;
+}
+
+.coin-notification.show {
+    opacity: 1;
+    bottom: 30px;
+}
+
+.coin-notification i {
+    font-size: 1rem;
+}
+
+/* Disabled Generate Button */
+#generate-btn.no-coins {
+    opacity: 0.7;
+    cursor: not-allowed;
+    filter: grayscale(70%);
+    transform: none !important;
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light) !important;
+}
+
+#generate-btn.no-coins:hover {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+}
+
+/* ============================================= */
+/* RESPONSIVE ADJUSTMENTS */
+/* ============================================= */
+
+@media (max-width: 768px) {
+    .coin-controls {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .coin-display-container {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .coin-display {
+        flex-grow: 1;
+        max-width: 120px;
+    }
+    
+    .coin-reset-info {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+    }
+    
+    .coin-notification {
+        width: 90%;
+        text-align: center;
+        padding: 10px 15px;
+    }
+}
+
+/* ============================================= */
+/* ANIMATIONS */
+/* ============================================= */
+
+@keyframes coinPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.coin-low {
+    animation: coinPulse 1.5s infinite;
+}
+
+/* ============================================= */
+/* DARK MODE ADJUSTMENTS */
+/* ============================================= */
+
+.dark-mode .coin-display {
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px rgba(0,0,0,0.1);
+}
+
+.dark-mode .coin-reset-btn {
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px rgba(0,0,0,0.1);
+}
+
+.dark-mode .coin-reset-info {
+    background: rgba(162, 155, 254, 0.1);
+}
