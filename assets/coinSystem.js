@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const COIN_KEY = 'ruangriung_coin_data';
     const INITIAL_COINS = 500; // Set default to 500 coins
     const COIN_RESET_HOURS = 24;
-    const ADMIN_PASSWORD = "admin123"; // Change this in production!
+    const ADMIN_PASSWORD = "ruangriungadmin123"; // Change this in production!
 
     // Elements
     const coinCount = document.getElementById('coin-count');
