@@ -37,21 +37,39 @@
                             <div class="status-indicator" id="statusIndicator">
             <div class="status-dot" id="statusDot"></div>
             <span id="statusText">Menyiapkan sistem...</span>
-        </div>            
-        
-        <div class="dark-mode-toggle" id="dark-mode-toggle">
-            <i class="fas fa-moon"></i>
-            <span>Dark Mode</span>
         </div>
-        
-        <div class="language-toggle" id="language-toggle">
-            <div class="language-option active" id="lang-en">
-                <i class="fas fa-language"></i> English
-            </div>
-            <div class="language-option" id="lang-id">
-                <i class="fas fa-language"></i> Bahasa
-            </div>
-        </div>
+
+<!-- Coin System -->
+<div class="coin-controls">
+       <div class="coin-display-container">
+           <div class="coin-display">
+               <i class="fas fa-coins"></i>
+               <span id="coin-count">500</span>
+           </div>
+           <button class="coin-reset-btn" id="coin-reset-btn">
+               <i class="fas fa-sync-alt"></i>
+           </button>
+           <div class="coin-reset-info">
+               <i class="fas fa-clock"></i>
+               <span id="reset-timer">Reset in 24:00:00</span>
+           </div>
+       </div>
+   </div>
+
+<!-- Existing dark mode and language toggles remain unchanged -->
+<div class="dark-mode-toggle" id="dark-mode-toggle">
+    <i class="fas fa-moon"></i>
+    <span>Dark Mode</span>
+</div>
+
+<div class="language-toggle" id="language-toggle">
+    <div class="language-option active" id="lang-en">
+        <i class="fas fa-language"></i> English
+    </div>
+    <div class="language-option" id="lang-id">
+        <i class="fas fa-language"></i> Bahasa
+    </div>
+</div>
         
 <!-- Ad Banner Module 1 - Below Language Toggle -->
 <div class="ad-banner-module" id="adBanner1">
@@ -84,10 +102,10 @@
     <i class="fas fa-wand-magic-sparkles input-icon"></i>
     <textarea id="prompt-textarea" placeholder="Describe your dream image in detail... (e.g. A cyberpunk cityscape at night with neon lights, 8k ultra detailed, cinematic lighting)"></textarea>
     <button class="expand-btn" id="expand-textarea-btn" title="Expand"><i class="fas fa-expand"></i></button>
-    <div class="input-buttons">
-        <button id="enhance-btn" title="Enhance Prompt"><i class="fas fa-brain"></i> Enhance</button>
-        <button id="generate-btn"><i class="fas fa-magic-wand-sparkles"></i> Generate</button>
-    </div>
+<div class="input-buttons">
+    <button id="enhance-btn"><i class="fas fa-brain"></i> Enhance</button>
+    <button id="generate-btn"><i class="fas fa-magic-wand-sparkles"></i> Generate</button>
+</div>
 </div>
 <!-- Ganti kode sebelumnya dengan ini -->
 <a href="ai-text-generator/" class="ai-text-toggle" style="margin-top: 10px; text-decoration: none;">
@@ -698,6 +716,9 @@ hs.src = ('//s10.histats.com/js15_as.js');
         </div>
     </div>
 </div>
+<!-- Add this before other script tags -->
+<div id="notification-container"></div>
+<script src="assets/coinSystem.js"></script>
 <script src="assets/adBannerModule.js"></script>
 <script src="assets/models.js"></script>
 <script src="assets/ruangriung.js"></script>
