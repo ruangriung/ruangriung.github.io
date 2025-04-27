@@ -62,18 +62,33 @@ document.addEventListener('DOMContentLoaded', function() {
         lastResetTime = Date.now();
         saveCoinData();
         updateUI();
-        showNotification(getTranslation('coins_reset'));
+        showSweetAlert(
+            getTranslation('coins_reset_title') || 'Coins Reset!',
+            getTranslation('coins_reset') || 'Your coins have been reset to 500!',
+            'success'
+        );
     }
 
     function spendCoin() {
-        if (coins <= 0) return false;
+        if (coins <= 0) {
+            showSweetAlert(
+                getTranslation('no_coins_title') || 'No Coins Left',
+                getTranslation('no_coins_left') || 'You have no coins left! Coins will reset in 24 hours.',
+                'warning'
+            );
+            return false;
+        }
         
         coins--;
         saveCoinData();
         updateUI();
         
         if (coins === 0) {
-            showNotification(getTranslation('no_coins_left'));
+            showSweetAlert(
+                getTranslation('no_coins_title') || 'No Coins Left',
+                getTranslation('no_coins_left') || 'You have no coins left! Coins will reset in 24 hours.',
+                'warning'
+            );
         }
         return true;
     }
@@ -149,20 +164,57 @@ document.addEventListener('DOMContentLoaded', function() {
     // ======================
 
     function setupEventListeners() {
-        // Reset button
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const password = prompt(getTranslation('enter_password'));
-                if (password === ADMIN_PASSWORD) {
-                    resetCoins();
-                    startResetTimer(); // Restart the timer after manual reset
-                } else {
-                    showNotification(getTranslation('wrong_password'));
+    // Reset button
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const isIndonesian = document.getElementById('lang-id')?.classList.contains('active');
+            
+            Swal.fire({
+                title: isIndonesian ? 'Masukkan Password Admin' : 'Enter Admin Password',
+                input: 'password',
+                inputPlaceholder: isIndonesian ? 'Masukkan password admin...' : 'Enter admin password...',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                html: isIndonesian ? 
+                    '<div style="text-align:left;font-size:0.9em;margin-top:10px;color:#666">' +
+                    'Untuk mendapatkan password admin, silakan hubungi:<br>' +
+                    '- Facebook: <a href="https://www.facebook.com/groups/1182261482811767" target="_blank">RuangRiung Group</a><br>' +
+                    '- Email: <a href="mailto:admin@ruangriung.my.id">admin@ruangriung.my.id</a><br>' +
+                    '- <span style="text-decoration: line-through;">WhatsApp: +62 812-3456-7890</span>' +
+                    '</div>' :
+                    '<div style="text-align:left;font-size:0.9em;margin-top:10px;color:#666">' +
+                    'To obtain admin password, please contact:<br>' +
+                    '- Facebook: <a href="https://www.facebook.com/groups/1182261482811767" target="_blank">RuangRiung Group</a><br>' +
+                    '- Email: <a href="mailto:admin@ruangriung.my.id">admin@ruangriung.my.id</a><br>' +
+                    '- <span style="text-decoration: line-through;">WhatsApp: +62 812-3456-7890</span>' +
+                    '</div>',
+                showCancelButton: true,
+                confirmButtonText: isIndonesian ? 'Konfirmasi' : 'Confirm',
+                cancelButtonText: isIndonesian ? 'Batal' : 'Cancel',
+                background: getComputedStyle(document.body).getPropertyValue('--bg'),
+                color: getComputedStyle(document.body).getPropertyValue('--text'),
+                confirmButtonColor: '#6c5ce7',
+                cancelButtonColor: '#d63031'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (result.value === ADMIN_PASSWORD) {
+                        resetCoins();
+                        startResetTimer();
+                    } else {
+                        showSweetAlert(
+                            isIndonesian ? 'Password Salah!' : 'Wrong Password!',
+                            isIndonesian ? 'Password admin yang Anda masukkan tidak valid.' : 'The admin password you entered is incorrect.',
+                            'error'
+                        );
+                    }
                 }
             });
-        }
+        });
     }
+}
 
     // ======================
     // LANGUAGE SUPPORT
@@ -176,15 +228,11 @@ document.addEventListener('DOMContentLoaded', function() {
             'no_coins_left': isIndonesian ? 
                 'Koin Anda sudah habis! Koin akan direset dalam 24 jam.' : 
                 'You have no coins left! Coins will reset in 24 hours.',
-            'enter_password': isIndonesian ? 
-                'Masukkan password admin untuk mereset koin:' : 
-                'Enter admin password to reset coins:',
+            'no_coins_title': isIndonesian ? 'Koin Habis' : 'No Coins Left',
+            'coins_reset_title': isIndonesian ? 'Koin Direset' : 'Coins Reset',
             'coins_reset': isIndonesian ? 
                 'Koin telah direset ke 500!' : 
-                'Coins have been reset to 500!',
-            'wrong_password': isIndonesian ? 
-                'Password salah!' : 
-                'Wrong password!',
+                'Your coins have been reset to 500!',
             'reset_tooltip': isIndonesian ? 
                 'Reset koin (hanya admin)' : 
                 'Reset coins (admin only)',
@@ -204,4 +252,17 @@ document.addEventListener('DOMContentLoaded', function() {
     window.spendCoin = spendCoin;
     window.canGenerateImage = () => coins > 0;
     window.updateResetTimer = updateResetTimerDisplay;
+
+    // Helper function to show SweetAlert notifications
+    function showSweetAlert(title, text, icon = 'success') {
+        return Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#6c5ce7',
+            background: getComputedStyle(document.body).getPropertyValue('--bg'),
+            color: getComputedStyle(document.body).getPropertyValue('--text')
+        });
+    }
 });

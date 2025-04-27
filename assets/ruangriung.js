@@ -106,6 +106,43 @@ const translations = {
     }
 };
 
+// Initialize SweetAlert
+const Swal = window.Swal;
+
+// SweetAlert helper functions
+function showSweetAlert(title, text, icon = 'success', confirmButtonText = 'OK') {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        confirmButtonText: confirmButtonText,
+        confirmButtonColor: '#6c5ce7',
+        background: getComputedStyle(document.body).getPropertyValue('--bg'),
+        color: getComputedStyle(document.body).getPropertyValue('--text'),
+        backdrop: `
+            rgba(0,0,0,0.5)
+            url("assets/ripple.gif")
+            center top
+            no-repeat
+        `
+    });
+}
+
+async function showConfirm(title, text, confirmButtonText = 'Yes', cancelButtonText = 'Cancel') {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#6c5ce7',
+        cancelButtonColor: '#d63031',
+        confirmButtonText: confirmButtonText,
+        cancelButtonText: cancelButtonText,
+        background: getComputedStyle(document.body).getPropertyValue('--bg'),
+        color: getComputedStyle(document.body).getPropertyValue('--text')
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Set current year in footer
     document.getElementById('current-year').textContent = new Date().getFullYear();
@@ -368,16 +405,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to update language
     function updateLanguage(lang) {
-    	  // Update coin reset button title if it exists
-    const coinResetBtn = document.querySelector('.coin-reset-btn');
-    if (coinResetBtn) {
-        coinResetBtn.title = lang === 'en' ? 'Reset coins (admin only)' : 'Reset koin (hanya admin)';
-    }
-    
-      // Update coin reset info
-    if (window.updateResetTimer) {
-        window.updateResetTimer();
-    }
+        const coinResetBtn = document.querySelector('.coin-reset-btn');
+        if (coinResetBtn) {
+            coinResetBtn.title = lang === 'en' ? 'Reset coins (admin only)' : 'Reset koin (hanya admin)';
+        }
+        
+        if (window.updateResetTimer) {
+            window.updateResetTimer();
+        }
+        
         const t = translations[lang];
         
         // Update UI elements
@@ -592,112 +628,108 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSliderFill();
     }
     
-    // Replace the generateImage function with this:
-// Modify the generateImage function
-async function generateImage() {
-    // Coin check
-    if (window.canGenerateImage && !window.canGenerateImage()) {
-        showError(currentLanguage === 'en' 
-            ? 'You have no coins left. Coins will reset in 24 hours.' 
-            : 'Koin Anda sudah habis. Koin akan direset dalam 24 jam.');
-        return;
-    }
-
-    const prompt = promptTextarea.value.trim();
-    if (!prompt) {
-        showError(currentLanguage === 'en' 
-            ? 'Please enter a description for the image' 
-            : 'Silakan masukkan deskripsi untuk gambar');
-        return;
-    }
-
-    // Spend coin
-    if (window.spendCoin && !window.spendCoin()) {
-        showError(currentLanguage === 'en' 
-            ? 'Failed to spend coin. Please try again.' 
-            : 'Gagal menggunakan koin. Silakan coba lagi.');
-        return;
-    }
-
-    // Rest of your existing generateImage code...
-    scrollToImageContainer();
-    generatedImage.style.display = 'none';
-
-    
-    // Hide previous image and error, show loading
-    generatedImage.style.display = 'none';
-    document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
-    errorMessage.style.display = 'none';
-    loadingElement.style.display = 'block';
-    filterControls.style.display = 'none';
-    aiEnhancePanel.style.display = 'none';
-    
-    // Build the prompt with additional parameters
-    let fullPrompt = buildFullPrompt(prompt);
-    
-    // Store current generation state
-    currentGeneration = {
-        prompt: fullPrompt,
-        seed: seedInput.value || Math.floor(Math.random() * 1000000),
-        model: modelSelect.value,
-        settings: {
-            width: widthSlider.value,
-            height: heightSlider.value,
-            style: styleSelect.value,
-            quality: qualitySelect.value,
-            lighting: lightingSelect.value,
-            color: colorSelect.value,
-            composition: compositionSelect.value,
-            hd: hdCheckbox.checked,
-            enhanceDetails: enhanceDetailsCheckbox.checked,
-            safeFilter: safeFilterCheckbox.checked
-        }
-    };
-    
-    try {
-        const imageUrl = await AIModelManager.generateImage(fullPrompt, currentGeneration.settings);
-        
-        if (!imageUrl) {
-            // API key not validated, already handled
-            loadingElement.style.display = 'none';
+    async function generateImage() {
+        // Coin check
+        if (window.canGenerateImage && !window.canGenerateImage()) {
+            showError(currentLanguage === 'en' 
+                ? 'You have no coins left. Coins will reset in 24 hours.' 
+                : 'Koin Anda sudah habis. Koin akan direset dalam 24 jam.');
             return;
         }
+
+        const prompt = promptTextarea.value.trim();
+        if (!prompt) {
+            showError(currentLanguage === 'en' 
+                ? 'Please enter a description for the image' 
+                : 'Silakan masukkan deskripsi untuk gambar');
+            return;
+        }
+
+        // Spend coin
+        if (window.spendCoin && !window.spendCoin()) {
+            showError(currentLanguage === 'en' 
+                ? 'Failed to spend coin. Please try again.' 
+                : 'Gagal menggunakan koin. Silakan coba lagi.');
+            return;
+        }
+
+        // Rest of your existing generateImage code...
+        scrollToImageContainer();
+        generatedImage.style.display = 'none';
+
         
-        // Load the image
-        generatedImage.onload = function() {
-            loadingElement.style.display = 'none';
-            generatedImage.style.display = 'block';
-            document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
-            
-            // Update image info
-            updateImageInfo();
-            
-            // Scroll to image container again after image loads
-            scrollToImageContainer();
-            
-            // Add to history only if this is a new generation, not from history click
-            if (!generatedImage.dataset.fromHistory) {
-                addToHistory(fullPrompt, imageUrl);
-            } else {
-                delete generatedImage.dataset.fromHistory;
+        // Hide previous image and error, show loading
+        generatedImage.style.display = 'none';
+        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+        errorMessage.style.display = 'none';
+        loadingElement.style.display = 'block';
+        filterControls.style.display = 'none';
+        aiEnhancePanel.style.display = 'none';
+        
+        // Build the prompt with additional parameters
+        let fullPrompt = buildFullPrompt(prompt);
+        
+        // Store current generation state
+        currentGeneration = {
+            prompt: fullPrompt,
+            seed: seedInput.value || Math.floor(Math.random() * 1000000),
+            model: modelSelect.value,
+            settings: {
+                width: widthSlider.value,
+                height: heightSlider.value,
+                style: styleSelect.value,
+                quality: qualitySelect.value,
+                lighting: lightingSelect.value,
+                color: colorSelect.value,
+                composition: compositionSelect.value,
+                hd: hdCheckbox.checked,
+                enhanceDetails: enhanceDetailsCheckbox.checked,
+                safeFilter: safeFilterCheckbox.checked
             }
         };
         
-        generatedImage.onerror = function() {
+        try {
+            const imageUrl = await AIModelManager.generateImage(fullPrompt, currentGeneration.settings);
+            
+            if (!imageUrl) {
+                // API key not validated, already handled
+                loadingElement.style.display = 'none';
+                return;
+            }
+            
+            // Load the image
+            generatedImage.onload = function() {
+                loadingElement.style.display = 'none';
+                generatedImage.style.display = 'block';
+                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                
+                // Update image info
+                updateImageInfo();
+                
+                // Scroll to image container again after image loads
+                scrollToImageContainer();
+                
+                // Add to history only if this is a new generation, not from history click
+                if (!generatedImage.dataset.fromHistory) {
+                    addToHistory(fullPrompt, imageUrl);
+                } else {
+                    delete generatedImage.dataset.fromHistory;
+                }
+            };
+            
+            generatedImage.onerror = function() {
+                loadingElement.style.display = 'none';
+                showError(currentLanguage === 'en' ? 'Failed to generate image. Please try a different prompt.' : 'Gagal menghasilkan gambar. Silakan coba dengan deskripsi yang berbeda.');
+            };
+            
+            generatedImage.src = imageUrl;
+        } catch (error) {
+            console.error('Error generating image:', error);
             loadingElement.style.display = 'none';
-            showError(currentLanguage === 'en' ? 'Failed to generate image. Please try a different prompt.' : 'Gagal menghasilkan gambar. Silakan coba dengan deskripsi yang berbeda.');
-        };
-        
-        generatedImage.src = imageUrl;
-    } catch (error) {
-        console.error('Error generating image:', error);
-        loadingElement.style.display = 'none';
-        showError(error.message || (currentLanguage === 'en' ? 'Failed to generate image. Please try again.' : 'Gagal menghasilkan gambar. Silakan coba lagi.'));
+            showError(error.message || (currentLanguage === 'en' ? 'Failed to generate image. Please try again.' : 'Gagal menghasilkan gambar. Silakan coba lagi.'));
+        }
     }
-}
 
-// Also update the generateBatch function similarly to use AIModelManager.generateImage()
-    
     function scrollToImageContainer() {
         const imageContainer = document.getElementById('generated-image-container');
         if (imageContainer) {
@@ -1043,7 +1075,11 @@ async function generateImage() {
         document.execCommand('copy');
         document.body.removeChild(textarea);
         
-        alert(currentLanguage === 'en' ? 'Image URL copied to clipboard!' : 'URL gambar disalin ke clipboard!');
+        showSweetAlert(
+            currentLanguage === 'en' ? 'Copied' : 'Disalin',
+            currentLanguage === 'en' ? 'Image URL copied to clipboard!' : 'URL gambar disalin ke clipboard!',
+            'success'
+        );
     }
     
     function remixImage() {
@@ -1080,14 +1116,22 @@ async function generateImage() {
     function savePrompt() {
         const prompt = promptTextarea.value.trim();
         if (!prompt) {
-            showError(currentLanguage === 'en' ? 'Please enter a prompt to save' : 'Silakan masukkan prompt untuk disimpan');
+            showSweetAlert(
+                currentLanguage === 'en' ? 'Error' : 'Kesalahan',
+                currentLanguage === 'en' ? 'Please enter a prompt to save' : 'Silakan masukkan prompt untuk disimpan',
+                'error'
+            );
             return;
         }
         
         // Check if prompt already exists
         const existingPrompt = savedPrompts.find(p => p.prompt === prompt);
         if (existingPrompt) {
-            alert(currentLanguage === 'en' ? 'This prompt is already saved!' : 'Prompt ini sudah disimpan!');
+            showSweetAlert(
+                currentLanguage === 'en' ? 'Duplicate' : 'Duplikat',
+                currentLanguage === 'en' ? 'This prompt is already saved!' : 'Prompt ini sudah disimpan!',
+                'warning'
+            );
             return;
         }
         
@@ -1100,7 +1144,11 @@ async function generateImage() {
         localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts));
         updateSavedPromptsPanel();
         
-        alert(currentLanguage === 'en' ? 'Prompt saved! You can find it in the Saved Prompts section.' : 'Prompt disimpan! Anda dapat menemukannya di bagian Prompt Tersimpan.');
+        showSweetAlert(
+            currentLanguage === 'en' ? 'Success' : 'Berhasil',
+            currentLanguage === 'en' ? 'Prompt saved! You can find it in the Saved Prompts section.' : 'Prompt disimpan! Anda dapat menemukannya di bagian Prompt Tersimpan.',
+            'success'
+        );
     }
     
     function addToHistory(prompt, imageUrl) {
@@ -1159,11 +1207,23 @@ async function generateImage() {
     }
     
     function resetHistory() {
-        if (confirm(currentLanguage === 'en' ? 'Are you sure you want to clear your generation history? This cannot be undone.' : 'Apakah Anda yakin ingin menghapus riwayat generasi? Tindakan ini tidak dapat dibatalkan.')) {
-            generationHistory = [];
-            localStorage.setItem('generationHistory', JSON.stringify(generationHistory));
-            updateHistoryPanel();
-        }
+        showConfirm(
+            currentLanguage === 'en' ? 'Confirm Reset' : 'Konfirmasi Reset',
+            currentLanguage === 'en' ? 'Are you sure you want to clear your generation history? This cannot be undone.' : 'Apakah Anda yakin ingin menghapus riwayat generasi? Tindakan ini tidak dapat dibatalkan.',
+            currentLanguage === 'en' ? 'Yes, clear it!' : 'Ya, hapus!',
+            currentLanguage === 'en' ? 'Cancel' : 'Batal'
+        ).then((result) => {
+            if (result.isConfirmed) {
+                generationHistory = [];
+                localStorage.setItem('generationHistory', JSON.stringify(generationHistory));
+                updateHistoryPanel();
+                showSweetAlert(
+                    currentLanguage === 'en' ? 'Cleared' : 'Dihapus',
+                    currentLanguage === 'en' ? 'Generation history has been cleared.' : 'Riwayat generasi telah dihapus.',
+                    'success'
+                );
+            }
+        });
     }
     
     function updateSavedPromptsPanel() {
@@ -1274,6 +1334,13 @@ async function generateImage() {
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';
         loadingElement.style.display = 'none';
+        
+        // Show SweetAlert for more prominent error
+        showSweetAlert(
+            currentLanguage === 'en' ? 'Error' : 'Kesalahan',
+            message,
+            'error'
+        );
     }
     
     function clearPrompt() {
@@ -1282,29 +1349,42 @@ async function generateImage() {
     }
     
     function resetAllSettings() {
-        if (confirm(currentLanguage === 'en' ? 'Are you sure you want to reset ALL settings? This will clear:\n- Generation history\n- Saved prompts\n- Dark mode preference\n\nThis action cannot be undone.' : 'Apakah Anda yakin ingin mengatur ulang SEMUA pengaturan? Ini akan menghapus:\n- Riwayat generasi\n- Prompt tersimpan\n- Preferensi mode gelap\n\nTindakan ini tidak dapat dibatalkan.')) {
-            // Clear all localStorage items
-            localStorage.removeItem('generationHistory');
-            localStorage.removeItem('savedPrompts');
-            localStorage.removeItem('darkMode');
-            localStorage.removeItem('language');
-            
-            // Reset state variables
-            generationHistory = [];
-            savedPrompts = [];
-            currentLanguage = 'en';
-            
-            // Update UI
-            updateHistoryPanel();
-            updateSavedPromptsPanel();
-            updateLanguage('en');
-            
-            // Reset dark mode to default (light)
-            document.body.classList.remove('dark-mode');
-            darkModeToggle.innerHTML = `<i class="fas fa-moon"></i><span>${translations.en.darkMode}</span>`;
-            
-            alert(currentLanguage === 'en' ? 'All settings have been reset to defaults.' : 'Semua pengaturan telah diatur ulang ke default.');
-        }
+        showConfirm(
+            currentLanguage === 'en' ? 'Reset All Settings?' : 'Atur Ulang Semua Pengaturan?',
+            currentLanguage === 'en' 
+                ? 'Are you sure you want to reset ALL settings? This will clear:\n- Generation history\n- Saved prompts\n- Dark mode preference\n\nThis action cannot be undone.' 
+                : 'Apakah Anda yakin ingin mengatur ulang SEMUA pengaturan? Ini akan menghapus:\n- Riwayat generasi\n- Prompt tersimpan\n- Preferensi mode gelap\n\nTindakan ini tidak dapat dibatalkan.',
+            currentLanguage === 'en' ? 'Yes, reset all' : 'Ya, atur ulang',
+            currentLanguage === 'en' ? 'Cancel' : 'Batal'
+        ).then((result) => {
+            if (result.isConfirmed) {
+                // Clear all localStorage items
+                localStorage.removeItem('generationHistory');
+                localStorage.removeItem('savedPrompts');
+                localStorage.removeItem('darkMode');
+                localStorage.removeItem('language');
+                
+                // Reset state variables
+                generationHistory = [];
+                savedPrompts = [];
+                currentLanguage = 'en';
+                
+                // Update UI
+                updateHistoryPanel();
+                updateSavedPromptsPanel();
+                updateLanguage('en');
+                
+                // Reset dark mode to default (light)
+                document.body.classList.remove('dark-mode');
+                darkModeToggle.innerHTML = `<i class="fas fa-moon"></i><span>${translations.en.darkMode}</span>`;
+                
+                showSweetAlert(
+                    currentLanguage === 'en' ? 'Reset Complete' : 'Pengaturan Ulang Selesai',
+                    currentLanguage === 'en' ? 'All settings have been reset to defaults.' : 'Semua pengaturan telah diatur ulang ke default.',
+                    'success'
+                );
+            }
+        });
     }
 
     // Filter functions
@@ -1464,256 +1544,271 @@ async function generateImage() {
         else return (bytes / 1048576).toFixed(1) + ' MB';
     }
 });
-                // Status Indicator
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
 
-        function updateStatus(status, message) {
-            statusDot.className = 'status-dot';
-            
-            switch(status) {
-                case 'connected':
-                    statusDot.classList.add('connected');
-                    statusText.textContent = message || 'Terhubung ke sistem AI';
-                    break;
-                case 'warning':
-                    statusDot.classList.add('warning');
-                    statusText.textContent = message || 'Peringatan: Masalah koneksi';
-                    break;
-                case 'error':
-                    statusDot.classList.add('error');
-                    statusText.textContent = message || 'Error: Tidak terhubung';
-                    break;
-                default:
-                    statusText.textContent = message || 'Status tidak diketahui';
-            }
-            
-            logToConsole(`Status sistem diperbarui: ${status} - ${message || ''}`);
-        }
+// Status Indicator
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
 
-        // Simulate connection status
-        setTimeout(() => {
-            updateStatus('connected', 'Sistem siap digunakan');
-        }, 1500);
-        
-            // Cookie Consent Module - Separate Structure
-    const CookieConsent = (function() {
-        // Private variables
-        const COOKIE_NAME = 'ruangriung_cookie_consent';
-        const COOKIE_EXPIRY_DAYS = 365;
-        const banner = document.getElementById('cookieConsentBanner');
-        const acceptBtn = document.getElementById('cookieAccept');
-        const declineBtn = document.getElementById('cookieDecline');
-        const learnMoreLink = document.getElementById('cookieLearnMore');
-        
-        // Check if cookie consent is needed
-        function shouldShowBanner() {
-            return !getCookie(COOKIE_NAME);
-        }
-        
-        // Get cookie value
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-        
-        // Set cookie
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
-        }
-        
-        // Show banner
-        function showBanner() {
-            if (shouldShowBanner()) {
-                banner.classList.add('show');
-            }
-        }
-        
-        // Hide banner
-        function hideBanner() {
-            banner.classList.remove('show');
-        }
-        
-        // Handle accept
-        function handleAccept() {
-            setCookie(COOKIE_NAME, 'accepted', COOKIE_EXPIRY_DAYS);
-            hideBanner();
-            logToConsole('Cookie consent accepted');
-        }
-        
-        // Handle decline
-        function handleDecline() {
-            setCookie(COOKIE_NAME, 'declined', COOKIE_EXPIRY_DAYS);
-            hideBanner();
-            logToConsole('Cookie consent declined');
-        }
-        
-        // Handle learn more
-        function handleLearnMore(e) {
-            e.preventDefault();
-            alert('Kebijakan Cookie: Kami menggunakan cookie untuk meningkatkan pengalaman pengguna dan analisis lalu lintas. Anda dapat mengelola preferensi cookie Anda melalui pengaturan browser.');
-        }
-        
-        // Initialize
-        function init() {
-            // Only add event listeners if elements exist
-            if (acceptBtn) acceptBtn.addEventListener('click', handleAccept);
-            if (declineBtn) declineBtn.addEventListener('click', handleDecline);
-            if (learnMoreLink) learnMoreLink.addEventListener('click', handleLearnMore);
-            
-            // Show banner if needed
-            showBanner();
-        }
-        
-        // Public API
-        return {
-            init: init
-        };
-    })();
+function updateStatus(status, message) {
+    statusDot.className = 'status-dot';
     
-    // Initialize Cookie Consent when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        CookieConsent.init();
-    });
-    
-    // Helper function to log to console (already in your code)
-    function logToConsole(message) {
-        console.log(message);
+    switch(status) {
+        case 'connected':
+            statusDot.classList.add('connected');
+            statusText.textContent = message || 'Terhubung ke sistem AI';
+            break;
+        case 'warning':
+            statusDot.classList.add('warning');
+            statusText.textContent = message || 'Peringatan: Masalah koneksi';
+            break;
+        case 'error':
+            statusDot.classList.add('error');
+            statusText.textContent = message || 'Error: Tidak terhubung';
+            break;
+        default:
+            statusText.textContent = message || 'Status tidak diketahui';
     }
     
-    // FAQ Module - Separate Structure
-    const FAQManager = (function() {
-        // Private variables
-        const faqData = [
-            {
-                question: "Apa itu RuangRiung AI Image Generator?",
-                answer: "RuangRiung AI Image Generator adalah alat yang menggunakan kecerdasan buatan untuk menghasilkan gambar berdasarkan deskripsi teks yang Anda berikan. Anda bisa membuat berbagai jenis gambar dalam berbagai gaya seni hanya dengan menulis deskripsi."
-            },
-            {
-                question: "Bagaimana cara menggunakan generator ini?",
-                answer: "Cukup ketik deskripsi gambar yang Anda inginkan di kotak teks, pilih gaya dan pengaturan yang diinginkan, lalu klik tombol 'Generate'. Sistem AI akan membuat gambar berdasarkan input Anda."
-            },
-            {
-                question: "Berapa lama waktu yang dibutuhkan untuk menghasilkan gambar?",
-                answer: "Waktu generasi bervariasi tergantung pada kompleksitas gambar dan beban server, biasanya antara 10-30 detik. Gambar yang lebih kompleks atau resolusi lebih tinggi mungkin membutuhkan waktu lebih lama."
-            },
-            {
-                question: "Apakah gambar yang dihasilkan gratis digunakan?",
-                answer: "Ya, semua gambar yang dihasilkan oleh alat ini bebas digunakan untuk keperluan pribadi atau komersial. Namun, kami menyarankan untuk memeriksa ketentuan penggunaan dari penyedia model AI untuk kepastian."
-            },
-            {
-                question: "Mengapa gambar saya tidak sesuai dengan yang saya deskripsikan?",
-                answer: "Kualitas hasil tergantung pada beberapa faktor termasuk kejelasan deskripsi, pilihan gaya, dan kemampuan model AI. Coba gunakan deskripsi yang lebih detail dan eksperimen dengan berbagai gaya untuk hasil terbaik."
-            }
-        ];
+    logToConsole(`Status sistem diperbarui: ${status} - ${message || ''}`);
+}
 
-        // Private methods
-        function createFAQItem(faq, index) {
-            const faqItem = document.createElement('div');
-            faqItem.className = 'faq-item';
-            faqItem.innerHTML = `
-                <div class="faq-question">
-                    <span>${faq.question}</span>
-                    <i class="fas fa-chevron-down faq-toggle"></i>
-                </div>
-                <div class="faq-answer">${faq.answer}</div>
-            `;
-            
-            const question = faqItem.querySelector('.faq-question');
-            const answer = faqItem.querySelector('.faq-answer');
-            
-            question.addEventListener('click', () => {
-                faqItem.classList.toggle('active');
-                answer.classList.toggle('show');
-            });
-            
-            return faqItem;
+// Simulate connection status
+setTimeout(() => {
+    updateStatus('connected', 'Sistem siap digunakan');
+}, 1500);
+
+// Cookie Consent Module
+const CookieConsent = (function() {
+    // Private variables
+    const COOKIE_NAME = 'ruangriung_cookie_consent';
+    const COOKIE_EXPIRY_DAYS = 365;
+    const banner = document.getElementById('cookieConsentBanner');
+    const acceptBtn = document.getElementById('cookieAccept');
+    const declineBtn = document.getElementById('cookieDecline');
+    const learnMoreLink = document.getElementById('cookieLearnMore');
+    
+    // Check if cookie consent is needed
+    function shouldShowBanner() {
+        return !getCookie(COOKIE_NAME);
+    }
+    
+    // Get cookie value
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    
+    // Set cookie
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+    }
+    
+    // Show banner
+    function showBanner() {
+        if (shouldShowBanner()) {
+            banner.classList.add('show');
         }
-
-        function renderFAQ() {
-            const container = document.getElementById('faqContainer');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            faqData.forEach((faq, index) => {
-                container.appendChild(createFAQItem(faq, index));
-            });
-        }
-
-        function translateFAQ(language) {
-            if (language === 'en') {
-                faqData = [
-                    {
-                        question: "What is RuangRiung AI Image Generator?",
-                        answer: "RuangRiung AI Image Generator is a tool that uses artificial intelligence to generate images based on text descriptions you provide. You can create various types of images in different art styles just by writing descriptions."
-                    },
-                    {
-                        question: "How do I use this generator?",
-                        answer: "Simply type your image description in the text box, select your desired style and settings, then click the 'Generate' button. The AI system will create an image based on your input."
-                    },
-                    {
-                        question: "How long does it take to generate an image?",
-                        answer: "Generation time varies depending on image complexity and server load, typically between 10-30 seconds. More complex images or higher resolutions may take longer."
-                    },
-                    {
-                        question: "Can I use the generated images for free?",
-                        answer: "Yes, all images generated by this tool are free to use for personal or commercial purposes. However, we recommend checking the terms of use from the AI model provider for certainty."
-                    },
-                    {
-                        question: "Why doesn't my image match what I described?",
-                        answer: "Output quality depends on several factors including description clarity, style selection, and AI model capabilities. Try using more detailed descriptions and experiment with different styles for best results."
-                    }
-                ];
-            } else {
-                faqData = [
-                    {
-                        question: "Apa itu RuangRiung AI Image Generator?",
-                        answer: "RuangRiung AI Image Generator adalah alat yang menggunakan kecerdasan buatan untuk menghasilkan gambar berdasarkan deskripsi teks yang Anda berikan. Anda bisa membuat berbagai jenis gambar dalam berbagai gaya seni hanya dengan menulis deskripsi."
-                    },
-                    {
-                        question: "Bagaimana cara menggunakan generator ini?",
-                        answer: "Cukup ketik deskripsi gambar yang Anda inginkan di kotak teks, pilih gaya dan pengaturan yang diinginkan, lalu klik tombol 'Generate'. Sistem AI akan membuat gambar berdasarkan input Anda."
-                    },
-                    {
-                        question: "Berapa lama waktu yang dibutuhkan untuk menghasilkan gambar?",
-                        answer: "Waktu generasi bervariasi tergantung pada kompleksitas gambar dan beban server, biasanya antara 10-30 detik. Gambar yang lebih kompleks atau resolusi lebih tinggi mungkin membutuhkan waktu lebih lama."
-                    },
-                    {
-                        question: "Apakah gambar yang dihasilkan gratis digunakan?",
-                        answer: "Ya, semua gambar yang dihasilkan oleh alat ini bebas digunakan untuk keperluan pribadi atau komersial. Namun, kami menyarankan untuk memeriksa ketentuan penggunaan dari penyedia model AI untuk kepastian."
-                    },
-                    {
-                        question: "Mengapa gambar saya tidak sesuai dengan yang saya deskripsikan?",
-                        answer: "Kualitas hasil tergantung pada beberapa faktor termasuk kejelasan deskripsi, pilihan gaya, dan kemampuan model AI. Coba gunakan deskripsi yang lebih detail dan eksperimen dengan berbagai gaya untuk hasil terbaik."
-                    }
-                ];
-            }
-            renderFAQ();
-        }
-
-        // Public API
-        return {
-            init: renderFAQ,
-            translate: translateFAQ
-        };
-    })();
-
-    // Initialize FAQ when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        FAQManager.init();
+    }
+    
+    // Hide banner
+    function hideBanner() {
+        banner.classList.remove('show');
+    }
+    
+    // Handle accept
+    function handleAccept() {
+        setCookie(COOKIE_NAME, 'accepted', COOKIE_EXPIRY_DAYS);
+        hideBanner();
+        logToConsole('Cookie consent accepted');
+        showSweetAlert(
+            'Cookie Consent',
+            'Terima kasih telah menerima penggunaan cookie kami. Pengaturan ini akan disimpan untuk kunjungan Anda berikutnya.',
+            'success'
+        );
+    }
+    
+    // Handle decline
+    function handleDecline() {
+        setCookie(COOKIE_NAME, 'declined', COOKIE_EXPIRY_DAYS);
+        hideBanner();
+        logToConsole('Cookie consent declined');
+        showSweetAlert(
+            'Cookie Consent',
+            'Anda telah menolak penggunaan cookie. Beberapa fitur mungkin tidak berfungsi optimal.',
+            'info'
+        );
+    }
+    
+    // Handle learn more
+    function handleLearnMore(e) {
+        e.preventDefault();
+        showSweetAlert(
+            'Cookie Policy',
+            'Kebijakan Cookie: Kami menggunakan cookie untuk meningkatkan pengalaman pengguna dan analisis lalu lintas. Anda dapat mengelola preferensi cookie Anda melalui pengaturan browser.',
+            'info'
+        );
+    }
+    
+    // Initialize
+    function init() {
+        // Only add event listeners if elements exist
+        if (acceptBtn) acceptBtn.addEventListener('click', handleAccept);
+        if (declineBtn) declineBtn.addEventListener('click', handleDecline);
+        if (learnMoreLink) learnMoreLink.addEventListener('click', handleLearnMore);
         
-        // Add language change listener if needed
-        const langEn = document.getElementById('lang-en');
-        const langId = document.getElementById('lang-id');
-        
-        if (langEn) {
-            langEn.addEventListener('click', () => FAQManager.translate('en'));
+        // Show banner if needed
+        showBanner();
+    }
+    
+    // Public API
+    return {
+        init: init
+    };
+})();
+
+// Initialize Cookie Consent when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    CookieConsent.init();
+});
+
+// Helper function to log to console
+function logToConsole(message) {
+    console.log(message);
+}
+
+// FAQ Module
+const FAQManager = (function() {
+    // Private variables
+    let faqData = [
+        {
+            question: "Apa itu RuangRiung AI Image Generator?",
+            answer: "RuangRiung AI Image Generator adalah alat yang menggunakan kecerdasan buatan untuk menghasilkan gambar berdasarkan deskripsi teks yang Anda berikan. Anda bisa membuat berbagai jenis gambar dalam berbagai gaya seni hanya dengan menulis deskripsi."
+        },
+        {
+            question: "Bagaimana cara menggunakan generator ini?",
+            answer: "Cukup ketik deskripsi gambar yang Anda inginkan di kotak teks, pilih gaya dan pengaturan yang diinginkan, lalu klik tombol 'Generate'. Sistem AI akan membuat gambar berdasarkan input Anda."
+        },
+        {
+            question: "Berapa lama waktu yang dibutuhkan untuk menghasilkan gambar?",
+            answer: "Waktu generasi bervariasi tergantung pada kompleksitas gambar dan beban server, biasanya antara 10-30 detik. Gambar yang lebih kompleks atau resolusi lebih tinggi mungkin membutuhkan waktu lebih lama."
+        },
+        {
+            question: "Apakah gambar yang dihasilkan gratis digunakan?",
+            answer: "Ya, semua gambar yang dihasilkan oleh alat ini bebas digunakan untuk keperluan pribadi atau komersial. Namun, kami menyarankan untuk memeriksa ketentuan penggunaan dari penyedia model AI untuk kepastian."
+        },
+        {
+            question: "Mengapa gambar saya tidak sesuai dengan yang saya deskripsikan?",
+            answer: "Kualitas hasil tergantung pada beberapa faktor termasuk kejelasan deskripsi, pilihan gaya, dan kemampuan model AI. Coba gunakan deskripsi yang lebih detail dan eksperimen dengan berbagai gaya untuk hasil terbaik."
         }
+    ];
+
+    // Private methods
+    function createFAQItem(faq, index) {
+        const faqItem = document.createElement('div');
+        faqItem.className = 'faq-item';
+        faqItem.innerHTML = `
+            <div class="faq-question">
+                <span>${faq.question}</span>
+                <i class="fas fa-chevron-down faq-toggle"></i>
+            </div>
+            <div class="faq-answer">${faq.answer}</div>
+        `;
         
-        if (langId) {
-            langId.addEventListener('click', () => FAQManager.translate('id'));
+        const question = faqItem.querySelector('.faq-question');
+        const answer = faqItem.querySelector('.faq-answer');
+        
+        question.addEventListener('click', () => {
+            faqItem.classList.toggle('active');
+            answer.classList.toggle('show');
+        });
+        
+        return faqItem;
+    }
+
+    function renderFAQ() {
+        const container = document.getElementById('faqContainer');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        faqData.forEach((faq, index) => {
+            container.appendChild(createFAQItem(faq, index));
+        });
+    }
+
+    function translateFAQ(language) {
+        if (language === 'en') {
+            faqData = [
+                {
+                    question: "What is RuangRiung AI Image Generator?",
+                    answer: "RuangRiung AI Image Generator is a tool that uses artificial intelligence to generate images based on text descriptions you provide. You can create various types of images in different art styles just by writing descriptions."
+                },
+                {
+                    question: "How do I use this generator?",
+                    answer: "Simply type your image description in the text box, select your desired style and settings, then click the 'Generate' button. The AI system will create an image based on your input."
+                },
+                {
+                    question: "How long does it take to generate an image?",
+                    answer: "Generation time varies depending on image complexity and server load, typically between 10-30 seconds. More complex images or higher resolutions may take longer."
+                },
+                {
+                    question: "Can I use the generated images for free?",
+                    answer: "Yes, all images generated by this tool are free to use for personal or commercial purposes. However, we recommend checking the terms of use from the AI model provider for certainty."
+                },
+                {
+                    question: "Why doesn't my image match what I described?",
+                    answer: "Output quality depends on several factors including description clarity, style selection, and AI model capabilities. Try using more detailed descriptions and experiment with different styles for best results."
+                }
+            ];
+        } else {
+            faqData = [
+                {
+                    question: "Apa itu RuangRiung AI Image Generator?",
+                    answer: "RuangRiung AI Image Generator adalah alat yang menggunakan kecerdasan buatan untuk menghasilkan gambar berdasarkan deskripsi teks yang Anda berikan. Anda bisa membuat berbagai jenis gambar dalam berbagai gaya seni hanya dengan menulis deskripsi."
+                },
+                {
+                    question: "Bagaimana cara menggunakan generator ini?",
+                    answer: "Cukup ketik deskripsi gambar yang Anda inginkan di kotak teks, pilih gaya dan pengaturan yang diinginkan, lalu klik tombol 'Generate'. Sistem AI akan membuat gambar berdasarkan input Anda."
+                },
+                {
+                    question: "Berapa lama waktu yang dibutuhkan untuk menghasilkan gambar?",
+                    answer: "Waktu generasi bervariasi tergantung pada kompleksitas gambar dan beban server, biasanya antara 10-30 detik. Gambar yang lebih kompleks atau resolusi lebih tinggi mungkin membutuhkan waktu lebih lama."
+                },
+                {
+                    question: "Apakah gambar yang dihasilkan gratis digunakan?",
+                    answer: "Ya, semua gambar yang dihasilkan oleh alat ini bebas digunakan untuk keperluan pribadi atau komersial. Namun, kami menyarankan untuk memeriksa ketentuan penggunaan dari penyedia model AI untuk kepastian."
+                },
+                {
+                    question: "Mengapa gambar saya tidak sesuai dengan yang saya deskripsikan?",
+                    answer: "Kualitas hasil tergantung pada beberapa faktor termasuk kejelasan deskripsi, pilihan gaya, dan kemampuan model AI. Coba gunakan deskripsi yang lebih detail dan eksperimen dengan berbagai gaya untuk hasil terbaik."
+                }
+            ];
         }
-    });
+        renderFAQ();
+    }
+
+    // Public API
+    return {
+        init: renderFAQ,
+        translate: translateFAQ
+    };
+})();
+
+// Initialize FAQ when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    FAQManager.init();
+    
+    // Add language change listener if needed
+    const langEn = document.getElementById('lang-en');
+    const langId = document.getElementById('lang-id');
+    
+    if (langEn) {
+        langEn.addEventListener('click', () => FAQManager.translate('en'));
+    }
+    
+    if (langId) {
+        langId.addEventListener('click', () => FAQManager.translate('id'));
+    }
+});
