@@ -255,9 +255,37 @@ const analysisLoading = document.querySelector('.analysis-loading');
 
 
 // Add these event listeners
+// Perbarui event listener untuk modal di ruangriung.js
 analyzeImageBtn.addEventListener('click', () => {
     imageAnalysisModal.style.display = 'flex';
+    
+    // Di mobile, scroll ke modal setelah ditampilkan
+    if (window.innerWidth <= 768) {
+        setTimeout(() => {
+            imageAnalysisModal.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' // Scroll ke awal modal
+            });
+        }, 50);
+    }
 });
+
+imageAnalysisModal.addEventListener('click', function(e) {
+    if (e.target === imageAnalysisModal) {
+        // Di mobile, scroll ke prompt textarea setelah modal ditutup
+        if (window.innerWidth <= 768) {
+            promptTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        imageAnalysisModal.style.display = 'none';
+    }
+});
+
+// Tambahkan event listener untuk mencegah closing ketika scroll di dalam modal
+imageAnalysisModal.addEventListener('touchmove', function(e) {
+    if (this.querySelector('.modal-content').scrollHeight > this.querySelector('.modal-content').clientHeight) {
+        e.stopPropagation();
+    }
+}, { passive: false });
 
 closeAnalysisModal.addEventListener('click', () => {
     imageAnalysisModal.style.display = 'none';

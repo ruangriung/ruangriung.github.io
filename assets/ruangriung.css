@@ -2357,3 +2357,91 @@ html {
 .analysis-result::-webkit-scrollbar-thumb:hover {
     background: var(--primary-dark);
 }
+/* Tambahkan ini ke ruangriung.css */
+@media (max-width: 768px) {
+    #image-analysis-modal .modal-content {
+        position: relative;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        max-height: 80vh;
+        border-radius: 20px 20px 0 0;
+        overflow-y: auto;
+        margin-bottom: 30px;
+    }
+    
+    #image-analysis-modal .modal-body {
+        max-height: calc(80vh - 120px);
+        overflow-y: auto;
+    }
+    
+    #image-analysis-modal {
+        align-items: flex-end;
+    }
+    
+    .analysis-result {
+        max-height: 30vh;
+    }
+}
+
+/* Improve mobile input and buttons */
+@media (max-width: 768px) {
+    #image-analysis-modal .modal-btn {
+        padding: 12px;
+        font-size: 14px;
+    }
+    
+    #upload-trigger {
+        width: 100%;
+        padding: 12px;
+    }
+    
+    #image-preview {
+        max-height: 200px;
+    }
+    
+    .analysis-result {
+        font-size: 14px;
+    }
+}
+/* Tambahkan ini ke ruangriung.css */
+@media (max-width: 768px) {
+    #image-analysis-modal {
+        align-items: flex-start; /* Ubah dari center ke flex-start */
+        padding-top: 20px; /* Beri jarak dari atas */
+        overflow-y: auto; /* Enable scrolling untuk modal */
+    }
+    
+    #image-analysis-modal .modal-content {
+        max-height: 90vh; /* Batasi tinggi maksimal */
+        overflow-y: auto; /* Enable scrolling untuk konten */
+        margin: 20px auto; /* Beri margin */
+        width: 95%; /* Lebar hampir penuh */
+    }
+    
+    #image-analysis-modal .modal-body {
+        max-height: 60vh; /* Batasi tinggi body */
+        overflow-y: auto; /* Enable scrolling untuk konten body */
+    }
+    
+    .analysis-result {
+        max-height: 40vh; /* Batasi tinggi hasil analisis */
+        overflow-y: auto;
+    }
+}
+
+/* Tambahkan ini untuk tombol di mobile */
+@media (max-width: 768px) {
+    #image-analysis-modal .modal-footer {
+        position: sticky;
+        bottom: 0;
+        background: var(--bg);
+        padding: 10px 0;
+        z-index: 1;
+    }
+    
+    #image-analysis-modal .modal-btn {
+        margin-bottom: 10px;
+    }
+}
