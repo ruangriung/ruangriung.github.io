@@ -864,11 +864,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    async function generateVariation() {
-        if (!currentGeneration.prompt || !generatedImage.src) {
-            showError(currentLanguage === 'en' ? 'Please generate an image first before creating variations' : 'Harap hasilkan gambar terlebih dahulu sebelum membuat variasi');
-            return;
-        }
+async function generateVariation() {
+    // Tambahkan pengecekan coin di awal
+    if (window.canGenerateImage && !window.canGenerateImage()) {
+        showError(currentLanguage === 'en' 
+            ? 'You have no coins left. Coins will reset in 24 hours.' 
+            : 'Koin Anda sudah habis. Koin akan direset dalam 24 jam.');
+        return;
+    }
+
+    // Spend 1 coin saat klik Variant
+    if (window.spendCoin && !window.spendCoin()) {
+        showError(currentLanguage === 'en' 
+            ? 'Failed to spend coin. Please try again.' 
+            : 'Gagal menggunakan koin. Silakan coba lagi.');
+        return;
+    }
+
+    if (!currentGeneration.prompt || !generatedImage.src) {
+        showError(currentLanguage === 'en' ? 'Please generate an image first before creating variations' : 'Harap hasilkan gambar terlebih dahulu sebelum membuat variasi');
+        return;
+    }
         
         // Scroll to image container before generation starts
         scrollToImageContainer();
