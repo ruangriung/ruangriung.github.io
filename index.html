@@ -102,27 +102,29 @@
     <i class="fas fa-wand-magic-sparkles input-icon"></i>
     <textarea id="prompt-textarea" placeholder="Describe your dream image in detail... (e.g. A cyberpunk cityscape at night with neon lights, 8k ultra detailed, cinematic lighting)"></textarea>
     <button class="expand-btn" id="expand-textarea-btn" title="Expand"><i class="fas fa-expand"></i></button>
+    
+    <!-- Add after the prompt textarea -->
+<div class="textarea-overlay" id="textarea-overlay"></div>
+<button class="done-expanding-btn" id="done-expanding-btn">
+    <i class="fas fa-check"></i> Done
+</button>
+
 <div class="input-buttons">
     <button id="enhance-btn"><i class="fas fa-brain"></i> Enhance</button>
     <button id="generate-btn"><i class="fas fa-magic-wand-sparkles"></i> Generate</button>
 </div>
 </div>
-<!-- Add after the prompt textarea -->
-<div class="textarea-overlay" id="textarea-overlay"></div>
-<button class="done-expanding-btn" id="done-expanding-btn">
-    <i class="fas fa-check"></i> Done
-</button>
-<!-- Add this button near the generate button -->
-<button id="analyze-image-btn" class="image-upload-btn">
-    <i class="fas fa-image"></i> Analyze Image
-</button>
 
-
-<!-- Ganti kode sebelumnya dengan ini -->
-<a href="ai-text-generator/" class="ai-text-toggle" style="margin-top: 10px; text-decoration: none;">
-    <i class="fas fa-comment-dots"></i>
-    <span>AI Text Generation</span>
-</a>
+<div class="button-group-container">
+    <a href="ai-text-generator/" class="ai-text-toggle">
+        <i class="fas fa-comment-dots"></i>
+        <span>AI Text Generation</span>
+    </a>
+    
+    <button id="analyze-image-btn" class="image-upload-btn">
+        <i class="fas fa-image"></i> Analyze Image
+    </button>
+</div>
 
 <!-- Ad Banner Module 2 - Below AI Text Generator -->
 <div class="ad-banner-module" id="adBanner2">
