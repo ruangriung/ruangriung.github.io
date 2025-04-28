@@ -50,7 +50,16 @@ const translations = {
         enhanceBackground: "Enhance Background",
         increaseSharpness: "Increase Sharpness",
         colorCorrection: "Color Correction",
-        reduceNoise: "Reduce Noise"
+        reduceNoise: "Reduce Noise",
+        // Add these to both en and id translations
+analyzeImage: "Analyze Image",
+imageAnalysis: "Image Analysis",
+uploadImage: "Upload Image",
+analyzingImage: "Analyzing image...",
+analysisResult: "Analysis Result",
+useAsPrompt: "Use as Prompt",
+noDescription: "No description available",
+failedToAnalyze: "Failed to analyze image. Please try again."
     },
     id: {
         title: "RuangRiung Generator Gambar AI",
@@ -102,7 +111,16 @@ const translations = {
         enhanceBackground: "Tingkatkan Latar Belakang",
         increaseSharpness: "Tingkatkan Ketajaman",
         colorCorrection: "Koreksi Warna",
-        reduceNoise: "Kurangi Noise"
+        reduceNoise: "Kurangi Noise",
+        // Add these to both en and id translations
+analyzeImage: "Analyze Image",
+imageAnalysis: "Image Analysis",
+uploadImage: "Upload Image",
+analyzingImage: "Analyzing image...",
+analysisResult: "Analysis Result",
+useAsPrompt: "Use as Prompt",
+noDescription: "No description available",
+failedToAnalyze: "Failed to analyze image. Please try again."
     }
 };
 
@@ -222,6 +240,214 @@ document.addEventListener('DOMContentLoaded', function() {
     const hdCheckbox = document.getElementById('hd');
     const enhanceDetailsCheckbox = document.getElementById('enhance-details');
     const safeFilterCheckbox = document.getElementById('safe-filter');
+    
+    // Add these elements to the existing list
+const analyzeImageBtn = document.getElementById('analyze-image-btn');
+const imageAnalysisModal = document.getElementById('image-analysis-modal');
+const closeAnalysisModal = document.getElementById('close-analysis-modal');
+const uploadTrigger = document.getElementById('upload-trigger');
+const imageUpload = document.getElementById('image-upload');
+const imagePreview = document.getElementById('image-preview');
+const analyzeBtn = document.getElementById('analyze-btn');
+const cancelAnalysisBtn = document.getElementById('cancel-analysis-btn');
+const analysisResult = document.getElementById('analysis-result');
+const analysisLoading = document.querySelector('.analysis-loading');
+
+
+// Add these event listeners
+analyzeImageBtn.addEventListener('click', () => {
+    imageAnalysisModal.style.display = 'flex';
+});
+
+closeAnalysisModal.addEventListener('click', () => {
+    imageAnalysisModal.style.display = 'none';
+});
+
+cancelAnalysisBtn.addEventListener('click', () => {
+    imageAnalysisModal.style.display = 'none';
+});
+
+imageAnalysisModal.addEventListener('click', (e) => {
+    if (e.target === imageAnalysisModal) {
+        imageAnalysisModal.style.display = 'none';
+    }
+});
+
+uploadTrigger.addEventListener('click', () => {
+    imageUpload.click();
+});
+
+imageUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            imagePreview.src = event.target.result;
+            imagePreview.style.display = 'block';
+            analyzeBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Update event listener for analyze button
+analyzeBtn.addEventListener('click', () => {
+    // Coin check
+    if (window.canGenerateImage && !window.canGenerateImage()) {
+        showError(currentLanguage === 'en' 
+            ? 'You have no coins left. Coins will reset in 24 hours.' 
+            : 'Koin Anda sudah habis. Koin akan direset dalam 24 jam.');
+        return;
+    }
+    
+    function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.7) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                canvas.toBlob((blob) => {
+                    const newReader = new FileReader();
+                    newReader.onload = (e) => resolve(e.target.result);
+                    newReader.readAsDataURL(blob);
+                }, 'image/jpeg', quality);
+            };
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Update image upload handler
+imageUpload.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        // Compress image before displaying
+        const compressedImage = await compressImage(file);
+        imagePreview.src = compressedImage;
+        imagePreview.style.display = 'block';
+        analyzeBtn.disabled = false;
+    }
+});
+    
+    analyzeImage();
+});
+
+// Add this function to analyze the image
+async function analyzeImage() {
+    if (!imagePreview.src) return;
+    
+    // Coin check
+if (window.canGenerateImage && !window.canGenerateImage()) {
+    showError(currentLanguage === 'en' 
+        ? 'You have no coins left. Coins will reset in 24 hours.' 
+        : 'Koin Anda sudah habis. Koin akan direset dalam 24 jam.');
+    return;
+}
+
+// Spend coin
+if (window.spendCoin && !window.spendCoin()) {
+    showError(currentLanguage === 'en' 
+        ? 'Failed to spend coin. Please try again.' 
+        : 'Gagal menggunakan koin. Silakan coba lagi.');
+    return;
+}
+    
+    // Hide previous result and show loading
+    analysisResult.textContent = '';
+    analysisLoading.style.display = 'block';
+    analyzeBtn.disabled = true;
+    
+    try {
+        // Convert image to base64
+        const base64Image = imagePreview.src.split(',')[1];
+        
+        // Prepare messages for OpenAI with image
+        const messages = [
+            {
+                role: "system",
+                content: "You are an expert at analyzing images. Describe the image in detail, including objects, colors, style, composition, and any text present. Be thorough and precise."
+            },
+            {
+                role: "user",
+                content: [
+                    {
+                        type: "text",
+                        text: "Please analyze this image and describe it in detail."
+                    },
+                    {
+                        type: "image_url",
+                        image_url: {
+                            url: `data:image/jpeg;base64,${base64Image}`
+                        }
+                    }
+                ]
+            }
+        ];
+        
+        let fullDescription = "";
+        
+        // Call the streaming API
+        await streamChatCompletion(
+            messages,
+            { 
+                model: "openai",
+                seed: Math.floor(Math.random() * 1000000)
+            },
+            (textChunk) => {
+                fullDescription += textChunk;
+                analysisResult.innerHTML = `
+                    <h4>${translations[currentLanguage].analysisResult}:</h4>
+                    <p>${fullDescription}</p>
+                    <button class="btn btn-secondary" id="use-as-prompt-btn">
+                        <i class="fas fa-magic-wand-sparkles"></i> ${translations[currentLanguage].useAsPrompt}
+                    </button>
+                `;
+                
+                // Scroll to bottom of result
+                analysisResult.scrollTop = analysisResult.scrollHeight;
+            }
+        );
+        
+        // Add event listener for the use as prompt button
+        document.getElementById('use-as-prompt-btn').addEventListener('click', () => {
+            promptTextarea.value = fullDescription;
+            imageAnalysisModal.style.display = 'none';
+        });
+        
+    } catch (error) {
+        console.error('Error analyzing image:', error);
+        analysisResult.innerHTML = `
+            <h4>Error</h4>
+            <p>${translations[currentLanguage].failedToAnalyze}</p>
+        `;
+    } finally {
+        analysisLoading.style.display = 'none';
+        analyzeBtn.disabled = false;
+    }
+}
     
     // History array
     let generationHistory = JSON.parse(localStorage.getItem('generationHistory')) || [];
@@ -452,6 +678,12 @@ document.addEventListener('DOMContentLoaded', function() {
         modelNotesToggle.querySelector('span').innerHTML = `<i class="fas fa-info-circle"></i> ${t.modelNotes}`;
         filterToggleBtn.querySelector('span').textContent = t.filters;
         enhanceToggleBtn.querySelector('span').textContent = t.aiEnhance;
+        
+        // Add these lines to the updateLanguage function
+analyzeImageBtn.innerHTML = `<i class="fas fa-image"></i> ${t.analyzeImage}`;
+document.querySelector('#image-analysis-modal .modal-title').innerHTML = `<i class="fas fa-image"></i> ${t.imageAnalysis}`;
+uploadTrigger.innerHTML = `<i class="fas fa-upload"></i> ${t.uploadImage}`;
+document.querySelector('.analysis-loading p').textContent = t.analyzingImage;
         
         // Update model notes content
         const notesContent = modelNotesContent.querySelectorAll('.note');
@@ -1828,3 +2060,47 @@ document.addEventListener('DOMContentLoaded', function() {
         langId.addEventListener('click', () => FAQManager.translate('id'));
     }
 });
+
+// Add these to your DOM element selections
+const expandTextareaBtn = document.getElementById('expand-textarea-btn');
+const textareaOverlay = document.getElementById('textarea-overlay');
+const doneExpandingBtn = document.getElementById('done-expanding-btn');
+
+// Add these event listeners
+expandTextareaBtn.addEventListener('click', toggleTextareaExpansion);
+textareaOverlay.addEventListener('click', toggleTextareaExpansion);
+doneExpandingBtn.addEventListener('click', toggleTextareaExpansion);
+
+function toggleTextareaExpansion() {
+    promptTextarea.classList.toggle('expanded');
+    textareaOverlay.classList.toggle('visible');
+    doneExpandingBtn.classList.toggle('visible');
+    expandTextareaBtn.classList.toggle('expanded');
+    
+    if (promptTextarea.classList.contains('expanded')) {
+        // When expanding
+        promptTextarea.focus();
+        document.body.style.overflow = 'hidden'; // Prevent page scrolling
+    } else {
+        // When collapsing
+        document.body.style.overflow = ''; // Re-enable page scrolling
+    }
+}
+
+// Auto-resize textarea as user types
+promptTextarea.addEventListener('input', function() {
+    if (!promptTextarea.classList.contains('expanded')) {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+        
+        // Limit height before suggesting expansion
+        if (this.scrollHeight > 200 && !this.classList.contains('expanded')) {
+            expandTextareaBtn.style.opacity = '1';
+            expandTextareaBtn.style.visibility = 'visible';
+        }
+    }
+});
+
+// Initialize
+promptTextarea.style.height = 'auto';
+promptTextarea.style.height = (promptTextarea.scrollHeight) + 'px';
