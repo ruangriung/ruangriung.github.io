@@ -74,7 +74,8 @@ const TranslationModule = (function() {
   }
   
   // Translate text between languages using Pollinations API
-  async function translateText(sourceLang, targetLang) {
+  // Dalam fungsi translateText, perbaiki bagian finally untuk memastikan spinner berhenti dalam semua kondisi
+async function translateText(sourceLang, targetLang) {
     const text = translationTextarea.value.trim();
     if (!text) {
       showTranslationError('Please enter text to translate');
@@ -138,16 +139,16 @@ const TranslationModule = (function() {
         showTranslationSuccess('Used fallback translation (may be less accurate)');
       }
     } finally {
-      // Restore button state
+      // Restore button state - pastikan ini dijalankan dalam semua kasus
       if (sourceLang === 'en') {
-        translateEnIdBtn.innerHTML = originalButtonText;
+        translateEnIdBtn.innerHTML = 'English to Bahasa <i class="fas fa-arrow-right"></i>';
         translateEnIdBtn.disabled = false;
       } else {
-        translateIdEnBtn.innerHTML = originalButtonText;
+        translateIdEnBtn.innerHTML = 'Bahasa to English <i class="fas fa-arrow-left"></i>';
         translateIdEnBtn.disabled = false;
       }
     }
-  }
+}
   
   // Simple fallback translation for common words/phrases
   function getFallbackTranslation(text, sourceLang, targetLang) {
