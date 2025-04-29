@@ -18,8 +18,8 @@ const TranslationModule = (function() {
     en: {
       toggleText: "Translation",
       placeholder: "Enter text to translate...",
-      translateEnId: "English to Bahasa",
-      translateIdEn: "Bahasa to English",
+      translateEnId: "English to Indonesia",
+      translateIdEn: "Indonesia to English",
       applyText: "Apply to Prompt",
       noTextError: "Please enter text to translate",
       successMessage: "Translation completed!",
@@ -30,8 +30,8 @@ const TranslationModule = (function() {
     id: {
       toggleText: "Terjemahan",
       placeholder: "Masukkan teks untuk diterjemahkan...",
-      translateEnId: "Inggris ke Bahasa",
-      translateIdEn: "Bahasa ke Inggris",
+      translateEnId: "Inggris ke Indonesia",
+      translateIdEn: "Indonesia ke Inggris",
       applyText: "Terapkan ke Prompt",
       noTextError: "Silakan masukkan teks untuk diterjemahkan",
       successMessage: "Terjemahan selesai!",
