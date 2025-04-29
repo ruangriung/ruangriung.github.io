@@ -13,6 +13,37 @@ const TranslationModule = (function() {
   // Pollinations Text API endpoint
   const TEXT_API = 'https://text.pollinations.ai';
   
+  // Language translations
+  const translations = {
+    en: {
+      toggleText: "Translation",
+      placeholder: "Enter text to translate...",
+      translateEnId: "English to Bahasa",
+      translateIdEn: "Bahasa to English",
+      applyText: "Apply to Prompt",
+      noTextError: "Please enter text to translate",
+      successMessage: "Translation completed!",
+      failedMessage: "Translation failed. Please try again.",
+      fallbackMessage: "Used fallback translation (may be less accurate)",
+      applyError: "No translated text to apply"
+    },
+    id: {
+      toggleText: "Terjemahan",
+      placeholder: "Masukkan teks untuk diterjemahkan...",
+      translateEnId: "Inggris ke Bahasa",
+      translateIdEn: "Bahasa ke Inggris",
+      applyText: "Terapkan ke Prompt",
+      noTextError: "Silakan masukkan teks untuk diterjemahkan",
+      successMessage: "Terjemahan selesai!",
+      failedMessage: "Terjemahan gagal. Silakan coba lagi.",
+      fallbackMessage: "Menggunakan terjemahan cadangan (mungkin kurang akurat)",
+      applyError: "Tidak ada teks terjemahan untuk diterapkan"
+    }
+  };
+
+  // Current language
+  let currentLanguage = localStorage.getItem('language') || 'en';
+
   // Initialize the module
   function init() {
     // Set up event listeners
@@ -32,8 +63,22 @@ const TranslationModule = (function() {
     if (savedText) {
       translationTextarea.value = savedText;
     }
+
+    // Update UI with current language
+    updateTranslationUI();
   }
-  
+
+  // Update UI elements based on current language
+  function updateTranslationUI() {
+    const t = translations[currentLanguage];
+    
+    translationToggle.querySelector('span').textContent = t.toggleText;
+    translationTextarea.placeholder = t.placeholder;
+    translateEnIdBtn.innerHTML = `${t.translateEnId} <i class="fas fa-arrow-right"></i>`;
+    translateIdEnBtn.innerHTML = `${t.translateIdEn} <i class="fas fa-arrow-left"></i>`;
+    applyTranslationBtn.innerHTML = `<i class="fas fa-check"></i> ${t.applyText}`;
+  }
+
   // Toggle the translation module visibility
   function toggleTranslationModule() {
     if (isOpen) {
@@ -74,11 +119,12 @@ const TranslationModule = (function() {
   }
   
   // Translate text between languages using Pollinations API
-  // Dalam fungsi translateText, perbaiki bagian finally untuk memastikan spinner berhenti dalam semua kondisi
-async function translateText(sourceLang, targetLang) {
+  async function translateText(sourceLang, targetLang) {
     const text = translationTextarea.value.trim();
+    const t = translations[currentLanguage];
+    
     if (!text) {
-      showTranslationError('Please enter text to translate');
+      showTranslationError(t.noTextError);
       return;
     }
     
@@ -93,10 +139,12 @@ async function translateText(sourceLang, targetLang) {
           : translateIdEnBtn.innerHTML;
       
       if (sourceLang === 'en') {
-        translateEnIdBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Translating...';
+        translateEnIdBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + 
+          (currentLanguage === 'en' ? 'Translating...' : 'Menerjemahkan...');
         translateEnIdBtn.disabled = true;
       } else {
-        translateIdEnBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Translating...';
+        translateIdEnBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + 
+          (currentLanguage === 'en' ? 'Translating...' : 'Menerjemahkan...');
         translateIdEnBtn.disabled = true;
       }
       
@@ -127,28 +175,28 @@ async function translateText(sourceLang, targetLang) {
       translationTextarea.value = translatedText;
       
       // Show success message
-      showTranslationSuccess('Translation completed!');
+      showTranslationSuccess(t.successMessage);
     } catch (error) {
       console.error('Translation error:', error);
-      showTranslationError('Translation failed. Please try again.');
+      showTranslationError(t.failedMessage);
       
       // Fallback to simple word mapping if API fails
       const fallbackTranslation = getFallbackTranslation(text, sourceLang, targetLang);
       if (fallbackTranslation) {
         translationTextarea.value = fallbackTranslation;
-        showTranslationSuccess('Used fallback translation (may be less accurate)');
+        showTranslationSuccess(t.fallbackMessage);
       }
     } finally {
-      // Restore button state - pastikan ini dijalankan dalam semua kasus
+      // Restore button state
       if (sourceLang === 'en') {
-        translateEnIdBtn.innerHTML = 'English to Bahasa <i class="fas fa-arrow-right"></i>';
+        translateEnIdBtn.innerHTML = `${translations[currentLanguage].translateEnId} <i class="fas fa-arrow-right"></i>`;
         translateEnIdBtn.disabled = false;
       } else {
-        translateIdEnBtn.innerHTML = 'Bahasa to English <i class="fas fa-arrow-left"></i>';
+        translateIdEnBtn.innerHTML = `${translations[currentLanguage].translateIdEn} <i class="fas fa-arrow-left"></i>`;
         translateIdEnBtn.disabled = false;
       }
     }
-}
+  }
   
   // Simple fallback translation for common words/phrases
   function getFallbackTranslation(text, sourceLang, targetLang) {
@@ -212,9 +260,10 @@ async function translateText(sourceLang, targetLang) {
   
   // Apply the translated text to the main prompt textarea
   function applyTranslation() {
+    const t = translations[currentLanguage];
     const translatedText = translationTextarea.value.trim();
     if (!translatedText) {
-      showTranslationError('No translated text to apply');
+      showTranslationError(t.applyError);
       return;
     }
     
@@ -226,7 +275,7 @@ async function translateText(sourceLang, targetLang) {
     notification.className = 'translation-notification';
     notification.innerHTML = `
       <i class="fas fa-check-circle"></i>
-      <span>Translation applied to prompt!</span>
+      <span>${currentLanguage === 'en' ? 'Translation applied to prompt!' : 'Terjemahan diterapkan ke prompt!'}</span>
     `;
     
     document.body.appendChild(notification);
@@ -265,6 +314,12 @@ async function translateText(sourceLang, targetLang) {
       setTimeout(() => successElement.remove(), 300);
     }, 3000);
   }
+
+  // Update language
+  function updateLanguage(lang) {
+    currentLanguage = lang;
+    updateTranslationUI();
+  }
   
   // Public API
   return {
@@ -272,7 +327,8 @@ async function translateText(sourceLang, targetLang) {
     open: openTranslationModule,
     close: closeTranslationModule,
     translate: translateText,
-    apply: applyTranslation
+    apply: applyTranslation,
+    updateLanguage: updateLanguage
   };
 })();
 
@@ -331,4 +387,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   `;
   document.head.appendChild(style);
+
+  // Add language change listeners
+  const langEn = document.getElementById('lang-en');
+  const langId = document.getElementById('lang-id');
+
+  if (langEn) {
+    langEn.addEventListener('click', () => TranslationModule.updateLanguage('en'));
+  }
+
+  if (langId) {
+    langId.addEventListener('click', () => TranslationModule.updateLanguage('id'));
+  }
 });
