@@ -197,7 +197,8 @@ const TranslationModule = (function() {
       }
     }
   }
-  
+    const clearTranslationBtn = document.getElementById('clear-translation');
+clearTranslationBtn.addEventListener('click', clearTranslationText);
   // Simple fallback translation for common words/phrases
   function getFallbackTranslation(text, sourceLang, targetLang) {
     if (!text) return '';
@@ -321,6 +322,11 @@ const TranslationModule = (function() {
     updateTranslationUI();
   }
   
+  function clearTranslationText() {
+  translationTextarea.value = '';
+  localStorage.removeItem('translationText');
+}
+  
   // Public API
   return {
     init: init,
@@ -385,6 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
       from { opacity: 1; bottom: 20px; }
       to { opacity: 0; bottom: 10px; }
     }
+
   `;
   document.head.appendChild(style);
 
