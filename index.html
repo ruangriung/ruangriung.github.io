@@ -48,6 +48,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="assets/ruangriung.css" />
+    <link rel="manifest" href="manifest.json" />
   </head>
   <body>
     <div class="container">
@@ -1117,6 +1118,52 @@
     </div>
     <!-- Add this before other script tags -->
     <div id="notification-container"></div>
+    <script>
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Mencegah tampilan prompt otomatis
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Tampilkan tombol atau banner yang menawarkan untuk menambahkan ke home screen
+    const banner = document.createElement('div');
+    banner.innerHTML = `
+      <div style="background-color: #6c5ce7; color: white; padding: 10px; text-align: center;">
+        <span>Tambahkan shortcut ke layar utama untuk akses cepat!</span>
+        <button id="add-to-home" style="background-color: #ffffff; color: #6c5ce7; border: none; padding: 5px 10px; cursor: pointer;">Tambah ke Home</button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+
+    // Tanggapi klik pada tombol untuk menambahkan ke Home
+    document.getElementById('add-to-home').addEventListener('click', () => {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice
+        .then((choiceResult) => {
+          console.log(choiceResult.outcome);
+          if (choiceResult.outcome === 'accepted') {
+            console.log('Pengguna menambahkan aplikasi ke layar utama');
+          }
+          deferredPrompt = null;
+        });
+    });
+  });
+</script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then((registration) => {
+          console.log('Service Worker registered:', registration);
+        })
+        .catch((error) => {
+          console.log('Service Worker registration failed:', error);
+        });
+    });
+  }
+</script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/coinSystem.js"></script>
     <script src="assets/adBannerModule.js"></script>
