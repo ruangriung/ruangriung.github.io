@@ -81,12 +81,16 @@ const AIModelManager = (function() {
                 alert('API key validated successfully!');
             } else {
                 alert('Invalid API key. Please check and try again.');
-                modelSelect.value = 'pollinations'; // Revert to default
+                // Revert to pollinations (FLUX Turbo)
+                modelSelect.value = 'pollinations';
+                currentModel = 'pollinations';
             }
         } catch (error) {
             console.error('API key validation error:', error);
             alert('Error validating API key. Please try again.');
-            modelSelect.value = 'pollinations'; // Revert to default
+            // Revert to pollinations (FLUX Turbo)
+            modelSelect.value = 'pollinations';
+            currentModel = 'pollinations';
         } finally {
             validateApiKeyBtn.disabled = false;
             validateApiKeyBtn.textContent = 'Validate & Save';
@@ -143,7 +147,7 @@ const AIModelManager = (function() {
         return true;
     }
     
-    // Public methods
+// Public methods
     async function generateImage(prompt, settings) {
         if (!handleModelChange()) {
             return null; // API key not validated
@@ -234,18 +238,30 @@ const AIModelManager = (function() {
     
     // Initialize
     function init() {
-        modelSelect.addEventListener('change', handleModelChange);
+        modelSelect.addEventListener('change', function() {
+            if (!handleModelChange()) {
+                // If API key is not validated, revert to pollinations
+                modelSelect.value = 'pollinations';
+                currentModel = 'pollinations';
+            }
+        });
         
         validateApiKeyBtn.addEventListener('click', validateApiKey);
         cancelApiKeyBtn.addEventListener('click', () => {
             modelSelect.value = 'pollinations';
+            currentModel = 'pollinations';
             hideApiKeyModal();
         });
-        closeApiKeyModal.addEventListener('click', hideApiKeyModal);
+        closeApiKeyModal.addEventListener('click', () => {
+            modelSelect.value = 'pollinations';
+            currentModel = 'pollinations';
+            hideApiKeyModal();
+        });
         
         apiKeyModal.addEventListener('click', function(e) {
             if (e.target === apiKeyModal) {
                 modelSelect.value = 'pollinations';
+                currentModel = 'pollinations';
                 hideApiKeyModal();
             }
         });
