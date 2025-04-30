@@ -25,7 +25,8 @@ const TranslationModule = (function() {
       successMessage: "Translation completed!",
       failedMessage: "Translation failed. Please try again.",
       fallbackMessage: "Used fallback translation (may be less accurate)",
-      applyError: "No translated text to apply"
+      applyError: "No translated text to apply",
+      clearText: "Clear Text"
     },
     id: {
       toggleText: "Terjemahan",
@@ -37,7 +38,8 @@ const TranslationModule = (function() {
       successMessage: "Terjemahan selesai!",
       failedMessage: "Terjemahan gagal. Silakan coba lagi.",
       fallbackMessage: "Menggunakan terjemahan cadangan (mungkin kurang akurat)",
-      applyError: "Tidak ada teks terjemahan untuk diterapkan"
+      applyError: "Tidak ada teks terjemahan untuk diterapkan",
+      clearText: "Hapus Teks"
     }
   };
 
@@ -77,6 +79,10 @@ const TranslationModule = (function() {
     translateEnIdBtn.innerHTML = `${t.translateEnId} <i class="fas fa-arrow-right"></i>`;
     translateIdEnBtn.innerHTML = `${t.translateIdEn} <i class="fas fa-arrow-left"></i>`;
     applyTranslationBtn.innerHTML = `<i class="fas fa-check"></i> ${t.applyText}`;
+    const clearTranslationBtn = document.getElementById('clear-translation');
+  if (clearTranslationBtn) {
+    clearTranslationBtn.innerHTML = `<i class="fas fa-times"></i> ${t.clearText}`;
+  }
   }
 
   // Toggle the translation module visibility
