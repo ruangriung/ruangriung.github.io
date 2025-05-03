@@ -359,7 +359,7 @@ const AIModelManager = (function() {
         if (modelSelect) {
             modelSelect.innerHTML = `
                 <option value="flux">FLUX</option>
-                <option value="turbo">Turbo</option>
+                <option value="turbo">Turbo (AI NSFW)</option>
                 <option value="dalle3">DALL-E 3 (OpenAI)</option>
                 <option value="stability">Stability AI</option>
             `;
