@@ -31,13 +31,11 @@ const AIModelManager = (function() {
     function showApiKeyModal(model) {
         currentModel = model;
         
-        // Clear any existing event listeners
         const oldShowPassword = document.getElementById('show-password');
         if (oldShowPassword) {
             oldShowPassword.replaceWith(oldShowPassword.cloneNode(true));
         }
         
-        // Update modal content based on model
         if (model === 'dalle3') {
             apiKeyTitle.innerHTML = '<i class="fas fa-key"></i> OpenAI API Key Required';
             apiKeyInstructions.textContent = 'Please enter your OpenAI API key to use DALL-E 3.';
@@ -67,7 +65,6 @@ const AIModelManager = (function() {
             apiKeyInput.placeholder = 'Enter password...';
             apiKeyInput.type = 'password';
             
-            // Add show/hide password toggle
             document.getElementById('show-password')?.addEventListener('change', function(e) {
                 apiKeyInput.type = e.target.checked ? 'text' : 'password';
             });
@@ -81,34 +78,31 @@ const AIModelManager = (function() {
         apiKeyModal.style.display = 'none';
     }
     
-    function clearApiKeys() {
-        // Clear from memory
+    function clearAllData() {
+        // Clear memory
         API_KEYS.dalle3 = '';
         API_KEYS.stability = '';
         API_KEYS.turbo = '';
         
-        // Clear from localStorage
-        localStorage.removeItem('dalle3_api_key');
-        localStorage.removeItem('stability_api_key');
-        localStorage.removeItem('turbo_password');
+        // Clear localStorage completely
+        localStorage.clear();
         
-        // Reset model to default
-        currentModel = 'flux';
+        // Reset form values
         if (modelSelect) modelSelect.value = 'flux';
         if (safeFilterCheckbox) safeFilterCheckbox.checked = true;
+        if (apiKeyInput) apiKeyInput.value = '';
+        
+        // Reset current model
+        currentModel = 'flux';
+        
+        // Clear any session data if needed
+        sessionStorage.clear();
     }
     
     async function validateApiKey() {
         const apiKey = apiKeyInput.value.trim();
         if (!apiKey) {
-            Swal.fire({
-                title: 'Error',
-                text: 'Please enter a valid API key/password',
-                icon: 'error',
-                confirmButtonColor: 'var(--primary)',
-                background: 'var(--bg)',
-                color: 'var(--text)'
-            });
+            showError('Please enter a valid API key/password');
             return;
         }
         
@@ -123,73 +117,37 @@ const AIModelManager = (function() {
             } else if (currentModel === 'stability') {
                 isValid = await validateStabilityKey(apiKey);
             } else if (currentModel === 'turbo') {
-                // For demo purposes, use a simple password check
                 isValid = apiKey === 'ruangriungxyz';
                 if (isValid) {
-                    // Disable safe filter for turbo model
                     if (safeFilterCheckbox) safeFilterCheckbox.checked = false;
                 }
             }
             
             if (isValid) {
-                // Save the valid API key/password
                 API_KEYS[currentModel] = apiKey;
-                if (currentModel === 'turbo') {
-                    localStorage.setItem('turbo_password', apiKey);
-                } else if (currentModel === 'dalle3') {
-                    localStorage.setItem('dalle3_api_key', apiKey);
-                } else if (currentModel === 'stability') {
-                    localStorage.setItem('stability_api_key', apiKey);
-                }
+                localStorage.setItem(
+                    currentModel === 'turbo' ? 'turbo_password' : 
+                    currentModel === 'dalle3' ? 'dalle3_api_key' : 'stability_api_key', 
+                    apiKey
+                );
                 
                 hideApiKeyModal();
                 
-                // Update the model select to the validated model
                 if (modelSelect) modelSelect.value = currentModel;
                 
-                if (currentModel === 'turbo') {
-                    Swal.fire({
-                        title: 'Success',
-                        html: 'Password validated! <span style="color: var(--danger)">NSFW filter has been disabled</span> for Turbo model.',
-                        icon: 'success',
-                        confirmButtonColor: 'var(--primary)',
-                        background: 'var(--bg)',
-                        color: 'var(--text)'
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Success',
-                        text: 'API key validated successfully!',
-                        icon: 'success',
-                        confirmButtonColor: 'var(--primary)',
-                        background: 'var(--bg)',
-                        color: 'var(--text)'
-                    });
-                }
+                showSuccess(
+                    currentModel === 'turbo' ? 
+                    'Password validated! <span style="color: var(--danger)">NSFW filter has been disabled</span>' : 
+                    'API key validated successfully!'
+                );
             } else {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Invalid API key/password. Please check and try again.',
-                    icon: 'error',
-                    confirmButtonColor: 'var(--primary)',
-                    background: 'var(--bg)',
-                    color: 'var(--text)'
-                });
-                // Revert to flux
+                showError('Invalid API key/password. Please check and try again.');
                 if (modelSelect) modelSelect.value = 'flux';
                 currentModel = 'flux';
             }
         } catch (error) {
-            console.error('API key validation error:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'Error validating API key. Please try again.',
-                icon: 'error',
-                confirmButtonColor: 'var(--primary)',
-                background: 'var(--bg)',
-                color: 'var(--text)'
-            });
-            // Revert to flux
+            console.error('Validation error:', error);
+            showError('Error validating API key. Please try again.');
             if (modelSelect) modelSelect.value = 'flux';
             currentModel = 'flux';
         } finally {
@@ -206,14 +164,9 @@ const AIModelManager = (function() {
                     'Authorization': `Bearer ${apiKey}`
                 }
             });
-            
-            if (response.ok) {
-                const data = await response.json();
-                return Array.isArray(data.data);
-            }
-            return false;
+            return response.ok && (await response.json()).data;
         } catch (error) {
-            console.error('OpenAI key validation error:', error);
+            console.error('OpenAI validation error:', error);
             return false;
         }
     }
@@ -226,10 +179,9 @@ const AIModelManager = (function() {
                     'Authorization': `Bearer ${apiKey}`
                 }
             });
-            
             return response.ok;
         } catch (error) {
-            console.error('Stability key validation error:', error);
+            console.error('Stability validation error:', error);
             return false;
         }
     }
@@ -239,17 +191,17 @@ const AIModelManager = (function() {
         
         const selectedModel = modelSelect.value;
         
-        if (selectedModel === 'dalle3' || selectedModel === 'stability' || selectedModel === 'turbo') {
+        if (['turbo', 'dalle3', 'stability'].includes(selectedModel)) {
             if (!API_KEYS[selectedModel]) {
                 showApiKeyModal(selectedModel);
-                return false; // Prevent model change until validated
-            } else if (selectedModel === 'turbo') {
-                // Disable safe filter for turbo model
-                if (safeFilterCheckbox) safeFilterCheckbox.checked = false;
+                return false;
             }
-        } else if (selectedModel === 'flux') {
-            // Enable safe filter for flux model
-            if (safeFilterCheckbox) safeFilterCheckbox.checked = true;
+            
+            if (selectedModel === 'turbo' && safeFilterCheckbox) {
+                safeFilterCheckbox.checked = false;
+            }
+        } else if (selectedModel === 'flux' && safeFilterCheckbox) {
+            safeFilterCheckbox.checked = true;
         }
         
         currentModel = selectedModel;
@@ -261,30 +213,31 @@ const AIModelManager = (function() {
         
         resetBtn.addEventListener('click', function() {
             Swal.fire({
-                title: 'Reset All Settings?',
-                text: "This will clear all saved data including API keys and preferences. This cannot be undone!",
+                title: 'Reset All Data?',
+                html: `
+                    <div style="color: var(--danger); margin-bottom: 15px;">
+                        <i class="fas fa-exclamation-triangle"></i> This will permanently delete:
+                    </div>
+                    <ul style="text-align: left; margin-left: 20px;">
+                        <li>All API keys and passwords</li>
+                        <li>Application preferences</li>
+                        <li>Session data</li>
+                    </ul>
+                `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: 'var(--primary)',
                 cancelButtonColor: 'var(--danger)',
-                confirmButtonText: 'Yes, reset!',
+                confirmButtonText: 'Yes, reset everything',
                 cancelButtonText: 'Cancel',
                 background: 'var(--bg)',
-                color: 'var(--text)'
+                color: 'var(--text)',
+                width: '90%',
+                maxWidth: '500px'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Clear all stored data
-                    clearApiKeys();
-                    
-                    // Show confirmation
-                    Swal.fire({
-                        title: 'Reset Complete!',
-                        text: 'All settings have been reset to defaults.',
-                        icon: 'success',
-                        confirmButtonColor: 'var(--primary)',
-                        background: 'var(--bg)',
-                        color: 'var(--text)'
-                    }).then(() => {
+                    clearAllData();
+                    showSuccess('All data has been reset successfully!').then(() => {
                         location.reload();
                     });
                 }
@@ -292,11 +245,32 @@ const AIModelManager = (function() {
         });
     }
     
+    // Helper functions
+    function showError(message) {
+        return Swal.fire({
+            title: 'Error',
+            html: message,
+            icon: 'error',
+            confirmButtonColor: 'var(--primary)',
+            background: 'var(--bg)',
+            color: 'var(--text)'
+        });
+    }
+    
+    function showSuccess(message) {
+        return Swal.fire({
+            title: 'Success',
+            html: message,
+            icon: 'success',
+            confirmButtonColor: 'var(--primary)',
+            background: 'var(--bg)',
+            color: 'var(--text)'
+        });
+    }
+    
     // Public methods
     async function generateImage(prompt, settings) {
-        if (!handleModelChange()) {
-            return null; // API key not validated
-        }
+        if (!handleModelChange()) return null;
         
         try {
             switch(currentModel) {
@@ -306,20 +280,12 @@ const AIModelManager = (function() {
                     return await generateWithStability(prompt, settings);
                 case 'turbo':
                     return generateWithPollinations(prompt, settings, 'turbo');
-                case 'flux':
                 default:
                     return generateWithPollinations(prompt, settings, 'flux');
             }
         } catch (error) {
-            console.error('Image generation error:', error);
-            Swal.fire({
-                title: 'Generation Error',
-                text: error.message || 'Failed to generate image',
-                icon: 'error',
-                confirmButtonColor: 'var(--primary)',
-                background: 'var(--bg)',
-                color: 'var(--text)'
-            });
+            console.error('Generation error:', error);
+            showError(error.message || 'Failed to generate image');
             throw error;
         }
     }
@@ -342,11 +308,10 @@ const AIModelManager = (function() {
         
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error?.message || 'Failed to generate image with DALL-E 3');
+            throw new Error(errorData.error?.message || 'DALL-E 3 generation failed');
         }
         
-        const data = await response.json();
-        return data.data[0].url;
+        return (await response.json()).data[0].url;
     }
     
     async function generateWithStability(prompt, settings) {
@@ -369,94 +334,55 @@ const AIModelManager = (function() {
         
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to generate image with Stability AI');
+            throw new Error(errorData.message || 'Stability AI generation failed');
         }
         
-        const data = await response.json();
-        // Stability returns base64 image data
-        return `data:image/png;base64,${data.artifacts[0].base64}`;
+        return `data:image/png;base64,${(await response.json()).artifacts[0].base64}`;
     }
     
     function generateWithPollinations(prompt, settings, modelType = 'flux') {
-        const width = settings.width || 1024;
-        const height = settings.height || 1024;
-        const safeFilter = modelType === 'turbo' ? false : settings.safeFilter !== false;
+        const params = new URLSearchParams({
+            width: settings.width || 1024,
+            height: settings.height || 1024,
+            nologo: true,
+            safe: modelType === 'turbo' ? false : settings.safeFilter !== false,
+            model: modelType
+        });
         
-        let ratioParam = `?width=${width}&height=${height}&nologo=true&safe=${safeFilter}&model=${modelType}`;
+        if (settings.seed) params.set('seed', settings.seed);
         
-        if (settings.seed) {
-            ratioParam += `&seed=${settings.seed}`;
-        }
-        
-        const encodedPrompt = encodeURIComponent(prompt);
-        return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
+        return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params}`;
     }
     
     // Initialize
     function init() {
-        // Update model select options in the DOM
         if (modelSelect) {
-            const modelOptions = `
+            modelSelect.innerHTML = `
                 <option value="flux">FLUX</option>
                 <option value="turbo">Turbo</option>
                 <option value="dalle3">DALL-E 3 (OpenAI)</option>
                 <option value="stability">Stability AI</option>
             `;
-            modelSelect.innerHTML = modelOptions;
             modelSelect.value = currentModel;
-            
-            modelSelect.addEventListener('change', function() {
-                const selectedModel = this.value;
-                
-                if (selectedModel === 'turbo' || selectedModel === 'dalle3' || selectedModel === 'stability') {
-                    if (!API_KEYS[selectedModel]) {
-                        showApiKeyModal(selectedModel);
-                        this.value = currentModel; // Revert selection until validated
-                        return;
-                    }
-                    
-                    if (selectedModel === 'turbo') {
-                        if (safeFilterCheckbox) safeFilterCheckbox.checked = false;
-                    }
-                } else if (selectedModel === 'flux') {
-                    if (safeFilterCheckbox) safeFilterCheckbox.checked = true;
-                }
-                
-                currentModel = selectedModel;
-            });
+            modelSelect.addEventListener('change', handleModelChange);
         }
         
-        if (validateApiKeyBtn) {
-            validateApiKeyBtn.addEventListener('click', validateApiKey);
-        }
-        
-        if (cancelApiKeyBtn) {
-            cancelApiKeyBtn.addEventListener('click', () => {
+        if (validateApiKeyBtn) validateApiKeyBtn.addEventListener('click', validateApiKey);
+        if (cancelApiKeyBtn) cancelApiKeyBtn.addEventListener('click', () => {
+            if (modelSelect) modelSelect.value = 'flux';
+            hideApiKeyModal();
+        });
+        if (closeApiKeyModal) closeApiKeyModal.addEventListener('click', () => {
+            if (modelSelect) modelSelect.value = 'flux';
+            hideApiKeyModal();
+        });
+        if (apiKeyModal) apiKeyModal.addEventListener('click', (e) => {
+            if (e.target === apiKeyModal) {
                 if (modelSelect) modelSelect.value = 'flux';
-                currentModel = 'flux';
                 hideApiKeyModal();
-            });
-        }
+            }
+        });
         
-        if (closeApiKeyModal) {
-            closeApiKeyModal.addEventListener('click', () => {
-                if (modelSelect) modelSelect.value = 'flux';
-                currentModel = 'flux';
-                hideApiKeyModal();
-            });
-        }
-        
-        if (apiKeyModal) {
-            apiKeyModal.addEventListener('click', function(e) {
-                if (e.target === apiKeyModal) {
-                    if (modelSelect) modelSelect.value = 'flux';
-                    currentModel = 'flux';
-                    hideApiKeyModal();
-                }
-            });
-        }
-        
-        // Setup reset button
         setupResetButton();
     }
     
@@ -464,11 +390,9 @@ const AIModelManager = (function() {
     return {
         init: init,
         generateImage: generateImage,
-        clearApiKeys: clearApiKeys
+        clearAllData: clearAllData
     };
 })();
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    AIModelManager.init();
-});
+document.addEventListener('DOMContentLoaded', AIModelManager.init);
