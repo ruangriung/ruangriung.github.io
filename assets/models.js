@@ -79,13 +79,23 @@ const AIModelManager = (function() {
     }
     
     function clearAllData() {
+        // Simpan data koin sebelum reset
+        const savedCoins = localStorage.getItem('ruangriung_coin_data');
+        
         // Clear memory
         API_KEYS.dalle3 = '';
         API_KEYS.stability = '';
         API_KEYS.turbo = '';
         
-        // Clear localStorage completely
-        localStorage.clear();
+        // Clear localStorage tapi pertahankan koin
+        localStorage.removeItem('dalle3_api_key');
+        localStorage.removeItem('stability_api_key');
+        localStorage.removeItem('turbo_password');
+        
+        // Kembalikan data koin jika ada
+        if (savedCoins) {
+            localStorage.setItem('ruangriung_coin_data', savedCoins);
+        }
         
         // Reset form values
         if (modelSelect) modelSelect.value = 'flux';
@@ -95,8 +105,11 @@ const AIModelManager = (function() {
         // Reset current model
         currentModel = 'flux';
         
-        // Clear any session data if needed
+        // Clear session data kecuali yang diperlukan
         sessionStorage.clear();
+        
+        // Perbarui tombol backToTop
+        initBackToTopButton();
     }
     
     async function validateApiKey() {
@@ -223,6 +236,9 @@ const AIModelManager = (function() {
                         <li>Application preferences</li>
                         <li>Session data</li>
                     </ul>
+                    <div style="margin-top: 15px; color: var(--primary);">
+                        <i class="fas fa-info-circle"></i> Note: Your coins will NOT be reset
+                    </div>
                 `,
                 icon: 'warning',
                 showCancelButton: true,
@@ -242,6 +258,26 @@ const AIModelManager = (function() {
                     });
                 }
             });
+        });
+    }
+    
+    function initBackToTopButton() {
+        const backToTopBtn = document.getElementById('backToTop');
+        if (!backToTopBtn) return;
+        
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
         });
     }
     
@@ -384,6 +420,7 @@ const AIModelManager = (function() {
         });
         
         setupResetButton();
+        initBackToTopButton();
     }
     
     // Public API
