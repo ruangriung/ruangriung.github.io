@@ -79,7 +79,6 @@ const AIModelManager = (function() {
     }
     
     function clearAllData() {
-        // Simpan data koin sebelum reset
         const savedCoins = localStorage.getItem('ruangriung_coin_data');
         
         // Clear memory
@@ -87,12 +86,11 @@ const AIModelManager = (function() {
         API_KEYS.stability = '';
         API_KEYS.turbo = '';
         
-        // Clear localStorage tapi pertahankan koin
+        // Clear localStorage but keep coins
         localStorage.removeItem('dalle3_api_key');
         localStorage.removeItem('stability_api_key');
         localStorage.removeItem('turbo_password');
         
-        // Kembalikan data koin jika ada
         if (savedCoins) {
             localStorage.setItem('ruangriung_coin_data', savedCoins);
         }
@@ -102,13 +100,8 @@ const AIModelManager = (function() {
         if (safeFilterCheckbox) safeFilterCheckbox.checked = true;
         if (apiKeyInput) apiKeyInput.value = '';
         
-        // Reset current model
         currentModel = 'flux';
-        
-        // Clear session data kecuali yang diperlukan
         sessionStorage.clear();
-        
-        // Perbarui tombol backToTop
         initBackToTopButton();
     }
     
@@ -130,20 +123,19 @@ const AIModelManager = (function() {
             } else if (currentModel === 'stability') {
                 isValid = await validateStabilityKey(apiKey);
             } else if (currentModel === 'turbo') {
-                isValid = apiKey === 'ruangriungxyz';
+                // Panggil file PHP di server Anda untuk validasi password
+                const response = await fetch('https://ariftirtana.com/private/get-turbo-password.php');
+                const validPassword = (await response.text()).trim();
+                isValid = apiKey === validPassword;
+                
                 if (isValid) {
                     if (safeFilterCheckbox) safeFilterCheckbox.checked = false;
+                    localStorage.setItem('turbo_password', apiKey); // Cache password di localStorage
                 }
             }
             
             if (isValid) {
                 API_KEYS[currentModel] = apiKey;
-                localStorage.setItem(
-                    currentModel === 'turbo' ? 'turbo_password' : 
-                    currentModel === 'dalle3' ? 'dalle3_api_key' : 'stability_api_key', 
-                    apiKey
-                );
-                
                 hideApiKeyModal();
                 
                 if (modelSelect) modelSelect.value = currentModel;
