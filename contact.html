@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - RuangRiung AI Image Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/ruangriung.css">
+  <style>
+    :root {
+      --form-bg: #ffffff;
+      --form-text: #333333;
+      --form-border: #dddddd;
+      --form-bg-dark: #2d3748;
+      --form-text-dark: #f7fafc;
+      --form-border-dark: #4a5568;
+    }
+
+    .contact-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .contact-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .contact-header h2 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid var(--form-border);
+      border-radius: 8px;
+      background: var(--form-bg);
+      color: var(--form-text);
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+    }
+
+    textarea.form-control {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 16px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: rgba(108, 92, 231, 0.1);
+    }
+
+    .contact-info {
+      margin-top: 3rem;
+      text-align: center;
+      padding: 1.5rem;
+      background: rgba(108, 92, 231, 0.1);
+      border-radius: 12px;
+      border: 1px solid rgba(108, 92, 231, 0.2);
+    }
+
+    /* Dark mode adjustments */
+    .dark-mode .contact-container {
+      background: var(--card-bg-dark);
+    }
+
+    .dark-mode .form-control {
+      background: var(--form-bg-dark);
+      color: var(--form-text-dark);
+      border-color: var(--form-border-dark);
+    }
+
+    .dark-mode .contact-info {
+      background: rgba(108, 92, 231, 0.15);
+      border-color: rgba(108, 92, 231, 0.3);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .form-group {
+        min-width: 100%;
+      }
+      
+      .contact-container {
+        padding: 1.5rem;
+        margin: 1rem;
+      }
+      
+      .action-buttons {
+        flex-direction: column-reverse;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-envelope"></i> Contact RuangRiung</h1>
+      <p class="subtitle">We'd love to hear from you!</p>
+    </header>
+
+    <div class="contact-container">
+      <div class="contact-header">
+        <h2><i class="fas fa-headset"></i> Get In Touch</h2>
+        <p>Have questions, suggestions, or feedback? Reach out to us!</p>
+      </div>
+
+      <form id="contactForm" action="https://formspree.io/f/xeoggznq" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name"><i class="fas fa-user"></i> Your Name</label>
+            <input type="text" id="name" name="name" class="form-control" required placeholder="Enter your name">
+          </div>
+
+          <div class="form-group">
+            <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+            <input type="email" id="email" name="email" class="form-control" required placeholder="your@email.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone"><i class="fas fa-phone"></i> Phone (Optional)</label>
+            <input type="tel" id="phone" name="phone" class="form-control" placeholder="+62 123 4567 890">
+          </div>
+
+          <div class="form-group">
+            <label for="subject"><i class="fas fa-tag"></i> Subject</label>
+            <input type="text" id="subject" name="subject" class="form-control" required placeholder="What's this about?">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="message"><i class="fas fa-comment-dots"></i> Message</label>
+          <textarea id="message" name="message" class="form-control" required placeholder="Type your message here..."></textarea>
+        </div>
+
+        <div class="action-buttons">
+          <a href="https://ruangriung.my.id" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Back to Home
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i> Send Message
+          </button>
+        </div>
+      </form>
+
+      <div class="contact-info">
+        <h3><i class="fas fa-info-circle"></i> Other Ways to Reach Us</h3>
+        <p>
+          <i class="fas fa-envelope"></i> Email: 
+          <a href="mailto:admin@ruangriung.my.id" style="color: var(--primary);">admin@ruangriung.my.id</a>
+        </p>
+        
+        <p>
+          <i class="fas fa-users"></i> Join our Facebook community:
+        </p>
+        
+        <div style="display: flex; justify-content: center; gap: 1.5rem; margin-top: 1rem;">
+          <a href="https://www.facebook.com/groups/1182261482811767" 
+             target="_blank" 
+             title="Facebook Group"
+             style="font-size: 1.5rem; color: var(--primary);">
+            <i class="fab fa-facebook"></i>
+          </a>
+          <a href="mailto:admin@ruangriung.my.id" 
+             title="Email Us"
+             style="font-size: 1.5rem; color: var(--primary);">
+            <i class="fas fa-envelope"></i>
+          </a>
+          <a href="https://wa.me/6281234567890" 
+             target="_blank"
+             title="WhatsApp"
+             style="font-size: 1.5rem; color: var(--primary);">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="background: var(--card-bg); padding: 2rem; text-align: center; border-top: 1px solid var(--border); margin-top: 2rem;">
+    <p style="color: var(--text); margin-bottom: 0.5rem;">
+      &copy; <span id="current-year"></span> RuangRiung AI Image Generator
+    </p>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0;">
+      Powered by <a href="https://pollinations.ai" target="_blank" style="color: var(--primary);">Pollinations.ai</a>
+    </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set initial form colors based on dark mode
+      updateFormColors();
+      
+      // Watch for dark mode changes
+      const darkModeObserver = new MutationObserver(updateFormColors);
+      darkModeObserver.observe(document.body, { 
+        attributes: true, 
+        attributeFilter: ['class'] 
+      });
+
+      function updateFormColors() {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        const inputs = document.querySelectorAll('.form-control');
+        
+        inputs.forEach(input => {
+          input.style.backgroundColor = isDarkMode ? '#2d3748' : '#ffffff';
+          input.style.color = isDarkMode ? '#f7fafc' : '#333333';
+          input.style.borderColor = isDarkMode ? '#4a5568' : '#dddddd';
+        });
+      }
+
+      const contactForm = document.getElementById('contactForm');
+      const currentLanguage = localStorage.getItem('language') || 'en';
+      
+      contactForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(contactForm);
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        
+        try {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${
+            currentLanguage === 'en' ? 'Sending...' : 'Mengirim...'
+          }`;
+          
+          const response = await fetch(contactForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+          });
+          
+          if (response.ok) {
+            Swal.fire({
+              title: currentLanguage === 'en' ? 'Success!' : 'Berhasil!',
+              html: currentLanguage === 'en' 
+                ? `<p>Thank you for contacting us!</p><p>We'll respond soon.</p>`
+                : `<p>Terima kasih telah menghubungi kami!</p><p>Kami akan segera merespons.</p>`,
+              icon: 'success',
+              confirmButtonColor: '#6c5ce7'
+            });
+            contactForm.reset();
+          } else {
+            throw new Error('Form submission failed');
+          }
+        } catch (error) {
+          Swal.fire({
+            title: currentLanguage === 'en' ? 'Error' : 'Kesalahan',
+            text: currentLanguage === 'en' 
+              ? 'Failed to send message. Please try again.' 
+              : 'Gagal mengirim pesan. Silakan coba lagi.',
+            icon: 'error',
+            confirmButtonColor: '#6c5ce7'
+          });
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i> ${
+            currentLanguage === 'en' ? 'Send Message' : 'Kirim Pesan'
+          }`;
+        }
+      });
+      
+      // Set current year in footer
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+    });
+  </script>
+</body>
+</html>
