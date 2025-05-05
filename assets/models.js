@@ -2,17 +2,28 @@
 const AIModelManager = (function() {
     // Private variables
     const API_KEYS = {
-        dalle3: localStorage.getItem('dalle3_api_key') || '',
-        stability: localStorage.getItem('stability_api_key') || '',
-        turbo: localStorage.getItem('turbo_password') || ''
+        dalle3: {
+            key: localStorage.getItem('dalle3_api_key') || '',
+            timestamp: localStorage.getItem('dalle3_api_key_timestamp') || 0
+        },
+        stability: {
+            key: localStorage.getItem('stability_api_key') || '',
+            timestamp: localStorage.getItem('stability_api_key_timestamp') || 0
+        },
+        turbo: {
+            key: localStorage.getItem('turbo_password') || '',
+            timestamp: localStorage.getItem('turbo_password_timestamp') || 0
+        }
     };
-    
+
+    const EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
     const MODEL_ENDPOINTS = {
         dalle3: 'https://api.openai.com/v1/images/generations',
         stability: 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image'
     };
     
     let currentModel = 'flux'; // Default to flux
+    let expiryInterval;
     
     // DOM Elements
     const modelSelect = document.getElementById('model');
@@ -39,33 +50,46 @@ const AIModelManager = (function() {
         if (model === 'dalle3') {
             apiKeyTitle.innerHTML = '<i class="fas fa-key"></i> OpenAI API Key Required';
             apiKeyInstructions.textContent = 'Please enter your OpenAI API key to use DALL-E 3.';
-            apiKeyNote.innerHTML = 'Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI</a>.';
-            apiKeyInput.value = API_KEYS.dalle3;
+            apiKeyNote.innerHTML = `
+                <div>Get your API key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI</a>.</div>
+                <div style="margin-top: 10px; color: #FF6B6B; font-size: 0.9em;">
+                    <i class="fas fa-clock"></i> For security reasons, API keys will expire after 24 hours
+                </div>
+            `;
+            apiKeyInput.value = API_KEYS.dalle3.key;
             apiKeyInput.placeholder = 'sk-...';
             apiKeyInput.type = 'password';
         } else if (model === 'stability') {
             apiKeyTitle.innerHTML = '<i class="fas fa-key"></i> Stability AI API Key Required';
             apiKeyInstructions.textContent = 'Please enter your Stability AI API key.';
-            apiKeyNote.innerHTML = 'Get your API key from <a href="https://platform.stability.ai/account/keys" target="_blank">Stability AI</a>.';
-            apiKeyInput.value = API_KEYS.stability;
+            apiKeyNote.innerHTML = `
+                <div>Get your API key from <a href="https://platform.stability.ai/account/keys" target="_blank">Stability AI</a>.</div>
+                <div style="margin-top: 10px; color: #FF6B6B; font-size: 0.9em;">
+                    <i class="fas fa-clock"></i> For security reasons, API keys will expire after 24 hours
+                </div>
+            `;
+            apiKeyInput.value = API_KEYS.stability.key;
             apiKeyInput.placeholder = 'sk-...';
             apiKeyInput.type = 'password';
         } else if (model === 'turbo') {
             apiKeyTitle.innerHTML = '<i class="fas fa-lock"></i> Turbo Model Password';
             apiKeyInstructions.textContent = 'Please enter the password to access Turbo model.';
             apiKeyNote.innerHTML = `
-    <div style="margin-top: 10px;">
-        <input type="checkbox" id="show-password"> Display password
-    </div>
-    <div style="margin-top: 10px; color: var(--danger);">
-        <i class="fas fa-exclamation-triangle"></i> Important Notice: You are solely responsible for all AI-generated content.
-    </div>
-    <div style="margin-top: 10px; font-size: 0.9em;">
-        For password access, please contact the <a href="https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew" target="_blank">RuangRiung</a> <strong>Admin Team</strong>.
-        This security measure helps maintain platform integrity by preventing potential misuse.
-    </div>
-`;
-            apiKeyInput.value = API_KEYS.turbo;
+                <div style="margin-top: 10px;">
+                    <input type="checkbox" id="show-password"> Display password
+                </div>
+                <div style="margin-top: 10px; color: #FF6B6B;">
+                    <i class="fas fa-exclamation-triangle"></i> Important Notice: You are solely responsible for all AI-generated content.
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9em;">
+                    For password access, please contact the <a href="https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew" target="_blank">RuangRiung</a> <strong>Admin Team</strong>.
+                    This security measure helps maintain platform integrity by preventing potential misuse.
+                </div>
+                <div style="margin-top: 10px; color: #FF6B6B; font-size: 0.9em;">
+                    <i class="fas fa-clock"></i> For security reasons, password will expire after 24 hours
+                </div>
+            `;
+            apiKeyInput.value = API_KEYS.turbo.key;
             apiKeyInput.placeholder = 'Enter password...';
             apiKeyInput.type = 'password';
             
@@ -83,20 +107,26 @@ const AIModelManager = (function() {
     }
     
     function clearAllData() {
-        // Simpan data koin sebelum reset
+        // Save coin data before reset
         const savedCoins = localStorage.getItem('ruangriung_coin_data');
         
         // Clear memory
-        API_KEYS.dalle3 = '';
-        API_KEYS.stability = '';
-        API_KEYS.turbo = '';
+        API_KEYS.dalle3.key = '';
+        API_KEYS.dalle3.timestamp = 0;
+        API_KEYS.stability.key = '';
+        API_KEYS.stability.timestamp = 0;
+        API_KEYS.turbo.key = '';
+        API_KEYS.turbo.timestamp = 0;
         
-        // Clear localStorage tapi pertahankan koin
+        // Clear localStorage but keep coins
         localStorage.removeItem('dalle3_api_key');
+        localStorage.removeItem('dalle3_api_key_timestamp');
         localStorage.removeItem('stability_api_key');
+        localStorage.removeItem('stability_api_key_timestamp');
         localStorage.removeItem('turbo_password');
+        localStorage.removeItem('turbo_password_timestamp');
         
-        // Kembalikan data koin jika ada
+        // Restore coin data if exists
         if (savedCoins) {
             localStorage.setItem('ruangriung_coin_data', savedCoins);
         }
@@ -109,11 +139,62 @@ const AIModelManager = (function() {
         // Reset current model
         currentModel = 'flux';
         
-        // Clear session data kecuali yang diperlukan
+        // Clear session data except what's needed
         sessionStorage.clear();
         
-        // Perbarui tombol backToTop
+        // Clear expiry interval
+        clearInterval(expiryInterval);
+        
+        // Update backToTop button
         initBackToTopButton();
+    }
+    
+    function isKeyExpired(timestamp) {
+        if (!timestamp) return true;
+        return Date.now() - parseInt(timestamp) > EXPIRATION_TIME;
+    }
+    
+    function formatTimeRemaining(ms) {
+        const hours = Math.floor(ms / (1000 * 60 * 60));
+        const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+        
+        return `${hours}h ${minutes}m ${seconds}s`;
+    }
+    
+    function updateExpiryInfo() {
+        const expiryDisplay = document.getElementById('model-expiry-display');
+        if (!expiryDisplay) return;
+        
+        const keyData = API_KEYS[currentModel];
+        if (!keyData.key) {
+            expiryDisplay.textContent = '';
+            expiryDisplay.style.display = 'none';
+            return;
+        }
+        
+        if (isKeyExpired(keyData.timestamp)) {
+            expiryDisplay.innerHTML = `
+                <span style="color: #FF6B6B; background: rgba(255,107,107,0.1); padding: 4px 8px; border-radius: 4px;">
+                    <i class="fas fa-exclamation-circle"></i> Expired
+                </span>
+            `;
+            expiryDisplay.style.display = 'block';
+        } else {
+            const timeLeft = EXPIRATION_TIME - (Date.now() - parseInt(keyData.timestamp));
+            expiryDisplay.innerHTML = `
+                <span style="color: #51CF66; background: rgba(81,207,102,0.1); padding: 4px 8px; border-radius: 4px;">
+                    <i class="fas fa-clock"></i> Expires in: ${formatTimeRemaining(timeLeft)}
+                </span>
+            `;
+            expiryDisplay.style.display = 'block';
+        }
+    }
+    
+    function startExpiryTimer() {
+        clearInterval(expiryInterval);
+        updateExpiryInfo();
+        expiryInterval = setInterval(updateExpiryInfo, 1000);
     }
     
     async function validateApiKey() {
@@ -141,11 +222,19 @@ const AIModelManager = (function() {
             }
             
             if (isValid) {
-                API_KEYS[currentModel] = apiKey;
+                // Save key and current timestamp
+                API_KEYS[currentModel].key = apiKey;
+                API_KEYS[currentModel].timestamp = Date.now();
+                
                 localStorage.setItem(
                     currentModel === 'turbo' ? 'turbo_password' : 
                     currentModel === 'dalle3' ? 'dalle3_api_key' : 'stability_api_key', 
                     apiKey
+                );
+                localStorage.setItem(
+                    currentModel === 'turbo' ? 'turbo_password_timestamp' : 
+                    currentModel === 'dalle3' ? 'dalle3_api_key_timestamp' : 'stability_api_key_timestamp', 
+                    Date.now().toString()
                 );
                 
                 hideApiKeyModal();
@@ -154,9 +243,17 @@ const AIModelManager = (function() {
                 
                 showSuccess(
                     currentModel === 'turbo' ? 
-                    'Password validated! <span style="color: var(--danger)">NSFW filter has been disabled</span>' : 
-                    'API key validated successfully!'
+                    'Password validated! <span style="color: #FF6B6B">NSFW filter has been disabled</span><br>' + 
+                    '<div style="margin-top: 10px; color: #51CF66;">' +
+                    '<i class="fas fa-clock"></i> This password will expire in 24 hours' +
+                    '</div>' : 
+                    'API key validated successfully!<br>' + 
+                    '<div style="margin-top: 10px; color: #51CF66;">' +
+                    '<i class="fas fa-clock"></i> This API key will expire in 24 hours' +
+                    '</div>'
                 );
+                
+                startExpiryTimer();
             } else {
                 showError('Invalid API key/password. Please check and try again.');
                 if (modelSelect) modelSelect.value = 'flux';
@@ -209,7 +306,9 @@ const AIModelManager = (function() {
         const selectedModel = modelSelect.value;
         
         if (['turbo', 'dalle3', 'stability'].includes(selectedModel)) {
-            if (!API_KEYS[selectedModel]) {
+            // Check if key exists and is not expired
+            const keyData = API_KEYS[selectedModel];
+            if (!keyData.key || isKeyExpired(keyData.timestamp)) {
                 showApiKeyModal(selectedModel);
                 return false;
             }
@@ -217,8 +316,14 @@ const AIModelManager = (function() {
             if (selectedModel === 'turbo' && safeFilterCheckbox) {
                 safeFilterCheckbox.checked = false;
             }
+            
+            currentModel = selectedModel;
+            startExpiryTimer();
         } else if (selectedModel === 'flux' && safeFilterCheckbox) {
             safeFilterCheckbox.checked = true;
+            clearInterval(expiryInterval);
+            const expiryDisplay = document.getElementById('model-expiry-display');
+            if (expiryDisplay) expiryDisplay.style.display = 'none';
         }
         
         currentModel = selectedModel;
@@ -232,7 +337,7 @@ const AIModelManager = (function() {
             Swal.fire({
                 title: 'Reset All Data?',
                 html: `
-                    <div style="color: var(--danger); margin-bottom: 15px;">
+                    <div style="color: #FF6B6B; margin-bottom: 15px;">
                         <i class="fas fa-exclamation-triangle"></i> This will permanently delete:
                     </div>
                     <ul style="text-align: left; margin-left: 20px;">
@@ -240,18 +345,18 @@ const AIModelManager = (function() {
                         <li>Application preferences</li>
                         <li>Session data</li>
                     </ul>
-                    <div style="margin-top: 15px; color: var(--primary);">
+                    <div style="margin-top: 15px; color: #51CF66;">
                         <i class="fas fa-info-circle"></i> Note: Your coins will NOT be reset
                     </div>
                 `,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: 'var(--primary)',
-                cancelButtonColor: 'var(--danger)',
+                confirmButtonColor: '#51CF66',
+                cancelButtonColor: '#FF6B6B',
                 confirmButtonText: 'Yes, reset everything',
                 cancelButtonText: 'Cancel',
-                background: 'var(--bg)',
-                color: 'var(--text)',
+                background: '#2B2D42',
+                color: '#EDF2F4',
                 width: '90%',
                 maxWidth: '500px'
             }).then((result) => {
@@ -291,9 +396,9 @@ const AIModelManager = (function() {
             title: 'Error',
             html: message,
             icon: 'error',
-            confirmButtonColor: 'var(--primary)',
-            background: 'var(--bg)',
-            color: 'var(--text)'
+            confirmButtonColor: '#51CF66',
+            background: '#2B2D42',
+            color: '#EDF2F4'
         });
     }
     
@@ -302,9 +407,9 @@ const AIModelManager = (function() {
             title: 'Success',
             html: message,
             icon: 'success',
-            confirmButtonColor: 'var(--primary)',
-            background: 'var(--bg)',
-            color: 'var(--text)'
+            confirmButtonColor: '#51CF66',
+            background: '#2B2D42',
+            color: '#EDF2F4'
         });
     }
     
@@ -335,7 +440,7 @@ const AIModelManager = (function() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEYS.dalle3}`
+                'Authorization': `Bearer ${API_KEYS.dalle3.key}`
             },
             body: JSON.stringify({
                 prompt: prompt,
@@ -359,7 +464,7 @@ const AIModelManager = (function() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEYS.stability}`,
+                'Authorization': `Bearer ${API_KEYS.stability.key}`,
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
@@ -397,6 +502,25 @@ const AIModelManager = (function() {
     // Initialize
     function init() {
         if (modelSelect) {
+            // Create container for model select and expiry info
+            const modelSelectContainer = document.createElement('div');
+            modelSelectContainer.style.display = 'flex';
+            modelSelectContainer.style.alignItems = 'center';
+            modelSelectContainer.style.gap = '10px';
+            modelSelectContainer.style.width = '100%';
+            modelSelectContainer.style.marginBottom = '15px';
+
+            // Wrap the existing select
+            modelSelect.parentNode.insertBefore(modelSelectContainer, modelSelect);
+            modelSelectContainer.appendChild(modelSelect);
+
+            // Create expiry display element
+            const expiryDisplay = document.createElement('div');
+            expiryDisplay.id = 'model-expiry-display';
+            expiryDisplay.style.fontSize = '0.85em';
+            expiryDisplay.style.marginLeft = 'auto';
+            modelSelectContainer.appendChild(expiryDisplay);
+
             modelSelect.innerHTML = `
                 <option value="flux">FLUX</option>
                 <option value="turbo">Turbo (AI NSFW)</option>
@@ -406,7 +530,7 @@ const AIModelManager = (function() {
             modelSelect.value = currentModel;
             modelSelect.addEventListener('change', handleModelChange);
         }
-        
+
         if (validateApiKeyBtn) validateApiKeyBtn.addEventListener('click', validateApiKey);
         if (cancelApiKeyBtn) cancelApiKeyBtn.addEventListener('click', () => {
             if (modelSelect) modelSelect.value = 'flux';
@@ -425,6 +549,11 @@ const AIModelManager = (function() {
         
         setupResetButton();
         initBackToTopButton();
+        
+        // Initialize expiry timer if a key is already set
+        if (API_KEYS[currentModel].key && !isKeyExpired(API_KEYS[currentModel].timestamp)) {
+            startExpiryTimer();
+        }
     }
     
     // Public API
