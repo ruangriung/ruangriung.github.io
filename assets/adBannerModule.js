@@ -1,5 +1,5 @@
 /**
- * AdvancedAdBannerModule - Complete Solution with Manual Control
+ * AdvancedAdBannerModule - Complete Solution with Full-Width Banners
  */
 const AdvancedAdBannerModule = (function() {
     // Private configuration
@@ -10,12 +10,12 @@ const AdvancedAdBannerModule = (function() {
                 imageId: 'adImage1',
                 currentType: 'ai',
                 enabled: false,
-                aiPrompt: "Quantum computer with glowing quantum bits, sci-fi laboratory setting",
+                aiPrompt: "Modern digital marketing concept with vibrant colors, abstract design",
                 localImage: '',
-                width: 300,
-                height: 150,
+                width: '100%',  // Full width
+                height: 'auto', // Auto height
                 clickUrl: "https://ruangriung.my.id",
-                overlayText: "Iklan by RuangRiung"
+                overlayText: "Advertisement by RuangRiung"
             },
             {
                 id: 'adBanner2',
@@ -24,44 +24,34 @@ const AdvancedAdBannerModule = (function() {
                 enabled: true,
                 aiPrompt: "",
                 localImage: 'ruangriung.png',
-                width: 300,
-                height: 150,
+                width: '100%',  // Full width
+                height: 'auto', // Auto height
                 clickUrl: "https://ruangriung.my.id",
-                overlayText: "Iklan by RuangRiung"
+                overlayText: "Advertisement by RuangRiung"
             },
-                          // New Banner 3
             {
                 id: 'adBanner3',
                 imageId: 'adImage3',
-                currentType: 'ai', // Default to AI-generated
+                currentType: 'ai',
                 enabled: false,
-                aiPrompt: "Modern workspace with laptop and coffee, professional photo",
+                aiPrompt: "Creative workspace with laptop and plants, professional environment",
                 localImage: '',
-                width: 300,
-                height: 150,
+                width: '100%',  // Full width
+                height: 'auto', // Auto height
                 clickUrl: "https://ruangriung.my.id/",
-                overlayText: "Tampilkan produkmu Disini!"
+                overlayText: "Show your product here!"
             }
         ],
         aiPrompts: [
-            "High-end gaming laptop with RGB lighting, cyberpunk style, holographic interface, product shot",
-        "Wireless earbuds with glowing effects, floating in mid-air, studio lighting, commercial photography",
-        "Smartwatch with futuristic UI display, macro shot, water droplets, reflective surface",
-        "VR headset in a digital metaverse environment, neon grid, cyberpunk aesthetic",
-        "Drone flying over mountain landscape at golden hour, 8k cinematic photography",
-        "Robot assistant serving coffee in modern office, futuristic technology, warm lighting",
-        "3D printer creating intricate object, glowing filament, macro photography",
-        "Gaming console with colorful particle effects, dynamic lighting, product display",
-        "Futuristic electric car dashboard with holographic navigation, night scene",
-        "Satellite orbiting Earth with solar panels extended, space background, ultra HD",
-        "Augmented reality glasses projecting interface, tech-savvy person using them",
-        "Mechanical keyboard with customizable RGB lighting, macro shot, bokeh background",
-        "Security camera with AI recognition, glowing red light, cyberpunk atmosphere",
-        "Quantum computer with glowing quantum bits, sci-fi laboratory setting"
+            "High-end product display with clean background, studio lighting, e-commerce style",
+            "Abstract technology background with glowing elements, digital art",
+            "Happy diverse people using technology in modern environment",
+            "Nature landscape with digital overlay, futuristic eco-friendly concept",
+            "Minimalist design with bold typography, modern advertising style"
         ],
         rotationInterval: 30000,
         currentLanguage: localStorage.getItem('language') || 'en',
-        moduleEnabled: true // Global enable/disable switch
+        moduleEnabled: true
     };
 
     // DOM elements cache
@@ -122,6 +112,10 @@ const AdvancedAdBannerModule = (function() {
             overlay.textContent = banner.overlayText;
         }
 
+        // Set full-width styling
+        elements[banner.id].style.width = '100%';
+        elements[banner.imageId].style.width = '100%';
+        
         // Load first ad
         loadAd(banner, index);
         
@@ -146,6 +140,10 @@ const AdvancedAdBannerModule = (function() {
         imageElement.style.display = 'none';
         container.style.display = 'block';
 
+        // Apply full-width styling
+        imageElement.style.width = '100%';
+        imageElement.style.height = banner.height === 'auto' ? 'auto' : `${banner.height}px`;
+
         if (banner.currentType === 'ai') {
             loadAiAd(banner, loadingElement, imageElement);
         } else {
@@ -154,13 +152,24 @@ const AdvancedAdBannerModule = (function() {
     }
 
     function loadAiAd(banner, loadingElement, imageElement) {
+        // Handle full-width parameters
+        const widthParam = banner.width === '100%' ? '1024' : banner.width;
+        const heightParam = banner.height === 'auto' ? '300' : banner.height;
+        
         const encodedPrompt = encodeURIComponent(banner.aiPrompt);
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${banner.width}&height=${banner.height}&nologo=true`;
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${widthParam}&height=${heightParam}&nologo=true`;
         
         imageElement.onload = function() {
             loadingElement.style.display = 'none';
             imageElement.style.display = 'block';
             imageElement.classList.remove('local-ad');
+            
+            // Maintain full-width display
+            if (banner.width === '100%') {
+                imageElement.style.width = '100%';
+                imageElement.style.height = 'auto';
+                imageElement.style.maxHeight = '400px'; // Prevent excessive height
+            }
         };
         
         imageElement.onerror = function() {
@@ -176,6 +185,13 @@ const AdvancedAdBannerModule = (function() {
             loadingElement.style.display = 'none';
             imageElement.style.display = 'block';
             imageElement.classList.add('local-ad');
+            
+            // Maintain full-width display
+            if (banner.width === '100%') {
+                imageElement.style.width = '100%';
+                imageElement.style.height = 'auto';
+                imageElement.style.maxHeight = '400px'; // Prevent excessive height
+            }
         };
         
         imageElement.onerror = function() {
@@ -261,7 +277,6 @@ const AdvancedAdBannerModule = (function() {
             document.addEventListener('DOMContentLoaded', init);
         },
         
-        // Enable/disable entire module
         setModuleEnabled: function(enabled) {
             config.moduleEnabled = enabled;
             if (enabled) {
@@ -271,7 +286,6 @@ const AdvancedAdBannerModule = (function() {
             }
         },
         
-        // Enable/disable specific banner
         setBannerEnabled: function(bannerIndex, enabled) {
             if (bannerIndex >= 0 && bannerIndex < config.banners.length) {
                 const banner = config.banners[bannerIndex];
@@ -288,14 +302,12 @@ const AdvancedAdBannerModule = (function() {
             }
         },
         
-        // Disable all banners
         disableAllBanners: function() {
             config.banners.forEach((banner, index) => {
                 this.setBannerEnabled(index, false);
             });
         },
         
-        // Enable all banners
         enableAllBanners: function() {
             config.banners.forEach((banner, index) => {
                 this.setBannerEnabled(index, true);
@@ -342,6 +354,10 @@ const AdvancedAdBannerModule = (function() {
                     banner.clickUrl = options.clickUrl;
                 }
                 
+                // Maintain full-width settings
+                banner.width = '100%';
+                banner.height = 'auto';
+                
                 if (banner.enabled) {
                     loadAd(banner, bannerIndex);
                 }
@@ -373,25 +389,3 @@ const AdvancedAdBannerModule = (function() {
 
 // Initialize the module
 AdvancedAdBannerModule.init();
-
-/* 
-Contoh penggunaan kontrol manual:
-
-1. Nonaktifkan seluruh modul iklan:
-AdvancedAdBannerModule.setModuleEnabled(false);
-
-2. Aktifkan kembali seluruh modul iklan:
-AdvancedAdBannerModule.setModuleEnabled(true);
-
-3. Nonaktifkan banner spesifik (0 untuk banner pertama, 1 untuk kedua):
-AdvancedAdBannerModule.setBannerEnabled(0, false);
-
-4. Aktifkan kembali banner spesifik:
-AdvancedAdBannerModule.setBannerEnabled(0, true);
-
-5. Nonaktifkan semua banner:
-AdvancedAdBannerModule.disableAllBanners();
-
-6. Aktifkan semua banner:
-AdvancedAdBannerModule.enableAllBanners();
-*/
