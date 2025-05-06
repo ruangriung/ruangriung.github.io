@@ -2049,6 +2049,53 @@ input:checked + .toggle-slider:before {
   background-color: var(--bg);
 }
 
+/* Ad Banner Full Width Styles */
+.ad-banner-module {
+    width: 100%;
+    max-width: 100% !important; /* Override any max-width */
+    margin: 0 auto 20px;
+    padding: 10px;
+    border-radius: 15px;
+    background: var(--bg);
+    box-shadow:
+        5px 5px 10px var(--shadow-dark),
+        -5px -5px 10px var(--shadow-light);
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ad-image-container {
+    position: relative;
+    width: 100%;
+    height: auto; /* Ubah dari fixed height ke auto */
+    min-height: 150px; /* Tetapkan min-height */
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.ad-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ad-banner-module {
+        border-radius: 10px; /* Lebih kecil di mobile */
+        padding: 8px;
+    }
+    
+    .ad-image-container {
+        min-height: 120px; /* Lebih pendek di mobile */
+    }
+}
+
 /* ============================================= */
 /* COIN SYSTEM STYLES */
 /* ============================================= */
