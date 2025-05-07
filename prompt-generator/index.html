@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Prompt Generator</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --primary-dark: #4a3dc1;
+            --secondary: #00b894;
+            --secondary-light: #00ce9d;
+            --danger: #d63031;
+            --danger-light: #ff7675;
+            --bg: #e0e5ec;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --shadow-light: #ffffff;
+            --shadow-dark: #a3b1c6;
+            --success: #00b894;
+            --error: #d63031;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2rem;
+            text-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        .subtitle {
+            color: var(--text-light);
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .panel {
+            background: var(--bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+        
+        .panel:hover {
+            box-shadow: 12px 12px 20px var(--shadow-dark), -12px -12px 20px var(--shadow-light);
+        }
+        
+        .panel-title {
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            color: var(--text);
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light), 
+                        0 0 0 2px var(--primary-light);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #copy-btn {
+            background-color: var(--text-light);
+        }
+        
+        #copy-btn:hover {
+            background-color: #7f8c8d;
+        }
+        
+        #clear-btn {
+            background-color: var(--danger);
+        }
+        
+        #clear-btn:hover {
+            background-color: var(--danger-light);
+        }
+        
+        #test-btn {
+            background-color: var(--secondary);
+        }
+        
+        #test-btn:hover {
+            background-color: var(--secondary-light);
+        }
+        
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: var(--bg);
+            min-height: 100px;
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+        }
+        
+        #prompt-result {
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: inherit;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: normal;
+            overflow-wrap: anywhere;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+        
+        #image-result {
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .generated-image {
+            max-width: 100%;
+            max-height: 70vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .image-info {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 10px;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+        }
+        
+        .image-description {
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .status {
+            margin-top: 15px;
+            font-style: italic;
+            color: var(--text-light);
+            min-height: 24px;
+        }
+        
+        .success {
+            color: var(--success);
+        }
+        
+        .error {
+            color: var(--error);
+        }
+        
+        .flex-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .flex-row > * {
+            flex: 1;
+        }
+        
+        /* Toggle button styles */
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0 8px;
+            margin-left: 10px;
+            vertical-align: middle;
+            box-shadow: none;
+            width: auto;
+            min-width: auto;
+        }
+        
+        .toggle-btn:hover {
+            transform: none;
+            background: none;
+        }
+        
+        .toggle-btn:active {
+            transform: none;
+        }
+        
+        .image-settings-container {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        /* Loading state */
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .loading-text {
+            animation: pulse 1.5s infinite;
+            text-align: center;
+            color: var(--primary);
+        }
+        
+        /* Checkbox Styles */
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            padding: 8px 12px;
+            background: var(--bg);
+            border-radius: 10px;
+            transition: all 0.2s;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            cursor: pointer;
+        }
+        
+        .checkbox-item:hover {
+            box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            accent-color: var(--primary);
+            cursor: pointer;
+            box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
+            background: var(--bg);
+            border-radius: 4px;
+            border: none;
+        }
+        
+        .checkbox-item label {
+            margin: 0;
+            font-weight: normal;
+            font-size: 0.95rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        /* Size Options */
+        .size-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .size-option {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .size-option input[type="radio"] {
+            display: none;
+        }
+        
+        .size-option label {
+            display: block;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+        }
+        
+        .size-option input[type="radio"]:checked + label {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.2), inset -3px -3px 6px rgba(255,255,255,0.2);
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .flex-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .checkbox-group {
+                gap: 10px;
+            }
+            
+            .checkbox-item {
+                flex: 1 0 calc(50% - 10px);
+            }
+            
+            .size-options {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .checkbox-item {
+                flex: 1 0 100%;
+            }
+            
+            .panel {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Image Prompt Generator</h1>
+            <p class="subtitle">Create perfect prompts for AI image generation</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="panel">
+                <h2 class="panel-title">Prompt Settings</h2>
+                <div class="form-group">
+                    <label for="subject">Main Subject*</label>
+                    <input type="text" id="subject" placeholder="e.g., a futuristic city, a mystical creature, a cozy cabin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="style">Art Style</label>
+                    <select id="style">
+                        <option value="">Any style</option>
+                        <option value="photorealistic">Photorealistic</option>
+                        <option value="digital art">Digital Art</option>
+                        <option value="oil painting">Oil Painting</option>
+                        <option value="watercolor">Watercolor</option>
+                        <option value="anime">Anime</option>
+                        <option value="pixel art">Pixel Art</option>
+                        <option value="cyberpunk">Cyberpunk</option>
+                        <option value="steampunk">Steampunk</option>
+                        <option value="impressionist">Impressionist</option>
+                        <option value="surrealist">Surrealist</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="details">Additional Details</label>
+                    <textarea id="details" placeholder="Describe colors, lighting, composition, mood, or any specific elements you want included"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="text-model">Text Model</label>
+                    <select id="text-model">
+                        <option value="openai">OpenAI GPT-4.1-mini (Azure)</option>
+                        <option value="mistral">Mistral Small 3.1 24B (Cloudflare)</option>
+                        <option value="llama">Llama 3.3 70B (Cloudflare)</option>
+                        <option value="deepseek">DeepSeek-V3 (DeepSeek)</option>
+                        <option value="phi">Phi-4 Instruct (Cloudflare)</option>
+                    </select>
+                </div>
+                
+                <button id="generate-btn">Generate Prompt</button>
+                <div id="status" class="status"></div>
+            </div>
+            
+            <div class="panel">
+                <h2 class="panel-title">Image Generation Settings <button id="toggle-image-settings" class="toggle-btn">▶</button></h2>
+                <div id="image-settings-container" class="image-settings-container" style="display: none;">
+                    <div class="form-group">
+                        <label for="seed">Seed (optional)</label>
+                        <input type="number" id="seed" placeholder="Leave blank for random">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="image-model">Image Model Parameters</label>
+                        <div class="flex-row">
+                            <select id="image-model-preset">
+                                <option value="flux">Flux (Balanced)</option>
+                                <option value="turbo">Turbo (Fast)</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                            <select id="image-quality">
+                                <option value="standard">Standard</option>
+                                <option value="high">High</option>
+                                <option value="ultra">Ultra</option>
+                            </select>
+                        </div>
+                        
+                        <label>Image Size</label>
+                        <div class="size-options">
+                            <div class="size-option">
+                                <input type="radio" id="size-portrait" name="image-size" value="1024x1792" checked>
+                                <label for="size-portrait">Portrait (1024×1792)</label>
+                            </div>
+                            <div class="size-option">
+                                <input type="radio" id="size-square" name="image-size" value="1024x1024">
+                                <label for="size-square">Square (1024×1024)</label>
+                            </div>
+                            <div class="size-option">
+                                <input type="radio" id="size-landscape" name="image-size" value="1792x1024">
+                                <label for="size-landscape">Landscape (1792×1024)</label>
+                            </div>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="nologo" checked>
+                                <label for="nologo">No Logo</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="enhance" checked>
+                                <label for="enhance">Enhance</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="safe">
+                                <label for="safe">Safe Mode</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button id="test-btn">Generate Image</button>
+                    <div id="image-status" class="status"></div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2 class="panel-title">Generated Prompt</h2>
+                <div class="result-container">
+                    <div id="prompt-result">
+                        <p>Your generated prompt will appear here...</p>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button id="copy-btn">Copy to Clipboard</button>
+                    <button id="clear-btn">Clear Prompt</button>
+                </div>
+                <div id="prompt-status" class="status"></div>
+            </div>
+            
+            <div class="panel" id="image-result-panel" style="display: none;">
+                <h2 class="panel-title">Generated Image</h2>
+                <div class="result-container">
+                    <div id="image-result">
+                        <p>Your generated image will appear here...</p>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button id="clear-image-btn">Clear Image</button>
+                </div>
+                <div id="image-status" class="status"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="imageGen.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generate-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const statusDiv = document.getElementById('status');
+            const promptStatus = document.getElementById('prompt-status');
+            const promptResult = document.getElementById('prompt-result');
+            const subjectInput = document.getElementById('subject');
+            const styleSelect = document.getElementById('style');
+            const detailsTextarea = document.getElementById('details');
+            const textModelSelect = document.getElementById('text-model');
+            
+            // Load saved data
+            function loadSavedData() {
+                const savedData = localStorage.getItem('promptGeneratorData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    subjectInput.value = data.subject || '';
+                    styleSelect.value = data.style || '';
+                    detailsTextarea.value = data.details || '';
+                    textModelSelect.value = data.textModel || 'openai';
+                    
+                    if (data.generatedPrompt) {
+                        promptResult.innerHTML = data.generatedPrompt;
+                        window.setCurrentPromptText(data.generatedPrompt);
+                    }
+                }
+            }
+            
+            // Save data to localStorage
+            function saveData() {
+                const data = {
+                    subject: subjectInput.value,
+                    style: styleSelect.value,
+                    details: detailsTextarea.value,
+                    textModel: textModelSelect.value,
+                    generatedPrompt: currentPromptText
+                };
+                localStorage.setItem('promptGeneratorData', JSON.stringify(data));
+            }
+            
+            // Clear all data
+            function clearData() {
+                localStorage.removeItem('promptGeneratorData');
+                localStorage.removeItem('imageSettings');
+                subjectInput.value = '';
+                styleSelect.value = '';
+                detailsTextarea.value = '';
+                textModelSelect.value = 'openai';
+                promptResult.innerHTML = '<p>Your generated prompt will appear here...</p>';
+                currentPromptText = '';
+                window.clearGeneratedImage();
+                statusDiv.textContent = '';
+                statusDiv.className = 'status';
+                promptStatus.textContent = '';
+            }
+            
+            // Store the current prompt text
+            let currentPromptText = '';
+            
+            // Load saved data when page loads
+            loadSavedData();
+            
+            // Generate prompt button click handler
+            generateBtn.addEventListener('click', async function() {
+                const subject = subjectInput.value.trim();
+                if (!subject) {
+                    statusDiv.textContent = 'Please enter a main subject';
+                    statusDiv.className = 'status error';
+                    return;
+                }
+                
+                const style = styleSelect.value;
+                const details = detailsTextarea.value.trim();
+                const model = textModelSelect.value;
+                
+                generateBtn.disabled = true;
+                statusDiv.innerHTML = '<div class="loading"></div> Generating prompt...';
+                statusDiv.className = 'status';
+                promptResult.innerHTML = '<p class="loading-text">Generating prompt...</p>';
+                
+                try {
+                    const prompt = await generatePrompt(subject, style, details, model);
+                    currentPromptText = prompt;
+                    window.setCurrentPromptText(prompt);
+                    promptResult.innerHTML = prompt;
+                    statusDiv.textContent = 'Prompt generated successfully!';
+                    statusDiv.className = 'status success';
+                    promptStatus.textContent = '';
+                    
+                    // Save generated prompt
+                    saveData();
+                } catch (error) {
+                    console.error('Error generating prompt:', error);
+                    statusDiv.textContent = 'Error generating prompt: ' + error.message;
+                    statusDiv.className = 'status error';
+                    promptResult.innerHTML = '<p>Failed to generate prompt. Please try again.</p>';
+                } finally {
+                    generateBtn.disabled = false;
+                }
+            });
+            
+            // Copy to clipboard button
+            copyBtn.addEventListener('click', async function() {
+                if (!currentPromptText) {
+                    promptStatus.textContent = 'No prompt to copy. Generate one first.';
+                    promptStatus.className = 'status error';
+                    return;
+                }
+                
+                try {
+                    await navigator.clipboard.writeText(currentPromptText.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, ''));
+                    promptStatus.textContent = 'Prompt copied to clipboard!';
+                    promptStatus.className = 'status success';
+                    
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                    
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                    promptStatus.textContent = 'Failed to copy prompt. Please try again.';
+                    promptStatus.className = 'status error';
+                    
+                    const textArea = document.createElement('textarea');
+                    textArea.value = currentPromptText.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, '');
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        promptStatus.textContent = 'Prompt copied to clipboard!';
+                        promptStatus.className = 'status success';
+                    } catch (err) {
+                        promptStatus.textContent = 'Failed to copy prompt. Please copy manually.';
+                        promptStatus.className = 'status error';
+                    }
+                    document.body.removeChild(textArea);
+                }
+            });
+            
+            // Clear button click handler
+            clearBtn.addEventListener('click', function() {
+                clearData();
+            });
+            
+            // Save data when inputs change
+            subjectInput.addEventListener('input', saveData);
+            styleSelect.addEventListener('change', saveData);
+            detailsTextarea.addEventListener('input', saveData);
+            textModelSelect.addEventListener('change', saveData);
+            
+            // Function to generate prompt using Pollinations API
+            async function generatePrompt(subject, style, details, model) {
+                const messages = [
+                    { 
+                        role: "system", 
+                        content: "You are an expert prompt engineer for AI image generation. " +
+                                "Create detailed, effective prompts that will produce high-quality images. " +
+                                "Include relevant artistic styles, composition details, lighting, and mood. " +
+                                "Format the response with proper line breaks for readability."
+                    },
+                    { 
+                        role: "user", 
+                        content: `Create a detailed prompt for an image of: ${subject}. ` +
+                                `${style ? `The style should be ${style}. ` : ''}` +
+                                `${details ? `Additional details to include: ${details}` : ''}`
+                    }
+                ];
+                
+                const options = {
+                    model: model
+                };
+                
+                const response = await postChatCompletion(messages, options);
+                return formatPrompt(response.choices[0].message.content);
+            }
+            
+            // Format the prompt response
+            function formatPrompt(prompt) {
+                // Ensure proper line breaks and basic formatting
+                return prompt
+                    .replace(/\n\n/g, '<br><br>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+            }
+            
+            // Generic function to call Pollinations chat API
+            async function postChatCompletion(messages, options = {}) {
+                const url = "https://text.pollinations.ai/openai";
+                const payload = {
+                    model: options.model || "openai",
+                    messages: messages,
+                    seed: options.seed,
+                    referrer: "ImagePromptGeneratorWebApp",
+                };
+                
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API error: ${errorText}`);
+                }
+                
+                return await response.json();
+            }
+        });
+    </script>
+</body>
+</html>
