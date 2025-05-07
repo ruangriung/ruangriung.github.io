@@ -455,6 +455,30 @@
                 padding: 15px;
             }
         }
+        /* Tambahkan di bagian CSS */
+.home-button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    min-width: 200px;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+    text-decoration: none;
+}
+
+.home-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
+}
     </style>
 </head>
 <body>
@@ -592,7 +616,9 @@
             </div>
         </div>
     </div>
-
+    
+	<a href="https://ruangriung.my.id" class="home-button">Kembali ke Beranda</a>
+	
     <script src="imageGen.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
