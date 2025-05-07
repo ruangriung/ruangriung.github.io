@@ -275,6 +275,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 `;
+                
+                // Add event listener to the download button
+                const downloadBtn = imageResult.querySelector('.download-btn');
+                if (downloadBtn) {
+                    downloadBtn.addEventListener('click', function() {
+                        const link = document.createElement('a');
+                        link.href = data.generatedImage;
+                        link.download = `ai-image-${Date.now()}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    });
+                }
             }
         }
     }
