@@ -84,11 +84,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Image generation functionality
     const testBtn = document.getElementById('test-btn');
-    let currentPromptText = '';
     
     // Function to set current prompt from main script
     window.setCurrentPromptText = function(text) {
-        currentPromptText = text;
+        // Save clean version to localStorage
+        const savedData = JSON.parse(localStorage.getItem('promptGeneratorData') || '{}');
+        savedData.cleanPrompt = text.replace(/<\/?[^>]+(>|$)/g, '');
+        localStorage.setItem('promptGeneratorData', JSON.stringify(savedData));
+        
         // Auto-expand image settings when prompt is generated
         if (!isExpanded) {
             imageSettingsContainer.style.display = 'block';
@@ -119,8 +122,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Generate image button
     testBtn.addEventListener('click', async function() {
-        if (!currentPromptText) {
-            imageStatus.textContent = 'Please generate a prompt first';
+        // Get clean prompt from localStorage
+        const savedData = JSON.parse(localStorage.getItem('promptGeneratorData') || {});
+        const cleanPrompt = savedData.cleanPrompt || '';
+        
+        if (!cleanPrompt) {
+            imageStatus.textContent = 'Please generate a valid prompt first';
             imageStatus.className = 'status error';
             return;
         }
@@ -142,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const style = document.getElementById('style').value || 'default style';
             
             const imageUrl = await generateImage(
-                currentPromptText, 
+                cleanPrompt, 
                 imageModel, 
                 quality, 
                 nologo, 
@@ -170,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const description = document.createElement('div');
             description.className = 'image-description';
             description.innerHTML = `
-                <p><strong>Prompt:</strong> ${currentPromptText.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, '')}</p>
+                <p><strong>Prompt:</strong> ${cleanPrompt}</p>
                 <p><strong>Style:</strong> ${style}</p>
                 <p><strong>Size:</strong> ${size}</p>
                 <p><strong>Quality:</strong> ${quality}</p>
@@ -200,12 +207,12 @@ document.addEventListener('DOMContentLoaded', function() {
             imageStatus.className = 'status success';
             
             // Save the generated image URL
-            const savedData = JSON.parse(localStorage.getItem('promptGeneratorData') || {});
             savedData.generatedImage = imageUrl;
+            savedData.generatedPrompt = cleanPrompt;
             localStorage.setItem('promptGeneratorData', JSON.stringify(savedData));
         } catch (error) {
             console.error('Error generating image:', error);
-            imageStatus.textContent = 'Error generating image: ' + error.message;
+            imageStatus.textContent = 'Error generating image: ' + (error.message || 'API might be busy. Please try again later.');
             imageStatus.className = 'status error';
             imageResult.innerHTML = '<p>Failed to generate image. Please try again.</p>';
         } finally {
@@ -215,8 +222,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to generate image using Pollinations API with custom parameters
     async function generateImage(prompt, modelPreset, quality, nologo, enhance, safe, size) {
-        // Clean the prompt by removing HTML tags
-        const cleanPrompt = prompt.replace(/<\/?[^>]+(>|$)/g, '');
+        // Clean the prompt by removing any remaining HTML tags
+        const cleanPrompt = prompt.replace(/<\/?[^>]+(>|$)/g, '').trim();
+        
+        if (!cleanPrompt) {
+            throw new Error('Prompt is empty after cleaning');
+        }
         
         // Build the URL with parameters
         let url = `https://image.pollinations.ai/prompt/${encodeURIComponent(cleanPrompt)}`;
@@ -248,13 +259,17 @@ document.addEventListener('DOMContentLoaded', function() {
             url += `?${params.join('&')}`;
         }
         
-        // Create image element to force load
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => resolve(url);
-            img.onerror = () => reject(new Error('Failed to generate image. The API might be busy. Please try again in a moment.'));
-            img.src = url;
-        });
+        // Use fetch to check if the URL is valid
+        try {
+            const response = await fetch(url, { mode: 'no-cors' });
+            if (!response.ok && response.type !== 'opaque') {
+                throw new Error('Failed to fetch image');
+            }
+            return url;
+        } catch (error) {
+            console.error('Fetch error:', error);
+            throw new Error('Failed to generate image. Please check your prompt and try again.');
+        }
     }
     
     // Load any previously generated image
@@ -269,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <img src="${data.generatedImage}" alt="Generated image" class="generated-image">
                         <div class="image-info">
                             <div class="image-description">
-                                <p><strong>Prompt:</strong> ${data.generatedPrompt ? data.generatedPrompt.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, '') : 'No prompt available'}</p>
+                                <p><strong>Prompt:</strong> ${data.generatedPrompt || 'No prompt available'}</p>
                             </div>
                             <button class="download-btn">Download Image</button>
                         </div>

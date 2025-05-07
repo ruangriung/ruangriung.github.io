@@ -505,6 +505,20 @@
                 <div id="status" class="status"></div>
             </div>
             
+            
+            <div class="panel">
+                <h2 class="panel-title">Generated Prompt</h2>
+                <div class="result-container">
+                    <div id="prompt-result">
+                        <p>Your generated prompt will appear here...</p>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button id="copy-btn">Copy to Clipboard</button>
+                    <button id="clear-btn">Clear Prompt</button>
+                </div>
+                <div id="prompt-status" class="status"></div>
+            </div>
             <div class="panel">
                 <h2 class="panel-title">Image Generation Settings <button id="toggle-image-settings" class="toggle-btn">▶</button></h2>
                 <div id="image-settings-container" class="image-settings-container" style="display: none;">
@@ -564,21 +578,6 @@
                     <div id="image-status" class="status"></div>
                 </div>
             </div>
-            
-            <div class="panel">
-                <h2 class="panel-title">Generated Prompt</h2>
-                <div class="result-container">
-                    <div id="prompt-result">
-                        <p>Your generated prompt will appear here...</p>
-                    </div>
-                </div>
-                <div class="button-group">
-                    <button id="copy-btn">Copy to Clipboard</button>
-                    <button id="clear-btn">Clear Prompt</button>
-                </div>
-                <div id="prompt-status" class="status"></div>
-            </div>
-            
             <div class="panel" id="image-result-panel" style="display: none;">
                 <h2 class="panel-title">Generated Image</h2>
                 <div class="result-container">
@@ -597,6 +596,7 @@
     <script src="imageGen.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
             const generateBtn = document.getElementById('generate-btn');
             const copyBtn = document.getElementById('copy-btn');
             const clearBtn = document.getElementById('clear-btn');
@@ -608,118 +608,168 @@
             const detailsTextarea = document.getElementById('details');
             const textModelSelect = document.getElementById('text-model');
             
-            // Store the current prompt text
+            // State
             let currentPromptText = '';
-            
-            // Load saved data
+            let availableModels = {
+                'openai': { name: 'OpenAI GPT-4 (Default)', type: 'text' }
+            };
+
+            // Initialize
+            initTextModels();
+            loadSavedData();
+
+            // Main Functions
+            async function initTextModels() {
+                // Set default first
+                renderModelOptions();
+                
+                try {
+                    statusDiv.innerHTML = '<div class="loading"></div> Loading models...';
+                    const response = await fetchWithTimeout('https://text.pollinations.ai/models', {}, 3000);
+                    
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const apiModels = await response.json();
+                    availableModels = { ...availableModels, ...apiModels };
+                    
+                } catch (error) {
+                    console.warn('Model API unavailable, using defaults:', error);
+                    statusDiv.textContent = 'Using default models (API unavailable)';
+                    statusDiv.className = 'status';
+                } finally {
+                    renderModelOptions();
+                    loadSavedData();
+                }
+            }
+
+            function renderModelOptions() {
+                textModelSelect.innerHTML = '';
+                
+                Object.entries(availableModels).forEach(([id, model]) => {
+                    if (model.type === 'text' || !model.type) {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = model.name || id;
+                        textModelSelect.appendChild(option);
+                    }
+                });
+            }
+
+            async function generatePrompt(subject, style, details, modelId = 'openai') {
+                // Validate model
+                if (!availableModels[modelId]) {
+                    modelId = 'openai';
+                    statusDiv.textContent = 'Selected model unavailable, using default';
+                    statusDiv.className = 'status';
+                }
+
+                const messages = [
+                    { 
+                        role: "system", 
+                        content: "You are an expert prompt engineer for AI image generation. " +
+                                "Create detailed prompts that will produce high-quality images. " +
+                                "Include artistic styles, composition, lighting, and mood. " +
+                                "Use clear formatting with line breaks."
+                    },
+                    { 
+                        role: "user", 
+                        content: `Create a prompt for: ${subject}. ` +
+                                `${style ? `Style: ${style}. ` : ''}` +
+                                `${details ? `Details: ${details}` : ''}`
+                    }
+                ];
+
+                try {
+                    const response = await postChatCompletion(messages, modelId);
+                    return formatPrompt(response.choices[0].message.content);
+                } catch (error) {
+                    console.error(`Model ${modelId} failed:`, error);
+                    throw new Error('Prompt generation failed. Please try again.');
+                }
+            }
+
+            async function postChatCompletion(messages, modelId) {
+                const url = "https://text.pollinations.ai/openai";
+                const payload = {
+                    model: modelId,
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 2000
+                };
+
+                const response = await fetchWithTimeout(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                }, 10000);
+
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.message || `API request failed (${response.status})`);
+                }
+
+                return response.json();
+            }
+
+            // Utility Functions
+            async function fetchWithTimeout(resource, options = {}, timeout = 5000) {
+                const controller = new AbortController();
+                const id = setTimeout(() => controller.abort(), timeout);
+                
+                const response = await fetch(resource, {
+                    ...options,
+                    signal: controller.signal  
+                });
+                
+                clearTimeout(id);
+                return response;
+            }
+
+            function formatPrompt(text) {
+                return text
+                    .replace(/\n\n+/g, '<br><br>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            }
+
             function loadSavedData() {
                 const savedData = localStorage.getItem('promptGeneratorData');
-                if (savedData) {
+                if (!savedData) return;
+
+                try {
                     const data = JSON.parse(savedData);
+                    
                     subjectInput.value = data.subject || '';
                     styleSelect.value = data.style || '';
                     detailsTextarea.value = data.details || '';
                     
-                    // Set text model after options are loaded
-                    setTimeout(() => {
-                        if (data.textModel && textModelSelect.querySelector(`option[value="${data.textModel}"]`)) {
-                            textModelSelect.value = data.textModel;
-                        }
-                    }, 100);
+                    if (data.textModel && availableModels[data.textModel]) {
+                        textModelSelect.value = data.textModel;
+                    }
                     
                     if (data.generatedPrompt) {
+                        currentPromptText = data.generatedPrompt;
                         promptResult.innerHTML = data.generatedPrompt;
                         window.setCurrentPromptText(data.generatedPrompt);
                     }
+                } catch (error) {
+                    console.error('Error loading saved data:', error);
                 }
             }
-            
-            // Save data to localStorage
+
             function saveData() {
                 const data = {
                     subject: subjectInput.value,
                     style: styleSelect.value,
                     details: detailsTextarea.value,
                     textModel: textModelSelect.value,
-                    generatedPrompt: currentPromptText
+                    generatedPrompt: currentPromptText,
+                    cleanPrompt: currentPromptText.replace(/<\/?[^>]+(>|$)/g, '')
                 };
                 localStorage.setItem('promptGeneratorData', JSON.stringify(data));
             }
-            
-            // Clear all data
-            function clearData() {
-                localStorage.removeItem('promptGeneratorData');
-                subjectInput.value = '';
-                styleSelect.value = '';
-                detailsTextarea.value = '';
-                textModelSelect.value = '';
-                promptResult.innerHTML = '<p>Your generated prompt will appear here...</p>';
-                currentPromptText = '';
-                window.clearGeneratedImage();
-                statusDiv.textContent = '';
-                statusDiv.className = 'status';
-                promptStatus.textContent = '';
-            }
-            
-            // Load text models from API
-            async function loadTextModels() {
-                try {
-                    const response = await fetch('https://text.pollinations.ai/models');
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const modelsData = await response.json();
-                    
-                    // Clear existing options
-                    textModelSelect.innerHTML = '';
-                    
-                    // Add default option
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = 'openai';
-                    defaultOption.textContent = 'OpenAI GPT-4 (Default)';
-                    textModelSelect.appendChild(defaultOption);
-                    
-                    // Add models from API
-                    Object.entries(modelsData).forEach(([modelId, modelInfo]) => {
-                        if (modelInfo.type === 'text' || !modelInfo.type) {
-                            const option = document.createElement('option');
-                            option.value = modelId;
-                            option.textContent = modelInfo.name || modelId;
-                            if (modelInfo.description) {
-                                option.title = modelInfo.description;
-                            }
-                            textModelSelect.appendChild(option);
-                        }
-                    });
-                    
-                    // Load saved selection
-                    loadSavedData();
-                    
-                } catch (error) {
-                    console.error('Error loading text models:', error);
-                    // Fallback to default options if API fails
-                    textModelSelect.innerHTML = '';
-                    const options = [
-                        { value: 'openai', text: 'OpenAI GPT-4 (Default)' },
-                        { value: 'mistral', text: 'Mistral 7B' },
-                        { value: 'llama', text: 'Llama 2' }
-                    ];
-                    
-                    options.forEach(opt => {
-                        const option = document.createElement('option');
-                        option.value = opt.value;
-                        option.textContent = opt.text;
-                        textModelSelect.appendChild(option);
-                    });
-                    
-                    loadSavedData();
-                }
-            }
-            
-            // Initialize text models
-            loadTextModels();
-            
-            // Generate prompt button click handler
+
+            // Event Handlers
             generateBtn.addEventListener('click', async function() {
                 const subject = subjectInput.value.trim();
                 if (!subject) {
@@ -727,156 +777,81 @@
                     statusDiv.className = 'status error';
                     return;
                 }
-                
-                const style = styleSelect.value;
-                const details = detailsTextarea.value.trim();
-                const model = textModelSelect.value || 'openai';
-                
+
                 generateBtn.disabled = true;
-                statusDiv.innerHTML = '<div class="loading"></div> Generating prompt...';
-                statusDiv.className = 'status';
+                statusDiv.innerHTML = '<div class="loading"></div> Generating...';
                 promptResult.innerHTML = '<p class="loading-text">Generating prompt...</p>';
-                
+
                 try {
-                    const prompt = await generatePrompt(subject, style, details, model);
-                    currentPromptText = prompt;
-                    window.setCurrentPromptText(prompt);
-                    promptResult.innerHTML = prompt;
-                    statusDiv.textContent = 'Prompt generated successfully!';
-                    statusDiv.className = 'status success';
-                    promptStatus.textContent = '';
+                    const prompt = await generatePrompt(
+                        subject,
+                        styleSelect.value,
+                        detailsTextarea.value.trim(),
+                        textModelSelect.value
+                    );
                     
-                    // Save generated prompt
+                    currentPromptText = prompt;
+                    promptResult.innerHTML = prompt;
+                    statusDiv.textContent = 'Prompt generated!';
+                    statusDiv.className = 'status success';
                     saveData();
+                    
+                    // Set the prompt for image generation
+                    window.setCurrentPromptText(prompt);
+                    
                 } catch (error) {
-                    console.error('Error generating prompt:', error);
-                    statusDiv.textContent = 'Error generating prompt: ' + error.message;
+                    console.error('Generation error:', error);
+                    statusDiv.textContent = error.message;
                     statusDiv.className = 'status error';
-                    promptResult.innerHTML = '<p>Failed to generate prompt. Please try again.</p>';
+                    promptResult.innerHTML = '<p>Error generating prompt</p>';
                 } finally {
                     generateBtn.disabled = false;
                 }
             });
-            
-            // Copy to clipboard button
+
             copyBtn.addEventListener('click', async function() {
                 if (!currentPromptText) {
-                    promptStatus.textContent = 'No prompt to copy. Generate one first.';
+                    promptStatus.textContent = 'No prompt to copy';
                     promptStatus.className = 'status error';
                     return;
                 }
-                
+
                 try {
-                    await navigator.clipboard.writeText(currentPromptText.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, ''));
-                    promptStatus.textContent = 'Prompt copied to clipboard!';
+                    await navigator.clipboard.writeText(
+                        currentPromptText.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, '')
+                    );
+                    promptStatus.textContent = 'Copied to clipboard!';
                     promptStatus.className = 'status success';
                     
-                    const originalText = copyBtn.textContent;
                     copyBtn.textContent = 'Copied!';
                     setTimeout(() => {
-                        copyBtn.textContent = originalText;
+                        copyBtn.textContent = 'Copy to Clipboard';
                     }, 2000);
                     
-                } catch (err) {
-                    console.error('Failed to copy:', err);
-                    promptStatus.textContent = 'Failed to copy prompt. Please try again.';
+                } catch (error) {
+                    console.error('Copy failed:', error);
+                    promptStatus.textContent = 'Copy failed. Please select and copy manually.';
                     promptStatus.className = 'status error';
-                    
-                    const textArea = document.createElement('textarea');
-                    textArea.value = currentPromptText.replace(/<br>/g, '\n').replace(/<\/?[^>]+(>|$)/g, '');
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    try {
-                        document.execCommand('copy');
-                        promptStatus.textContent = 'Prompt copied to clipboard!';
-                        promptStatus.className = 'status success';
-                    } catch (err) {
-                        promptStatus.textContent = 'Failed to copy prompt. Please copy manually.';
-                        promptStatus.className = 'status error';
-                    }
-                    document.body.removeChild(textArea);
                 }
             });
-            
-            // Clear button click handler
+
             clearBtn.addEventListener('click', function() {
-                clearData();
+                localStorage.removeItem('promptGeneratorData');
+                subjectInput.value = '';
+                styleSelect.value = '';
+                detailsTextarea.value = '';
+                promptResult.innerHTML = '<p>Your prompt will appear here...</p>';
+                currentPromptText = '';
+                statusDiv.textContent = '';
+                promptStatus.textContent = '';
+                window.clearGeneratedImage();
             });
-            
-            // Save data when inputs change
+
+            // Auto-save
             subjectInput.addEventListener('input', saveData);
             styleSelect.addEventListener('change', saveData);
             detailsTextarea.addEventListener('input', saveData);
             textModelSelect.addEventListener('change', saveData);
-            
-            // Function to generate prompt using Pollinations API
-            async function generatePrompt(subject, style, details, model) {
-                const messages = [
-                    { 
-                        role: "system", 
-                        content: "You are an expert prompt engineer for AI image generation. " +
-                                "Create detailed, effective prompts that will produce high-quality images. " +
-                                "Include relevant artistic styles, composition details, lighting, and mood. " +
-                                "Format the response with proper line breaks for readability."
-                    },
-                    { 
-                        role: "user", 
-                        content: `Create a detailed prompt for an image of: ${subject}. ` +
-                                `${style ? `The style should be ${style}. ` : ''}` +
-                                `${details ? `Additional details to include: ${details}` : ''}`
-                    }
-                ];
-                
-                try {
-                    const response = await postChatCompletion(messages, { model: model });
-                    return formatPrompt(response.choices[0].message.content);
-                } catch (error) {
-                    console.error(`Error with model ${model}:`, error);
-                    // Fallback to default model if selected model fails
-                    if (model !== 'openai') {
-                        const response = await postChatCompletion(messages, { model: 'openai' });
-                        return formatPrompt(response.choices[0].message.content);
-                    }
-                    throw error;
-                }
-            }
-            
-            // Format the prompt response
-            function formatPrompt(prompt) {
-                return prompt
-                    .replace(/\n\n/g, '<br><br>')
-                    .replace(/\n/g, '<br>')
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>');
-            }
-            
-            // Generic function to call Pollinations chat API
-            async function postChatCompletion(messages, options = {}) {
-                const url = "https://text.pollinations.ai/openai";
-                const payload = {
-                    model: options.model || "openai",
-                    messages: messages,
-                    temperature: 0.7,
-                    max_tokens: 2000,
-                    seed: options.seed,
-                    referrer: "ImagePromptGeneratorWebApp",
-                };
-                
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
-                });
-                
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`API error (model: ${options.model || 'default'}): ${errorText}`);
-                }
-                
-                return await response.json();
-            }
         });
     </script>
 </body>
