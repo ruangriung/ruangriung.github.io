@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Prompt Generator</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #6c5ce7;
@@ -479,14 +480,47 @@
     transform: translateY(-2px);
     box-shadow: 8px 8px 15px var(--shadow-dark), -8px -8px 15px var(--shadow-light);
 }
+/* Tambahkan di bagian CSS */
+.header-icon-button {
+    background-color: var(--primary);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.header-icon-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+}
+
+.header-icon-button:active {
+    transform: translateY(0);
+    box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+}
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
+      <header>
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px;">
+        <a href="https://ruangriung.my.id" class="header-icon-button" title="Kembali ke Beranda">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div style="flex-grow: 1; text-align: center; min-width: 0;">
             <h1>Image Prompt Generator</h1>
             <p class="subtitle">Create perfect prompts for AI image generation</p>
-        </header>
+        </div>
+        <div style="width: 40px;">&nbsp;</div> <!-- Spacer untuk balance layout -->
+    </div>
+</header>
         
         <div class="app-container">
             <div class="panel">
