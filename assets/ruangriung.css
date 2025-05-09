@@ -2842,3 +2842,72 @@ input:checked + .toggle-slider:before {
     align-self: flex-end;
   }
 }
+
+
+/* Batch Loading Styles */
+.batch-loading-container {
+    width: 100%;
+    margin-bottom: 20px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: var(--shadow);
+}
+
+.batch-loading-header {
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.batch-loading-header h3 {
+    margin: 0 0 10px 0;
+    color: var(--primary);
+}
+
+.batch-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--shadow-light);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.batch-progress-fill {
+    height: 100%;
+    background: var(--primary);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.image-loading-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--shadow-light);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px 0;
+    min-height: 150px;
+}
+
+.image-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--shadow-dark);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.batch-images-loading {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
