@@ -1078,43 +1078,55 @@ async function generateBatch() {
     // Disable buttons during batch generation
     generateBtn.disabled = true;
     batchGenerateBtn.disabled = true;
-    batchGenerateBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${currentLanguage === 'en' ? 'Generating...' : 'Memproses...'}`;
+    batchGenerateBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${currentLanguage === 'en' ? 'Preparing batch...' : 'Mempersiapkan batch...'}`;
     
-    // Show batch loading container
+    // Create prominent loading container
     const batchLoadingContainer = document.createElement('div');
     batchLoadingContainer.className = 'batch-loading-container';
     batchLoadingContainer.innerHTML = `
         <div class="batch-loading-header">
-            <h3>${currentLanguage === 'en' ? 'Generating Batch' : 'Membuat Batch'} (0/${batchCount})</h3>
-            <div class="batch-progress-bar">
-                <div class="batch-progress-fill"></div>
+            <h3><i class="fas fa-images"></i> ${currentLanguage === 'en' ? 'Generating Batch' : 'Membuat Batch'} <span class="batch-counter">0/${batchCount}</span></h3>
+            <div class="batch-progress-container">
+                <div class="batch-progress-bar">
+                    <div class="batch-progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="batch-progress-text">0% ${currentLanguage === 'en' ? 'Complete' : 'Selesai'}</div>
             </div>
         </div>
         <div class="batch-images-loading"></div>
     `;
     
-    // Create container for batch images if it doesn't exist
-    let batchContainer = document.getElementById('batch-images-container');
-    if (batchContainer) {
-        batchContainer.innerHTML = '';
-    } else {
-        batchContainer = document.createElement('div');
-        batchContainer.id = 'batch-images-container';
-        batchContainer.className = 'batch-images-container';
-    }
+    // Insert loading container at the top of image container
+    const imageContainer = document.querySelector('.image-container');
+    imageContainer.insertBefore(batchLoadingContainer, imageContainer.firstChild);
     
-    // Insert loading container before the batch container
-    document.querySelector('.image-container').insertBefore(batchLoadingContainer, document.querySelector('.action-buttons'));
-    batchLoadingContainer.appendChild(batchContainer);
+    // Hide main image and buttons during batch generation
+    generatedImage.style.display = 'none';
+    document.querySelectorAll('.action-buttons button').forEach(btn => {
+        btn.style.display = 'none';
+    });
     
     try {
+        const batchImagesLoading = batchLoadingContainer.querySelector('.batch-images-loading');
+        
         // Generate multiple images
         for (let i = 0; i < batchCount; i++) {
-            // Update progress
-            batchLoadingContainer.querySelector('h3').textContent = 
-                `${currentLanguage === 'en' ? 'Generating Batch' : 'Membuat Batch'} (${i+1}/${batchCount})`;
-            const progressPercent = ((i + 1) / batchCount) * 100;
-            batchLoadingContainer.querySelector('.batch-progress-fill').style.width = `${progressPercent}%`;
+            // Update progress indicators
+            const progress = Math.round(((i + 1) / batchCount) * 100);
+            batchLoadingContainer.querySelector('.batch-counter').textContent = `${i+1}/${batchCount}`;
+            batchLoadingContainer.querySelector('.batch-progress-fill').style.width = `${progress}%`;
+            batchLoadingContainer.querySelector('.batch-progress-text').textContent = 
+                `${progress}% ${currentLanguage === 'en' ? 'Complete' : 'Selesai'}`;
+            
+            // Create visible loading placeholder for this image
+            const imageLoading = document.createElement('div');
+            imageLoading.className = 'image-loading-placeholder';
+            imageLoading.innerHTML = `
+                <div class="image-loading-spinner"></div>
+                <span>${currentLanguage === 'en' ? 'Generating image' : 'Membuat gambar'} ${i+1}</span>
+                <div class="image-loading-progress">${currentLanguage === 'en' ? 'Initializing...' : 'Memulai...'}</div>
+            `;
+            batchImagesLoading.appendChild(imageLoading);
             
             // Generate a random seed for each image
             const randomSeed = Math.floor(Math.random() * 1000000);
@@ -1125,69 +1137,118 @@ async function generateBatch() {
             
             // Spend coin for each image
             if (window.spendCoin && !window.spendCoin()) {
-                console.error(`Failed to spend coin for image ${i+1}`);
+                imageLoading.querySelector('.image-loading-progress').textContent = 
+                    currentLanguage === 'en' ? 'Coin error - skipped' : 'Error koin - dilewati';
+                imageLoading.className += ' error';
                 continue;
             }
             
-            // Create loading placeholder for this image
-            const imageLoading = document.createElement('div');
-            imageLoading.className = 'image-loading-placeholder';
-            imageLoading.innerHTML = `
-                <div class="image-loading-spinner"></div>
-                <span>${currentLanguage === 'en' ? 'Generating image' : 'Membuat gambar'} ${i+1}</span>
-            `;
-            batchContainer.appendChild(imageLoading);
+            // Small delay to make loading visible
+            await new Promise(resolve => setTimeout(resolve, 300));
             
             try {
+                // Update loading status
+                imageLoading.querySelector('.image-loading-progress').textContent = 
+                    currentLanguage === 'en' ? 'Processing prompt...' : 'Memproses prompt...';
+                
                 // Generate the image
                 const imageUrl = await AIModelManager.generateImage(fullPrompt, {
                     ...currentGeneration.settings,
                     seed: randomSeed
                 });
                 
-                if (!imageUrl) continue;
+                if (!imageUrl) {
+                    throw new Error(currentLanguage === 'en' ? 'Failed to generate image' : 'Gagal membuat gambar');
+                }
+                
+                // Update loading status
+                imageLoading.querySelector('.image-loading-progress').textContent = 
+                    currentLanguage === 'en' ? 'Finalizing...' : 'Menyelesaikan...';
                 
                 // Replace loading placeholder with actual image
-                imageLoading.remove();
+                imageLoading.innerHTML = '';
+                imageLoading.className = 'batch-image-container';
                 
                 const img = document.createElement('img');
                 img.src = imageUrl;
                 img.className = 'batch-image';
                 img.alt = `${currentLanguage === 'en' ? 'Batch image' : 'Gambar batch'} ${i+1}`;
                 
-                // Add click handler
+                // Add click handler to view this image in main display
                 img.addEventListener('click', function() {
                     generatedImage.src = this.src;
                     generatedImage.style.display = 'block';
-                    document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
-                    currentGeneration.seed = randomSeed;
+                    document.querySelectorAll('.action-buttons button').forEach(btn => {
+                        btn.style.display = 'flex';
+                    });
+                    
+                    // Update current generation state
+                    currentGeneration = {
+                        prompt: fullPrompt,
+                        seed: randomSeed,
+                        model: modelSelect.value,
+                        settings: {
+                            ...currentGeneration.settings,
+                            seed: randomSeed
+                        }
+                    };
+                    
                     updateImageInfo();
                 });
                 
-                batchContainer.appendChild(img);
+                imageLoading.appendChild(img);
+                
+                // Add to history
                 addToHistory(fullPrompt, imageUrl);
                 
             } catch (error) {
                 console.error(`Error generating batch image ${i+1}:`, error);
-                imageLoading.innerHTML = `<i class="fas fa-times-circle"></i> ${currentLanguage === 'en' ? 'Failed to generate' : 'Gagal membuat gambar'}`;
+                imageLoading.className = 'image-loading-placeholder error';
+                imageLoading.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>${currentLanguage === 'en' ? 'Failed to generate' : 'Gagal membuat gambar'}</span>
+                    <div class="image-loading-error">${error.message || ''}</div>
+                `;
             }
         }
+        
+        // Update UI when batch is complete
+        batchLoadingContainer.querySelector('.batch-loading-header h3').innerHTML = `
+            <i class="fas fa-check-circle" style="color: var(--success)"></i> 
+            ${currentLanguage === 'en' ? 'Batch Complete!' : 'Batch Selesai!'}
+        `;
+        batchLoadingContainer.querySelector('.batch-progress-text').textContent = 
+            currentLanguage === 'en' ? '100% Completed (Please wait until finished..)' : '100% Selesai (Mohon tunggu hingga selesai..)';
+        batchLoadingContainer.querySelector('.batch-progress-fill').style.background = 'var(--success)';
         
     } catch (error) {
         console.error('Error generating batch:', error);
         showError(error.message || (currentLanguage === 'en' ? 'Failed to generate batch. Please try again.' : 'Gagal menghasilkan batch. Silakan coba lagi.'));
+        
+        // Show error in loading container
+        batchLoadingContainer.querySelector('.batch-loading-header h3').innerHTML = `
+            <i class="fas fa-times-circle" style="color: var(--error)"></i> 
+            ${currentLanguage === 'en' ? 'Batch Failed' : 'Batch Gagal'}
+        `;
+        batchLoadingContainer.querySelector('.batch-progress-text').textContent = 
+            currentLanguage === 'en' ? 'Error occurred' : 'Terjadi error';
+        batchLoadingContainer.querySelector('.batch-progress-fill').style.background = 'var(--error)';
+        
     } finally {
-        // Remove loading container
-        batchLoadingContainer.querySelector('.batch-loading-header').remove();
-        
-        // Re-enable buttons
-        generateBtn.disabled = false;
-        batchGenerateBtn.disabled = false;
-        batchGenerateBtn.innerHTML = `<i class="fas fa-layer-group"></i> ${translations[currentLanguage].batchGenerate}`;
-        
-        // Hide the main generated image during batch view
-        generatedImage.style.display = 'none';
-        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+        // Re-enable buttons after a short delay
+        setTimeout(() => {
+            generateBtn.disabled = false;
+            batchGenerateBtn.disabled = false;
+            batchGenerateBtn.innerHTML = `
+                <i class="fas fa-layer-group"></i> 
+                ${translations[currentLanguage].batchGenerate}
+            `;
+            
+            // Show action buttons again
+            document.querySelectorAll('.action-buttons button').forEach(btn => {
+                btn.style.display = 'flex';
+            });
+        }, 1000);
     }
 }
     
