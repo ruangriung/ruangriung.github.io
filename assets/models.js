@@ -1,4 +1,4 @@
-// AI Model Manager - Complete Implementation
+// AI Model Manager - Complete Implementation with Password Generator
 const AIModelManager = (function() {
     // Private variables
     const API_KEYS = {
@@ -22,9 +22,7 @@ const AIModelManager = (function() {
         stability: 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image'
     };
     
-    // Current Turbo password (visible to users)
-    const TURBO_PASSWORD = 'ruangriungxyz'; // Default password
-    
+    let TURBO_PASSWORD = ''; // Will be set when password is generated
     let currentModel = 'flux'; // Default to flux
     let expiryInterval;
     
@@ -42,6 +40,19 @@ const AIModelManager = (function() {
     const resetBtn = document.getElementById('reset-btn');
     
     // Private methods
+    function generateRandomPassword() {
+        const prefix = "ruangriung";
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let suffix = "";
+        
+        // Generate 8-character random suffix
+        for (let i = 0; i < 4; i++) {
+            suffix += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        return prefix + suffix;
+    }
+
     function showApiKeyModal(model) {
         currentModel = model;
         
@@ -49,6 +60,38 @@ const AIModelManager = (function() {
         const oldShowPassword = document.getElementById('show-password');
         if (oldShowPassword) {
             oldShowPassword.replaceWith(oldShowPassword.cloneNode(true));
+        }
+
+        // Apply responsive styles to modal
+        apiKeyModal.style.cssText = `
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            align-items: flex-start;
+            justify-content: center;
+        `;
+
+        const modalContent = apiKeyModal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.cssText = `
+                background: #e0e5ec;
+                padding: 25px;
+                border-radius: 15px;
+                width: 100%;
+                max-width: 500px;
+                margin: 20px auto;
+                box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+                position: relative;
+                box-sizing: border-box;
+            `;
         }
 
         if (model === 'dalle3') {
@@ -75,102 +118,120 @@ const AIModelManager = (function() {
             apiKeyInput.value = API_KEYS.stability.key;
             apiKeyInput.placeholder = 'sk-...';
             apiKeyInput.type = 'password';
-        } else if (model === 'turbo') {
-            apiKeyTitle.innerHTML = '<i class="fas fa-bolt"></i> Turbo Model Access';
-            apiKeyInstructions.innerHTML = `
-                <div style="margin-bottom: 10px; font-weight: 500;">
-                    Enter password to enable high-speed generation with fewer restrictions
-                </div>
-            `;
+} else if (model === 'turbo') {
+    apiKeyTitle.innerHTML = '<i class="fas fa-bolt"></i> Turbo Model Access';
+    apiKeyInstructions.innerHTML = `
+        <div style="margin-bottom: 10px; font-weight: 500;">
+            Generate a password first, then enter it below to enable high-speed generation
+        </div>
+    `;
+    
+    apiKeyNote.innerHTML = `
+        <div style="background: linear-gradient(135deg, #6c5ce755, #a29bfe55); 
+            padding: 15px; border-radius: 12px; margin-bottom: 15px;
+            border: 1px dashed #6c5ce7;">
+            <div style="display: flex; justify-content: space-between; align-items: center;
+                background: #ffffff; padding: 12px; border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 12px;">
+                <div style="font-weight: bold;">Generated Password:</div>
+                <div id="generated-password" style="font-family: 'Courier New', monospace; font-weight: bold;
+                    color: #6c5ce7; letter-spacing: 1px; word-break: break-all;"></div>
+            </div>
             
-            apiKeyNote.innerHTML = `
-                <div style="background: linear-gradient(135deg, #6c5ce755, #a29bfe55); 
-                    padding: 15px; border-radius: 12px; margin-bottom: 15px;
-                    border: 1px dashed #6c5ce7;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;
-                        background: #ffffff; padding: 12px; border-radius: 8px;
-                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                        <div style="font-weight: bold;">Current Password:</div>
-                        <div style="font-family: 'Courier New', monospace; font-weight: bold;
-                            color: #6c5ce7; letter-spacing: 1px;">${TURBO_PASSWORD}</div>
-                        <button id="copy-password-btn" style="background: #6c5ce7; color: white;
-                            border: none; padding: 5px 10px; border-radius: 5px;
-                            cursor: pointer; transition: all 0.2s;">
-                            <i class="fas fa-copy"></i> Copy
-                        </button>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; margin-top: 12px;">
-                        <input type="checkbox" id="show-password" style="margin-right: 8px;">
-                        <label for="show-password" style="font-size: 14px;">
-                            Show password field for editing
-                        </label>
-                    </div>
-                </div>
-                
-                <div style="margin: 15px 0;">
-                    <div style="display: flex; align-items: center; padding: 8px 12px;
-                        background: #fff5f5; border-radius: 8px; margin-bottom: 8px;">
-                        <i class="fas fa-exclamation-triangle" style="color: #d63031; margin-right: 8px;"></i>
-                        <span style="font-size: 14px;">You are responsible for all generated content</span>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; padding: 8px 12px;
-                        background: #f0f5ff; border-radius: 8px; margin-bottom: 8px;">
-                        <i class="fas fa-info-circle" style="color: #0984e3; margin-right: 8px;"></i>
-                        <span style="font-size: 14px;">Password rotates periodically - contact admin for updates</span>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; padding: 8px 12px;
-                        background: #fff9e6; border-radius: 8px;">
-                        <i class="fas fa-clock" style="color: #fdcb6e; margin-right: 8px;"></i>
-                        <span style="font-size: 14px;">Password expires after 24 hours</span>
-                    </div>
-                </div>
-                
-                <div style="text-align: center; margin-top: 15px;">
-                    <a href="https://www.facebook.com/groups/1182261482811767" target="_blank"
-                        style="color: #6c5ce7; text-decoration: none; font-weight: bold;">
-                        <i class="fab fa-facebook" style="margin-right: 5px;"></i> Contact Admin for Support
-                    </a>
-                </div>
-            `;
+            <button id="generate-password-btn" style="width: 100%; 
+                background: #6c5ce7; color: white; border: none; 
+                padding: 12px; border-radius: 8px; cursor: pointer; 
+                transition: all 0.2s; font-weight: bold; margin-bottom: 8px;">
+                <i class="fas fa-sync-alt"></i> Generate New Password
+            </button>
+            
+            <button id="autofill-password-btn" style="width: 100%; 
+                background: #00b894; color: white; border: none; 
+                padding: 12px; border-radius: 8px; cursor: pointer; 
+                transition: all 0.2s; font-weight: bold;">
+                <i class="fas fa-magic"></i> Auto Fill Password
+            </button>
+            
+            <div style="display: flex; align-items: center; margin-top: 12px;">
+                <input type="checkbox" id="show-password" style="margin-right: 8px;">
+                <label for="show-password" style="font-size: 14px;">
+                    Show password field
+                </label>
+            </div>
+        </div>
+        
+        <div style="margin: 15px 0;">
+            <div style="display: flex; align-items: center; padding: 8px 12px;
+                background: #fff5f5; border-radius: 8px; margin-bottom: 8px;">
+                <i class="fas fa-exclamation-triangle" style="color: #d63031; margin-right: 8px;"></i>
+                <span style="font-size: 14px;">You are responsible for all generated content</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; padding: 8px 12px;
+                background: #f0f5ff; border-radius: 8px; margin-bottom: 8px;">
+                <i class="fas fa-info-circle" style="color: #0984e3; margin-right: 8px;"></i>
+                <span style="font-size: 14px;">Generate a new password each time you want to use Turbo mode</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; padding: 8px 12px;
+                background: #fff9e6; border-radius: 8px;">
+                <i class="fas fa-clock" style="color: #fdcb6e; margin-right: 8px;"></i>
+                <span style="font-size: 14px;">Password expires after 24 hours</span>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="https://www.facebook.com/groups/1182261482811767" target="_blank"
+                style="color: #6c5ce7; text-decoration: none; font-weight: bold;">
+                <i class="fab fa-facebook" style="margin-right: 5px;"></i> Contact Admin for Support
+            </a>
+        </div>
+    `;
 
-            // Auto-fill the current password
-            apiKeyInput.value = TURBO_PASSWORD;
-            apiKeyInput.placeholder = 'Password auto-filled';
-            apiKeyInput.type = 'password';
-            apiKeyInput.readOnly = true;
+    // Generate initial password
+    const generatedPassword = generateRandomPassword();
+    document.getElementById('generated-password').textContent = generatedPassword;
+    
+    // Setup generate password button
+    document.getElementById('generate-password-btn')?.addEventListener('click', (e) => {
+        const newPassword = generateRandomPassword();
+        document.getElementById('generated-password').textContent = newPassword;
+        apiKeyInput.focus();
+    });
 
-            // Setup copy password button
-            document.getElementById('copy-password-btn')?.addEventListener('click', (e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(TURBO_PASSWORD).then(() => {
-                    const btn = e.target.closest('button');
-                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    btn.style.background = '#00b894';
-                    setTimeout(() => {
-                        btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
-                        btn.style.background = '#6c5ce7';
-                    }, 2000);
-                });
-            });
+    // Setup autofill password button
+    document.getElementById('autofill-password-btn')?.addEventListener('click', (e) => {
+        const currentPassword = document.getElementById('generated-password').textContent;
+        apiKeyInput.value = currentPassword;
+        
+        // Beri feedback visual
+        const btn = e.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Password Filled!';
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+        }, 2000);
+    });
 
-            // Toggle password field visibility and editability
-            document.getElementById('show-password')?.addEventListener('change', function(e) {
-                apiKeyInput.readOnly = !e.target.checked;
-                apiKeyInput.type = e.target.checked ? 'text' : 'password';
-                apiKeyInput.placeholder = e.target.checked ? 'Edit password if needed' : 'Password auto-filled';
-                if (!e.target.checked && apiKeyInput.value !== TURBO_PASSWORD) {
-                    if (confirm('Reset to default password?')) {
-                        apiKeyInput.value = TURBO_PASSWORD;
-                    }
-                }
-            });
-        }
+    // Setup password field
+    apiKeyInput.value = '';
+    apiKeyInput.placeholder = 'Paste generated password here';
+    apiKeyInput.type = 'password';
+    apiKeyInput.readOnly = false;
+
+    // Toggle password field visibility
+    document.getElementById('show-password')?.addEventListener('change', function(e) {
+        apiKeyInput.type = e.target.checked ? 'text' : 'password';
+    });
+}
         
         apiKeyModal.style.display = 'flex';
         apiKeyInput.focus();
+        
+        // Prevent modal from closing when clicking inside the content
+        apiKeyModal.querySelector('.modal-content')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
     }
     
     function hideApiKeyModal() {
@@ -188,6 +249,7 @@ const AIModelManager = (function() {
         API_KEYS.stability.timestamp = 0;
         API_KEYS.turbo.key = '';
         API_KEYS.turbo.timestamp = 0;
+        TURBO_PASSWORD = ''; // Reset password
         
         // Clear localStorage but keep coins
         localStorage.removeItem('dalle3_api_key');
@@ -286,16 +348,15 @@ const AIModelManager = (function() {
             } else if (currentModel === 'stability') {
                 isValid = await validateStabilityKey(apiKey);
             } else if (currentModel === 'turbo') {
-                // Enhanced password validation
-                isValid = apiKey === TURBO_PASSWORD;
+                const generatedPassword = document.getElementById('generated-password')?.textContent;
+                isValid = apiKey === generatedPassword;
                 if (isValid) {
                     if (safeFilterCheckbox) safeFilterCheckbox.checked = false;
-                    
-                    // Log successful access
+                    TURBO_PASSWORD = apiKey; // Update the current password
                     console.log('Turbo mode activated with valid password');
                 } else {
                     console.warn('Failed Turbo access attempt with password:', apiKey);
-                    showError('Invalid Turbo password. Please use the displayed password.');
+                    showError('Invalid Turbo password. Please generate and use the displayed password.');
                 }
             }
             
@@ -475,7 +536,9 @@ const AIModelManager = (function() {
             icon: 'error',
             confirmButtonColor: '#51CF66',
             background: '#2B2D42',
-            color: '#EDF2F4'
+            color: '#EDF2F4',
+            width: '90%',
+            maxWidth: '500px'
         });
     }
     
@@ -486,7 +549,9 @@ const AIModelManager = (function() {
             icon: 'success',
             confirmButtonColor: '#51CF66',
             background: '#2B2D42',
-            color: '#EDF2F4'
+            color: '#EDF2F4',
+            width: '90%',
+            maxWidth: '500px'
         });
     }
     
@@ -596,6 +661,8 @@ const AIModelManager = (function() {
             expiryDisplay.id = 'model-expiry-display';
             expiryDisplay.style.fontSize = '0.85em';
             expiryDisplay.style.marginLeft = 'auto';
+            expiryDisplay.style.wordBreak = 'break-word';
+            expiryDisplay.style.maxWidth = '60%';
             modelSelectContainer.appendChild(expiryDisplay);
 
             modelSelect.innerHTML = `
