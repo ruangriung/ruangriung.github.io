@@ -894,107 +894,113 @@ document.querySelector('.analysis-loading p').textContent = t.analyzingImage;
         updateSliderFill();
     }
     
-    async function generateImage() {
-        // Coin check
-        if (window.canGenerateImage && !window.canGenerateImage()) {
-            showError(currentLanguage === 'en' 
-                ? 'You have no coins left. Coins will reset in 24 hours.' 
-                : 'Koin Anda sudah habis. Koin akan direset dalam 24 jam.');
+  async function generateImage() {
+    // Cek ketersediaan koin
+    if (window.canGenerateImage && !window.canGenerateImage()) {
+        showError(currentLanguage === 'en' 
+            ? 'You have no coins left. Coins will reset in 24 hours.' 
+            : 'Koin Anda sudah habis. Koin akan direset dalam 24 jam.');
+        return;
+    }
+
+    const prompt = promptTextarea.value.trim();
+    if (!prompt) {
+        showError(currentLanguage === 'en' 
+            ? 'Please enter a description for the image' 
+            : 'Silakan masukkan deskripsi untuk gambar');
+        return;
+    }
+
+    // Gunakan koin
+    if (window.spendCoin && !window.spendCoin()) {
+        showError(currentLanguage === 'en' 
+            ? 'Failed to spend coin. Please try again.' 
+            : 'Gagal menggunakan koin. Silakan coba lagi.');
+        return;
+    }
+
+    // Scroll ke area gambar
+    scrollToImageContainer();
+    generatedImage.style.display = 'none';
+
+    // Sembunyikan gambar lama, tampilkan loading
+    generatedImage.style.display = 'none';
+    document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+    errorMessage.style.display = 'none';
+    loadingElement.style.display = 'block';
+    filterControls.style.display = 'none';
+    aiEnhancePanel.style.display = 'none';
+    
+    // Bangun prompt lengkap
+    let fullPrompt = buildFullPrompt(prompt);
+    
+    // **GENERATE SEED BARU SETIAP KALI**
+    const randomSeed = generateRandomSeed();
+    seedInput.value = randomSeed; // Update input seed
+    
+    // Simpan state generasi saat ini
+    currentGeneration = {
+        prompt: fullPrompt,
+        seed: randomSeed, // Gunakan seed baru
+        model: modelSelect.value,
+        settings: {
+            width: widthSlider.value,
+            height: heightSlider.value,
+            style: styleSelect.value,
+            quality: qualitySelect.value,
+            lighting: lightingSelect.value,
+            color: colorSelect.value,
+            composition: compositionSelect.value,
+            hd: hdCheckbox.checked,
+            enhanceDetails: enhanceDetailsCheckbox.checked,
+            safeFilter: safeFilterCheckbox.checked
+        }
+    };
+    
+    try {
+        // **Gunakan seed acak untuk hasil berbeda setiap kali**
+        const imageUrl = await AIModelManager.generateImage(fullPrompt, {
+            ...currentGeneration.settings,
+            seed: randomSeed // Pastikan seed acak digunakan
+        });
+        
+        if (!imageUrl) {
+            loadingElement.style.display = 'none';
             return;
         }
-
-        const prompt = promptTextarea.value.trim();
-        if (!prompt) {
-            showError(currentLanguage === 'en' 
-                ? 'Please enter a description for the image' 
-                : 'Silakan masukkan deskripsi untuk gambar');
-            return;
-        }
-
-        // Spend coin
-        if (window.spendCoin && !window.spendCoin()) {
-            showError(currentLanguage === 'en' 
-                ? 'Failed to spend coin. Please try again.' 
-                : 'Gagal menggunakan koin. Silakan coba lagi.');
-            return;
-        }
-
-        // Rest of your existing generateImage code...
-        scrollToImageContainer();
-        generatedImage.style.display = 'none';
-
         
-        // Hide previous image and error, show loading
-        generatedImage.style.display = 'none';
-        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
-        errorMessage.style.display = 'none';
-        loadingElement.style.display = 'block';
-        filterControls.style.display = 'none';
-        aiEnhancePanel.style.display = 'none';
-        
-        // Build the prompt with additional parameters
-        let fullPrompt = buildFullPrompt(prompt);
-        
-        // Store current generation state
-        currentGeneration = {
-            prompt: fullPrompt,
-            seed: seedInput.value || Math.floor(Math.random() * 1000000),
-            model: modelSelect.value,
-            settings: {
-                width: widthSlider.value,
-                height: heightSlider.value,
-                style: styleSelect.value,
-                quality: qualitySelect.value,
-                lighting: lightingSelect.value,
-                color: colorSelect.value,
-                composition: compositionSelect.value,
-                hd: hdCheckbox.checked,
-                enhanceDetails: enhanceDetailsCheckbox.checked,
-                safeFilter: safeFilterCheckbox.checked
+        // Tampilkan gambar setelah selesai
+        generatedImage.onload = function() {
+            loadingElement.style.display = 'none';
+            generatedImage.style.display = 'block';
+            document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+            updateImageInfo();
+            scrollToImageContainer();
+            
+            // Tambahkan ke riwayat
+            if (!generatedImage.dataset.fromHistory) {
+                addToHistory(fullPrompt, imageUrl);
+            } else {
+                delete generatedImage.dataset.fromHistory;
             }
         };
         
-        try {
-            const imageUrl = await AIModelManager.generateImage(fullPrompt, currentGeneration.settings);
-            
-            if (!imageUrl) {
-                // API key not validated, already handled
-                loadingElement.style.display = 'none';
-                return;
-            }
-            
-            // Load the image
-            generatedImage.onload = function() {
-                loadingElement.style.display = 'none';
-                generatedImage.style.display = 'block';
-                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
-                
-                // Update image info
-                updateImageInfo();
-                
-                // Scroll to image container again after image loads
-                scrollToImageContainer();
-                
-                // Add to history only if this is a new generation, not from history click
-                if (!generatedImage.dataset.fromHistory) {
-                    addToHistory(fullPrompt, imageUrl);
-                } else {
-                    delete generatedImage.dataset.fromHistory;
-                }
-            };
-            
-            generatedImage.onerror = function() {
-                loadingElement.style.display = 'none';
-                showError(currentLanguage === 'en' ? 'Failed to generate image. Please try a different prompt.' : 'Gagal menghasilkan gambar. Silakan coba dengan deskripsi yang berbeda.');
-            };
-            
-            generatedImage.src = imageUrl;
-        } catch (error) {
-            console.error('Error generating image:', error);
+        generatedImage.onerror = function() {
             loadingElement.style.display = 'none';
-            showError(error.message || (currentLanguage === 'en' ? 'Failed to generate image. Please try again.' : 'Gagal menghasilkan gambar. Silakan coba lagi.'));
-        }
+            showError(currentLanguage === 'en' 
+                ? 'Failed to generate image. Please try a different prompt.' 
+                : 'Gagal menghasilkan gambar. Silakan coba dengan deskripsi yang berbeda.');
+        };
+        
+        generatedImage.src = imageUrl;
+    } catch (error) {
+        console.error('Error generating image:', error);
+        loadingElement.style.display = 'none';
+        showError(error.message || (currentLanguage === 'en' 
+            ? 'Failed to generate image. Please try again.' 
+            : 'Gagal menghasilkan gambar. Silakan coba lagi.'));
     }
+}
 
     function scrollToImageContainer() {
         const imageContainer = document.getElementById('generated-image-container');
@@ -1128,8 +1134,8 @@ async function generateBatch() {
             `;
             batchImagesLoading.appendChild(imageLoading);
             
-            // Generate a random seed for each image
-            const randomSeed = Math.floor(Math.random() * 1000000);
+            // Generate a new random seed for each image - this ensures different results even with same prompt
+            const randomSeed = generateRandomSeed();
             seedInput.value = randomSeed;
             
             // Build the full prompt with current settings
@@ -1151,10 +1157,10 @@ async function generateBatch() {
                 imageLoading.querySelector('.image-loading-progress').textContent = 
                     currentLanguage === 'en' ? 'Processing prompt...' : 'Memproses prompt...';
                 
-                // Generate the image
+                // Generate the image with the new random seed
                 const imageUrl = await AIModelManager.generateImage(fullPrompt, {
                     ...currentGeneration.settings,
-                    seed: randomSeed
+                    seed: randomSeed // Use the new random seed here
                 });
                 
                 if (!imageUrl) {
@@ -1218,7 +1224,7 @@ async function generateBatch() {
             ${currentLanguage === 'en' ? 'Batch Complete!' : 'Batch Selesai!'}
         `;
         batchLoadingContainer.querySelector('.batch-progress-text').textContent = 
-            currentLanguage === 'en' ? '100% Completed (Please wait until finished..)' : '100% Selesai (Mohon tunggu hingga selesai..)';
+            currentLanguage === 'en' ? '100% Completed' : '100% Selesai';
         batchLoadingContainer.querySelector('.batch-progress-fill').style.background = 'var(--success)';
         
     } catch (error) {
@@ -1250,6 +1256,11 @@ async function generateBatch() {
             });
         }, 1000);
     }
+}
+
+// Helper function to generate random seed
+function generateRandomSeed() {
+    return Math.floor(Math.random() * 1000000);
 }
     
 async function generateVariation() {
