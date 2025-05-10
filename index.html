@@ -275,6 +275,19 @@
             <div class="aspect-ratio-display" id="aspect-ratio-display">
               Aspect Ratio: 1:1
             </div>
+                        	<!-- Tambahkan ini setelah div aspect-ratio-display -->
+<div class="size-preset-container">
+  <label for="size-preset"><i class="fas fa-ruler-combined"></i> Size Preset</label>
+  <div class="select-container">
+    <i class="fas fa-ruler-combined"></i>
+    <select id="size-preset">
+      <option value="custom" >Custom</option>
+      <option value="portrait" selected>Portrait (1024×1792)</option>
+      <option value="square">Square (1024×1024)</option>
+      <option value="landscape">Landscape (1792×1024)</option>
+    </select>
+  </div>
+</div>
             <div
               style="margin-top: 15px; font-size: 0.8em; text-align: center"
               class="advanced-toggle"
@@ -1189,5 +1202,6 @@
     <script src="assets/promptTranslate.js"></script>
     <script src="assets/consent-cookies.js"></script>
     <script src="assets/status-indicator.js"></script>
+	<script src="assets/size-preset.js"></script>
   </body>
 </html>
