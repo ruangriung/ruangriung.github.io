@@ -2937,3 +2937,25 @@ input:checked + .toggle-slider:before {
     visibility: visible !important;
     transform: translateY(0) !important;
 }
+
+/* Size Preset Styles */
+.size-preset-container {
+    margin-top: 15px;
+}
+
+.size-preset-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .size-preset-container {
+        margin-top: 10px;
+    }
+}
