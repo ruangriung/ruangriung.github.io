@@ -1,4 +1,4 @@
-// AI Model Manager - Encapsulated Module
+// AI Model Manager - Complete Implementation
 const AIModelManager = (function() {
     // Private variables
     const API_KEYS = {
@@ -22,6 +22,9 @@ const AIModelManager = (function() {
         stability: 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image'
     };
     
+    // Current Turbo password (visible to users)
+    const TURBO_PASSWORD = 'ruangriungxyz'; // Default password
+    
     let currentModel = 'flux'; // Default to flux
     let expiryInterval;
     
@@ -42,11 +45,12 @@ const AIModelManager = (function() {
     function showApiKeyModal(model) {
         currentModel = model;
         
+        // Clear any existing password toggle
         const oldShowPassword = document.getElementById('show-password');
         if (oldShowPassword) {
             oldShowPassword.replaceWith(oldShowPassword.cloneNode(true));
         }
-        
+
         if (model === 'dalle3') {
             apiKeyTitle.innerHTML = '<i class="fas fa-key"></i> OpenAI API Key Required';
             apiKeyInstructions.textContent = 'Please enter your OpenAI API key to use DALL-E 3.';
@@ -72,29 +76,96 @@ const AIModelManager = (function() {
             apiKeyInput.placeholder = 'sk-...';
             apiKeyInput.type = 'password';
         } else if (model === 'turbo') {
-            apiKeyTitle.innerHTML = '<i class="fas fa-lock"></i> Turbo Model Password';
-            apiKeyInstructions.textContent = 'Please enter the password to access Turbo model.';
-            apiKeyNote.innerHTML = `
-                <div style="margin-top: 10px;">
-                    <input type="checkbox" id="show-password"> Display password
-                </div>
-                <div style="margin-top: 10px; color: #FF6B6B;">
-                    <i class="fas fa-exclamation-triangle"></i> Important Notice: You are solely responsible for all AI-generated content.
-                </div>
-                <div style="margin-top: 10px; font-size: 0.9em;">
-                    For password access, please contact the <a href="https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew" target="_blank">RuangRiung</a> <strong>Admin Team</strong>.
-                    This security measure helps maintain platform integrity by preventing potential misuse.
-                </div>
-                <div style="margin-top: 10px; color: #FF6B6B; font-size: 0.9em;">
-                    <i class="fas fa-clock"></i> For security reasons, password will expire after 24 hours
+            apiKeyTitle.innerHTML = '<i class="fas fa-bolt"></i> Turbo Model Access';
+            apiKeyInstructions.innerHTML = `
+                <div style="margin-bottom: 10px; font-weight: 500;">
+                    Enter password to enable high-speed generation with fewer restrictions
                 </div>
             `;
-            apiKeyInput.value = API_KEYS.turbo.key;
-            apiKeyInput.placeholder = 'Enter password...';
-            apiKeyInput.type = 'password';
             
+            apiKeyNote.innerHTML = `
+                <div style="background: linear-gradient(135deg, #6c5ce755, #a29bfe55); 
+                    padding: 15px; border-radius: 12px; margin-bottom: 15px;
+                    border: 1px dashed #6c5ce7;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;
+                        background: #ffffff; padding: 12px; border-radius: 8px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <div style="font-weight: bold;">Current Password:</div>
+                        <div style="font-family: 'Courier New', monospace; font-weight: bold;
+                            color: #6c5ce7; letter-spacing: 1px;">${TURBO_PASSWORD}</div>
+                        <button id="copy-password-btn" style="background: #6c5ce7; color: white;
+                            border: none; padding: 5px 10px; border-radius: 5px;
+                            cursor: pointer; transition: all 0.2s;">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; margin-top: 12px;">
+                        <input type="checkbox" id="show-password" style="margin-right: 8px;">
+                        <label for="show-password" style="font-size: 14px;">
+                            Show password field for editing
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; align-items: center; padding: 8px 12px;
+                        background: #fff5f5; border-radius: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-exclamation-triangle" style="color: #d63031; margin-right: 8px;"></i>
+                        <span style="font-size: 14px;">You are responsible for all generated content</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; padding: 8px 12px;
+                        background: #f0f5ff; border-radius: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-info-circle" style="color: #0984e3; margin-right: 8px;"></i>
+                        <span style="font-size: 14px;">Password rotates periodically - contact admin for updates</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; padding: 8px 12px;
+                        background: #fff9e6; border-radius: 8px;">
+                        <i class="fas fa-clock" style="color: #fdcb6e; margin-right: 8px;"></i>
+                        <span style="font-size: 14px;">Password expires after 24 hours</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="https://www.facebook.com/groups/1182261482811767" target="_blank"
+                        style="color: #6c5ce7; text-decoration: none; font-weight: bold;">
+                        <i class="fab fa-facebook" style="margin-right: 5px;"></i> Contact Admin for Support
+                    </a>
+                </div>
+            `;
+
+            // Auto-fill the current password
+            apiKeyInput.value = TURBO_PASSWORD;
+            apiKeyInput.placeholder = 'Password auto-filled';
+            apiKeyInput.type = 'password';
+            apiKeyInput.readOnly = true;
+
+            // Setup copy password button
+            document.getElementById('copy-password-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(TURBO_PASSWORD).then(() => {
+                    const btn = e.target.closest('button');
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    btn.style.background = '#00b894';
+                    setTimeout(() => {
+                        btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                        btn.style.background = '#6c5ce7';
+                    }, 2000);
+                });
+            });
+
+            // Toggle password field visibility and editability
             document.getElementById('show-password')?.addEventListener('change', function(e) {
+                apiKeyInput.readOnly = !e.target.checked;
                 apiKeyInput.type = e.target.checked ? 'text' : 'password';
+                apiKeyInput.placeholder = e.target.checked ? 'Edit password if needed' : 'Password auto-filled';
+                if (!e.target.checked && apiKeyInput.value !== TURBO_PASSWORD) {
+                    if (confirm('Reset to default password?')) {
+                        apiKeyInput.value = TURBO_PASSWORD;
+                    }
+                }
             });
         }
         
@@ -215,9 +286,16 @@ const AIModelManager = (function() {
             } else if (currentModel === 'stability') {
                 isValid = await validateStabilityKey(apiKey);
             } else if (currentModel === 'turbo') {
-                isValid = apiKey === 'ruangriungxyz';
+                // Enhanced password validation
+                isValid = apiKey === TURBO_PASSWORD;
                 if (isValid) {
                     if (safeFilterCheckbox) safeFilterCheckbox.checked = false;
+                    
+                    // Log successful access
+                    console.log('Turbo mode activated with valid password');
+                } else {
+                    console.warn('Failed Turbo access attempt with password:', apiKey);
+                    showError('Invalid Turbo password. Please use the displayed password.');
                 }
             }
             
@@ -243,25 +321,24 @@ const AIModelManager = (function() {
                 
                 showSuccess(
                     currentModel === 'turbo' ? 
-                    'Password validated! <span style="color: #FF6B6B">NSFW filter has been disabled</span><br>' + 
-                    '<div style="margin-top: 10px; color: #51CF66;">' +
-                    '<i class="fas fa-clock"></i> This password will expire in 24 hours' +
-                    '</div>' : 
-                    'API key validated successfully!<br>' + 
-                    '<div style="margin-top: 10px; color: #51CF66;">' +
-                    '<i class="fas fa-clock"></i> This API key will expire in 24 hours' +
-                    '</div>'
+                    '<div style="text-align: center;">' +
+                    '<i class="fas fa-bolt" style="font-size: 2rem; color: #fdcb6e; margin-bottom: 10px;"></i>' +
+                    '<div style="font-size: 1.2rem; font-weight: bold;">Turbo Mode Activated!</div>' +
+                    '<div style="margin-top: 10px; font-size: 0.9em; color: #FF6B6B;">' +
+                    '<i class="fas fa-exclamation-triangle"></i> NSFW filter has been disabled' +
+                    '</div></div>' : 
+                    'API key validated successfully!'
                 );
                 
                 startExpiryTimer();
             } else {
-                showError('Invalid API key/password. Please check and try again.');
+                showError('Invalid credentials. Please check and try again.');
                 if (modelSelect) modelSelect.value = 'flux';
                 currentModel = 'flux';
             }
         } catch (error) {
             console.error('Validation error:', error);
-            showError('Error validating API key. Please try again.');
+            showError('Error validating credentials. Please try again.');
             if (modelSelect) modelSelect.value = 'flux';
             currentModel = 'flux';
         } finally {
@@ -560,7 +637,15 @@ const AIModelManager = (function() {
     return {
         init: init,
         generateImage: generateImage,
-        clearAllData: clearAllData
+        clearAllData: clearAllData,
+        // Admin function to update password
+        updateTurboPassword: function(newPassword) {
+            API_KEYS.turbo.key = newPassword;
+            API_KEYS.turbo.timestamp = Date.now();
+            localStorage.setItem('turbo_password', newPassword);
+            localStorage.setItem('turbo_password_timestamp', Date.now().toString());
+            return 'Turbo password updated successfully';
+        }
     };
 })();
 
