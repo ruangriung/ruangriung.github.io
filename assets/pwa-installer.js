@@ -1,25 +1,43 @@
-// PWA Installation Handler
 document.addEventListener('DOMContentLoaded', () => {
   let deferredPrompt;
+  const installBtn = document.getElementById('pwa-install-btn');
   
+  // Check if PWA is already installed
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (installBtn) installBtn.style.display = 'none';
+    return;
+  }
+
+  // Show install button when supported
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    document.getElementById('pwa-install-btn').style.display = 'flex';
-  });
-
-  document.getElementById('pwa-install-btn').addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    const { outcome } = await deferredPrompt.prompt();
-    if (outcome === 'accepted') {
-      document.getElementById('pwa-install-btn').style.display = 'none';
+    if (installBtn) {
+      installBtn.style.display = 'inline-flex';
+      installBtn.innerHTML = '<i class="fas fa-download"></i> Install Aplikasi';
     }
-    deferredPrompt = null;
   });
 
+  // Handle install button click
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      
+      installBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+      
+      const { outcome } = await deferredPrompt.prompt();
+      
+      if (outcome === 'accepted') {
+        installBtn.style.display = 'none';
+      } else {
+        installBtn.innerHTML = '<i class="fas fa-download"></i> Install Aplikasi';
+      }
+      deferredPrompt = null;
+    });
+  }
+
+  // Hide button after installation
   window.addEventListener('appinstalled', () => {
-    document.getElementById('pwa-install-btn').style.display = 'none';
+    if (installBtn) installBtn.style.display = 'none';
   });
 });
-
-
