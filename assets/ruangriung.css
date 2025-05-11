@@ -2959,3 +2959,123 @@ input:checked + .toggle-slider:before {
         margin-top: 10px;
     }
 }
+/* Prompt Generator Styles */
+.prompt-gen-module {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.prompt-gen-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 12px 20px;
+  border-radius: 15px;
+  background: var(--bg);
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: 
+    4px 4px 8px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.prompt-gen-toggle:hover {
+  transform: translateY(-2px);
+}
+
+.prompt-gen-toggle.active {
+  background: var(--primary-dark);
+  color: white;
+}
+
+.prompt-gen-content {
+  display: none;
+  margin-top: 15px;
+}
+
+.prompt-gen-content.show {
+  display: block;
+}
+
+.prompt-gen-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.prompt-gen-options label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.prompt-gen-options select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: 
+    inset 3px 3px 5px var(--shadow-dark),
+    inset -3px -3px 5px var(--shadow-light);
+  border: none;
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+}
+
+.generated-prompt-container {
+  margin-top: 15px;
+}
+
+#generated-prompt {
+  width: 100%;
+  min-height: 100px;
+  padding: 15px;
+  border-radius: 15px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+  box-shadow: 
+    inset 3px 3px 5px var(--shadow-dark),
+    inset -3px -3px 5px var(--shadow-light);
+  border: none;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .prompt-gen-options {
+    grid-template-columns: 1fr;
+  }
+}
+.prompt-gen-inputs {
+  margin-bottom: 15px;
+}
+
+.prompt-gen-subject {
+  margin-bottom: 15px;
+}
+
+.prompt-gen-subject label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.prompt-gen-subject input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: 
+    inset 3px 3px 5px var(--shadow-dark),
+    inset -3px -3px 5px var(--shadow-light);
+  border: none;
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+    }
