@@ -1,207 +1,300 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // ====================== ELEMENT SELECTORS ======================
-    const promptGenToggle = document.getElementById('prompt-gen-toggle');
-    const promptGenContent = document.getElementById('prompt-gen-content');
-    const promptGenArrow = document.querySelector('#prompt-gen-toggle .fa-chevron-down');
+// promptGen.js - AI Prompt Generator Module with Dynamic Model Loading and Subject Field
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // Create the HTML structure
+    const promptGenContainer = document.createElement('div');
+    promptGenContainer.className = 'prompt-gen-module';
+    promptGenContainer.innerHTML = `
+        <div class="prompt-gen-toggle" id="promptGenToggle">
+            <span><i class="fas fa-wand-magic-sparkles"></i> Prompt Generator</span>
+            <i class="fas fa-chevron-down prompt-gen-arrow"></i>
+        </div>
+        <div class="prompt-gen-content" id="promptGenContent">
+            <div class="prompt-gen-loading-models" id="promptGenLoadingModels">
+                <div class="spinner"></div>
+                <span>Loading available models...</span>
+            </div>
+            <div class="prompt-gen-controls" id="promptGenControls" style="display: none;">
+                <div class="form-group">
+                    <label for="prompt-gen-subject"><i class="fas fa-asterisk"></i> Main Subject <span style="color:#e62984">(required)</span></label>
+                    <input type="text" id="prompt-gen-subject" class="form-control" 
+                           placeholder="e.g. Cyberpunk city, Portrait of a warrior" required>
+                    <div class="error-message" id="subject-error" style="display: none;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="prompt-gen-details"><i class="fas fa-align-left"></i> Additional Details</label>
+                    <textarea id="prompt-gen-details" class="form-control" 
+                              placeholder="Optional: Add specific details like style, lighting, composition"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prompt-gen-model"><i class="fas fa-microchip"></i> AI Model</label>
+                        <div class="select-container">
+
+                            <select id="prompt-gen-model" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="prompt-gen-category"><i class="fas fa-tags"></i> Category</label>
+                        <div class="select-container">
+
+                            <select id="prompt-gen-category" class="form-control">
+                                <option value="random">Random</option>
+                                <option value="fantasy">Fantasy</option>
+                                <option value="sci-fi">Sci-Fi</option>
+                                <option value="realism">Realism</option>
+                                <option value="anime">Anime</option>
+                                <option value="photography">Photography</option>
+                                <option value="cyberpunk">Cyberpunk</option>
+                                <option value="portrait">Portrait</option>
+                                <option value="landscape">Landscape</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="generate-prompt-btn">
+                    <i class="fas fa-magic"></i> Generate Prompt
+                </button>
+            </div>
+            <div class="prompt-gen-result" id="promptGenResult"></div>
+            <div class="prompt-gen-loading" id="promptGenLoading" style="display: none;">
+                <div class="spinner"></div>
+                <span>Generating creative prompt...</span>
+            </div>
+        </div>
+    `;
+
+    // Insert after the translation module
+    const translationModule = document.querySelector('.translation-module');
+    if (translationModule) {
+        translationModule.insertAdjacentElement('afterend', promptGenContainer);
+    } else {
+        const inputGroup = document.querySelector('.input-group');
+        if (inputGroup) {
+            inputGroup.insertAdjacentElement('beforebegin', promptGenContainer);
+        }
+    }
+
+    // Toggle functionality
+    const promptGenToggle = document.getElementById('promptGenToggle');
+    const promptGenContent = document.getElementById('promptGenContent');
+    const promptGenArrow = document.querySelector('.prompt-gen-arrow');
+
+    promptGenToggle.addEventListener('click', function() {
+        promptGenContent.classList.toggle('show');
+        promptGenArrow.classList.toggle('fa-chevron-down');
+        promptGenArrow.classList.toggle('fa-chevron-up');
+    });
+
+    // Load models from API
+    const modelSelect = document.getElementById('prompt-gen-model');
+    const loadingModelsDiv = document.getElementById('promptGenLoadingModels');
+    const controlsDiv = document.getElementById('promptGenControls');
+
+    try {
+        const response = await fetch('https://text.pollinations.ai/models');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const models = await response.json();
+        
+        loadingModelsDiv.style.display = 'none';
+        controlsDiv.style.display = 'block';
+        
+        models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model.id;
+            option.textContent = model.name;
+            modelSelect.appendChild(option);
+        });
+
+        if (models.some(model => model.id === 'openai')) {
+            modelSelect.value = 'openai';
+        }
+
+    } catch (error) {
+        console.error('Error loading models:', error);
+        loadingModelsDiv.innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i> Failed to load models. Using default options.
+            </div>
+        `;
+        
+        const defaultModels = [
+            { id: 'openai', name: 'OpenAI GPT-4' },
+            { id: 'anthropic', name: 'Anthropic Claude' },
+            { id: 'meta-llama', name: 'Meta Llama' }
+        ];
+        
+        defaultModels.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model.id;
+            option.textContent = model.name;
+            modelSelect.appendChild(option);
+        });
+        
+        controlsDiv.style.display = 'block';
+    }
+
+    // Generate prompt button
     const generatePromptBtn = document.getElementById('generate-prompt-btn');
-    const applyPromptBtn = document.getElementById('apply-prompt-btn');
-    const generatedPrompt = document.getElementById('generated-prompt');
+    const promptGenResult = document.getElementById('promptGenResult');
+    const promptGenLoading = document.getElementById('promptGenLoading');
     const promptTextarea = document.getElementById('prompt-textarea');
-    const categorySelect = document.getElementById('prompt-category');
-    const styleSelect = document.getElementById('prompt-style');
-    const userSubjectInput = document.getElementById('user-subject');
-    const languageToggle = document.getElementById('language-toggle');
-    
-    // ====================== TRANSLATIONS ======================
-    const translations = {
-        en: {
-            title: "Prompt Generator",
-            category: "Category:",
-            style: "Style:",
-            subject: "Subject (Optional):",
-            generateBtn: "Generate Prompt",
-            applyBtn: "Apply to Image Prompt",
-            placeholder: "Your generated prompt will appear here...",
-            successTitle: "Prompt Applied!",
-            successText: "The generated prompt has been added to your image prompt.",
-            noPromptTitle: "No Prompt Generated",
-            noPromptText: "Please generate a prompt first before applying."
-        },
-        id: {
-            title: "Generator Prompt",
-            category: "Kategori:",
-            style: "Gaya:",
-            subject: "Subjek (Opsional):",
-            generateBtn: "Hasilkan Prompt",
-            applyBtn: "Terapkan ke Prompt Gambar",
-            placeholder: "Prompt yang dihasilkan akan muncul di sini...",
-            successTitle: "Prompt Diterapkan!",
-            successText: "Prompt yang dihasilkan telah ditambahkan ke prompt gambar Anda.",
-            noPromptTitle: "Tidak Ada Prompt",
-            noPromptText: "Silakan hasilkan prompt terlebih dahulu sebelum menerapkan."
-        }
-    };
-    
-    // ====================== STATE VARIABLES ======================
-    let currentLanguage = localStorage.getItem('language') || 'en';
-    
-    // ====================== INITIALIZATION ======================
-    function init() {
-        updateLanguage(currentLanguage);
-        setupEventListeners();
-    }
-    
-    // ====================== LANGUAGE FUNCTIONS ======================
-    function updateLanguage(lang) {
-        currentLanguage = lang;
-        const t = translations[lang];
-        
-        promptGenToggle.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i> ${t.title} <i class="fas fa-chevron-down prompt-gen-arrow"></i>`;
-        document.querySelector('.prompt-gen-options label:nth-of-type(1)').textContent = t.category;
-        document.querySelector('.prompt-gen-options label:nth-of-type(2)').textContent = t.style;
-        document.querySelector('.prompt-gen-subject label').innerHTML = `<i class="fas fa-pencil-alt"></i> ${t.subject}`;
-        generatePromptBtn.innerHTML = `<i class="fas fa-magic"></i> ${t.generateBtn}`;
-        applyPromptBtn.innerHTML = `<i class="fas fa-check"></i> ${t.applyBtn}`;
-        generatedPrompt.placeholder = t.placeholder;
-    }
-    
-    // ====================== EVENT LISTENERS ======================
-    function setupEventListeners() {
-        // Toggle functionality
-        promptGenToggle.addEventListener('click', function() {
-            const isShowing = promptGenContent.classList.toggle('show');
-            const arrow = this.querySelector('.prompt-gen-arrow');
-            arrow.classList.toggle('fa-chevron-down', !isShowing);
-            arrow.classList.toggle('fa-chevron-up', isShowing);
-        });
-        
-        // Language change detection
-        languageToggle.addEventListener('click', function() {
-            setTimeout(() => {
-                const newLang = document.querySelector('.language-option.active').id === 'lang-en' ? 'en' : 'id';
-                if (newLang !== currentLanguage) {
-                    updateLanguage(newLang);
-                }
-            }, 100);
-        });
-        
-        // Generate prompt button
-        generatePromptBtn.addEventListener('click', generatePrompt);
-        
-        // Apply prompt button
-        applyPromptBtn.addEventListener('click', applyGeneratedPrompt);
-    }
-    
-    // ====================== PROMPT GENERATION ======================
-    const promptTemplates = {
-        'fantasy': {
-            'detailed': 'A majestic {subject} in a {setting}, ultra detailed, intricate {details}, {lighting} lighting, 8k resolution, fantasy art',
-            'cinematic': 'Epic scene of a {subject} in a {setting}, cinematic composition, dramatic {lighting}, fantasy atmosphere, highly detailed',
-            'painting': 'Oil painting of a {subject} in a {setting}, brush strokes visible, {art-style} style, {lighting} lighting',
-            'digital-art': 'Digital painting of a {subject} in a {setting}, {art-style} style, vibrant colors, {lighting} lighting, highly detailed'
-        },
-        'sci-fi': {
-            'detailed': 'Futuristic {subject} in a {setting}, cyberpunk style, neon lights, ultra detailed, 8k resolution, sci-fi art',
-            'cinematic': 'Sci-fi scene of a {subject} in a {setting}, cinematic composition, dramatic {lighting}, futuristic atmosphere, highly detailed',
-            'painting': 'Concept art of a {subject} in a {setting}, sci-fi style, {lighting} lighting, intricate details',
-            'digital-art': 'Digital artwork of a {subject} in a {setting}, sci-fi theme, vibrant colors, {lighting} lighting, highly detailed'
-        },
-        'realism': {
-            'detailed': 'Photorealistic {subject} in a {setting}, 8k ultra HD, {lighting} lighting, highly detailed, professional photography',
-            'cinematic': 'Realistic scene of a {subject} in a {setting}, cinematic composition, {lighting} lighting, highly detailed',
-            'painting': 'Hyperrealistic painting of a {subject} in a {setting}, {art-style} style, {lighting} lighting, intricate details',
-            'digital-art': 'Photorealistic digital art of a {subject} in a {setting}, {lighting} lighting, highly detailed'
-        },
-        'anime': {
-            'detailed': 'Anime style {subject} in a {setting}, highly detailed, vibrant colors, {lighting} lighting, 8k resolution',
-            'cinematic': 'Anime scene of a {subject} in a {setting}, cinematic composition, dramatic {lighting}, highly detailed',
-            'painting': 'Anime artwork of a {subject} in a {setting}, {art-style} style, {lighting} lighting, vibrant colors',
-            'digital-art': 'Digital anime art of a {subject} in a {setting}, {art-style} style, {lighting} lighting, highly detailed'
-        },
-        'photography': {
-            'detailed': 'Professional photo of a {subject} in a {setting}, {camera} with {lens}, {lighting} lighting, 8k ultra HD',
-            'cinematic': 'Cinematic photo of a {subject} in a {setting}, {camera} with {lens}, dramatic {lighting}, highly detailed',
-            'painting': 'Artistic photo of a {subject} in a {setting}, {camera} with {lens}, {lighting} lighting, creative composition',
-            'digital-art': 'Creative photography of a {subject} in a {setting}, {camera} with {lens}, {lighting} lighting, highly detailed'
-        }
-    };
-    
-    const promptOptions = {
-        'subject': ['dragon', 'wizard', 'warrior', 'city', 'landscape', 'creature', 'robot', 'spaceship', 'animal', 'portrait'],
-        'setting': ['enchanted forest', 'futuristic city', 'ancient ruins', 'space station', 'mountain peak', 'desert', 'ocean', 'castle', 'village', 'laboratory'],
-        'details': ['armor', 'clothing', 'architecture', 'foliage', 'technology', 'weapons', 'jewelry', 'textures', 'materials'],
-        'lighting': ['dramatic', 'soft', 'golden hour', 'neon', 'moonlit', 'sunset', 'studio', 'natural', 'backlit', 'volumetric'],
-        'art-style': ['Renaissance', 'Baroque', 'Impressionist', 'Art Nouveau', 'Surrealist', 'Concept Art', 'Character Design'],
-        'camera': ['Canon EOS R5', 'Sony A7R IV', 'Nikon Z7', 'Fujifilm GFX 100', 'Leica M11'],
-        'lens': ['24-70mm f/2.8', '50mm f/1.2', '85mm f/1.4', '70-200mm f/2.8', 'macro lens']
-    };
-    
-    function generatePrompt() {
-        const category = categorySelect.value;
-        const style = styleSelect.value;
-        const userSubject = userSubjectInput.value.trim();
-        
-        if (!promptTemplates[category] || !promptTemplates[category][style]) {
-            generatedPrompt.value = 'Invalid category or style selected';
+    const subjectInput = document.getElementById('prompt-gen-subject');
+    const detailsTextarea = document.getElementById('prompt-gen-details');
+    const subjectError = document.getElementById('subject-error');
+
+    generatePromptBtn.addEventListener('click', async function() {
+        // Validate main subject
+        if (!subjectInput.value.trim()) {
+            subjectError.textContent = 'Please enter a main subject';
+            subjectError.style.display = 'block';
+            subjectInput.focus();
             return;
         }
+        subjectError.style.display = 'none';
         
-        let prompt = promptTemplates[category][style];
+        const selectedModel = modelSelect.value;
+        const selectedCategory = document.getElementById('prompt-gen-category').value;
+        const mainSubject = subjectInput.value.trim();
+        const additionalDetails = detailsTextarea.value.trim();
         
-        // Use user's subject if provided
-        if (userSubject) {
-            prompt = prompt.replace(/{subject}/g, userSubject);
+        // Show loading state
+        promptGenResult.textContent = '';
+        promptGenLoading.style.display = 'flex';
+        generatePromptBtn.disabled = true;
+
+        try {
+            // System message to guide the AI
+            const systemMessage = {
+                role: "system",
+                content: `You are a creative AI prompt generator. Generate a detailed prompt for: "${mainSubject}"${additionalDetails ? ` with these details: ${additionalDetails}` : ''}.
+                The prompt should be in the ${selectedCategory} category (unless random).
+                Include details about style (${selectedCategory === 'random' ? 'appropriate for the subject' : selectedCategory}), composition, lighting, and quality.
+                Focus on visual elements and keep it 1-2 sentences.`
+            };
+
+            // User message
+            const userMessage = {
+                role: "user",
+                content: `Generate an AI image prompt for: ${mainSubject}${additionalDetails ? ` (Details: ${additionalDetails})` : ''}`
+            };
+
+            let fullPrompt = "";
+
+            // Call the streaming API
+            await streamChatCompletion(
+                [systemMessage, userMessage],
+                { 
+                    model: selectedModel,
+                    seed: Math.floor(Math.random() * 1000000)
+                },
+                (textChunk) => {
+                    fullPrompt += textChunk;
+                    promptGenResult.textContent = fullPrompt;
+                    promptGenResult.scrollTop = promptGenResult.scrollHeight;
+                }
+            );
+
+            // Add "Use this prompt" button
+            const usePromptBtn = document.createElement('button');
+            usePromptBtn.className = 'btn btn-secondary';
+            usePromptBtn.innerHTML = '<i class="fas fa-check"></i> Use this Prompt';
+            usePromptBtn.addEventListener('click', function() {
+                promptTextarea.value = fullPrompt;
+                promptTextarea.focus();
+            });
+            
+            const copyPromptBtn = document.createElement('button');
+            copyPromptBtn.className = 'btn btn-secondary';
+            copyPromptBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            copyPromptBtn.addEventListener('click', function() {
+                navigator.clipboard.writeText(fullPrompt);
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltip-text';
+                tooltip.textContent = 'Copied!';
+                copyPromptBtn.appendChild(tooltip);
+                setTimeout(() => tooltip.remove(), 2000);
+            });
+            
+            const btnContainer = document.createElement('div');
+            btnContainer.className = 'prompt-action-buttons';
+            btnContainer.appendChild(usePromptBtn);
+            btnContainer.appendChild(copyPromptBtn);
+            
+            promptGenResult.appendChild(document.createElement('br'));
+            promptGenResult.appendChild(btnContainer);
+
+        } catch (error) {
+            console.error('Error generating prompt:', error);
+            promptGenResult.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i> Failed to generate prompt. Please try again.
+                </div>
+            `;
+        } finally {
+            promptGenLoading.style.display = 'none';
+            generatePromptBtn.disabled = false;
         }
-        
-        // Replace other placeholders
-        for (const [key, values] of Object.entries(promptOptions)) {
-            const placeholder = `{${key}}`;
-            if (prompt.includes(placeholder)) {
-                const randomValue = values[Math.floor(Math.random() * values.length)];
-                prompt = prompt.replace(new RegExp(placeholder, 'g'), randomValue);
+    });
+
+    // Stream chat completion function
+    async function streamChatCompletion(messages, options = {}, onChunkReceived) {
+        const url = "https://text.pollinations.ai/openai";
+        const payload = {
+            model: options.model || "openai",
+            messages: messages,
+            seed: options.seed,
+            stream: true,
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "text/event-stream",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
-        }
-        
-        generatedPrompt.value = prompt;
-    }
-    
-    // ====================== PROMPT APPLICATION ======================
-    function applyGeneratedPrompt() {
-        if (generatedPrompt.value.trim()) {
-            promptTextarea.value = generatedPrompt.value;
-            promptTextarea.focus();
-            
-            // Close the prompt generator
-            promptGenContent.classList.remove('show');
-            const arrow = promptGenToggle.querySelector('.prompt-gen-arrow');
-            arrow.classList.remove('fa-chevron-up');
-            arrow.classList.add('fa-chevron-down');
-            
-            // Show success message
-            const t = translations[currentLanguage];
-            Swal.fire({
-                title: t.successTitle,
-                text: t.successText,
-                icon: 'success',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#6c5ce7',
-                background: getComputedStyle(document.body).getPropertyValue('--bg'),
-                color: getComputedStyle(document.body).getPropertyValue('--text')
-            });
-        } else {
-            const t = translations[currentLanguage];
-            Swal.fire({
-                title: t.noPromptTitle,
-                text: t.noPromptText,
-                icon: 'warning',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#6c5ce7',
-                background: getComputedStyle(document.body).getPropertyValue('--bg'),
-                color: getComputedStyle(document.body).getPropertyValue('--text')
-            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n\n");
+                buffer = lines.pop();
+
+                for (const line of lines) {
+                    if (line.startsWith("data: ")) {
+                        const dataStr = line.substring(6).trim();
+                        if (dataStr === "[DONE]") continue;
+                        
+                        try {
+                            const chunk = JSON.parse(dataStr);
+                            const content = chunk?.choices?.[0]?.delta?.content;
+                            if (content && onChunkReceived) {
+                                onChunkReceived(content);
+                            }
+                        } catch (e) {
+                            console.error("Failed to parse stream chunk:", dataStr, e);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error during streaming chat completion:", error);
+            throw error;
         }
     }
-    
-    // ====================== INITIALIZE ======================
-    init();
 });
