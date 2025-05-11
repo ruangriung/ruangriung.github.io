@@ -202,10 +202,56 @@
             <i class="fas fa-comment-dots"></i>
             <span>AI Text Generation</span>
           </a>
-          <a href="prompt-generator/" class="ai-text-toggle">
+          <!-- <a href="prompt-generator/" class="ai-text-toggle">
             <i class="fas fa-pen-to-square"></i>
             <span>Prompt Generation</span>
-          </a>
+          </a> -->
+          <!-- Add this after the translation module -->
+<div class="prompt-gen-module">
+  <div class="prompt-gen-toggle" id="prompt-gen-toggle">
+    <span><i class="fas fa-wand-magic-sparkles"></i> Prompt Generator</span>
+    <i class="fas fa-chevron-down prompt-gen-arrow"></i>
+  </div>
+  <div class="prompt-gen-content" id="prompt-gen-content">
+    <div class="prompt-gen-controls">
+    	<div class="prompt-gen-inputs">
+  <div class="prompt-gen-subject">
+    <label for="user-subject"><i class="fas fa-pencil-alt"></i> Subject (Optional):</label>
+    <input type="text" id="user-subject" placeholder="Enter your subject...">
+  </div>
+</div>
+      <div class="prompt-gen-options">
+        <label for="prompt-category">Category:</label>
+        <select id="prompt-category">
+          <option value="fantasy">Fantasy</option>
+          <option value="sci-fi">Sci-Fi</option>
+          <option value="realism">Realism</option>
+          <option value="anime">Anime</option>
+          <option value="photography">Photography</option>
+        </select>
+        
+        <label for="prompt-style">Style:</label>
+        <select id="prompt-style">
+          <option value="detailed">Highly Detailed</option>
+          <option value="cinematic">Cinematic</option>
+          <option value="painting">Painting</option>
+          <option value="digital-art">Digital Art</option>
+        </select>
+      </div>
+      
+      <button id="generate-prompt-btn" class="btn btn-primary">
+        <i class="fas fa-magic"></i> Generate Prompt
+      </button>
+      
+      <div class="generated-prompt-container">
+        <textarea id="generated-prompt" readonly placeholder="Your generated prompt will appear here..."></textarea>
+        <button id="apply-prompt-btn" class="btn btn-secondary">
+          <i class="fas fa-check"></i> Apply to Image Prompt
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
           <button id="analyze-image-btn" class="image-upload-btn">
             <i class="fas fa-image"></i> Image To Teks
@@ -1210,5 +1256,6 @@
     <script src="assets/status-indicator.js"></script>
 	<script src="assets/size-preset.js"></script>
 	  <script src="assets/pwa-installer.js"></script>
+	  <script src="assets/promptGen.js"></script>
   </body>
 </html>
