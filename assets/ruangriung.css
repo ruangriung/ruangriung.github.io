@@ -2959,6 +2959,7 @@ input:checked + .toggle-slider:before {
         margin-top: 10px;
     }
 }
+
 /* Prompt Generator Styles */
 .prompt-gen-module {
   margin-top: 20px;
