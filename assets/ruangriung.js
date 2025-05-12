@@ -756,7 +756,7 @@ document.querySelector('.analysis-loading p').textContent = t.analyzingImage;
             const systemMessage = {
                 role: "system",
                 content: "You are a creative AI prompt generator. Generate 3 diverse, creative, and detailed prompts for AI image generation. " +
-                         "Each prompt should be for a different category (fantasy, sci-fi, realism, surealism, anime, ghibli etc). " +
+                         "Each prompt should be for a different category (animal, superhero, Panorama, surealism, anime, ghibli etc). " +
                          "Format the response with each prompt on a new line, prefixed with '1. ', '2. ', etc. " +
                          "Each prompt should be 1-2 sentences long and include details about style, lighting, shot and composition."
             };
