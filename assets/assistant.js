@@ -13,6 +13,7 @@ class RRAssistant {
     this.isGenerating = false;
     this.currentConversationId = null;
     this.savedConversations = [];
+    this.uploadedFiles = [];
     
     this.init();
   }
@@ -56,10 +57,31 @@ class RRAssistant {
     const inputContainer = document.createElement('div');
     inputContainer.className = 'rr-assistant-input-container';
     
+    // Create file input container
+    const fileInputContainer = document.createElement('div');
+    fileInputContainer.className = 'rr-assistant-file-input-container';
+    
+    // Create upload button
+    const uploadButton = document.createElement('button');
+    uploadButton.className = 'rr-assistant-upload';
+    uploadButton.innerHTML = '<i class="fas fa-paperclip"></i>';
+    uploadButton.title = 'Attach file';
+    
+    // Create hidden file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.multiple = true;
+    fileInput.accept = 'image/*,.pdf,.txt,.doc,.docx';
+    fileInput.style.display = 'none';
+    
+    // Create image preview container
+    const imagePreview = document.createElement('div');
+    imagePreview.className = 'rr-assistant-image-preview';
+    
     // Create textarea field
     this.chatTextarea = document.createElement('textarea');
     this.chatTextarea.className = 'rr-assistant-textarea';
-    this.chatTextarea.placeholder = 'Tanya Saya Apa saja...';
+    this.chatTextarea.placeholder = 'Ask me anything or upload a file...';
     this.chatTextarea.rows = 3;
     
     // Create send button container
@@ -72,10 +94,16 @@ class RRAssistant {
     this.sendButton.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
     this.sendButton.disabled = true;
     
+    // Assemble file input container
+    fileInputContainer.appendChild(uploadButton);
+    fileInputContainer.appendChild(fileInput);
+    fileInputContainer.appendChild(imagePreview);
+    
     // Assemble send button container
     sendButtonContainer.appendChild(this.sendButton);
     
     // Assemble input container
+    inputContainer.appendChild(fileInputContainer);
     inputContainer.appendChild(this.chatTextarea);
     inputContainer.appendChild(sendButtonContainer);
     
@@ -100,6 +128,8 @@ class RRAssistant {
     
     // Get buttons references
     this.clearButton = this.chatContainer.querySelector('.rr-assistant-clear-chat');
+    this.fileInput = fileInput;
+    this.imagePreview = imagePreview;
   }
 
   setupEventListeners() {
@@ -109,7 +139,7 @@ class RRAssistant {
     
     // Textarea events
     this.chatTextarea.addEventListener('input', () => {
-      this.sendButton.disabled = this.chatTextarea.value.trim() === '';
+      this.sendButton.disabled = this.chatTextarea.value.trim() === '' && this.uploadedFiles.length === 0;
       this.adjustTextareaHeight();
     });
     
@@ -138,6 +168,12 @@ class RRAssistant {
       this.saveCurrentConversation();
       this.showSavedConversations();
     });
+    
+    // File upload events
+    const uploadButton = this.chatContainer.querySelector('.rr-assistant-upload');
+    uploadButton.addEventListener('click', () => this.fileInput.click());
+    
+    this.fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
   }
 
   adjustTextareaHeight() {
@@ -160,14 +196,136 @@ class RRAssistant {
     this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
   }
 
+  async handleFileUpload(event) {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+    
+    // Clear previous files
+    this.uploadedFiles = [];
+    this.imagePreview.innerHTML = '';
+    this.imagePreview.style.display = 'none';
+    
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        this.showNotification('File too large (max 5MB)');
+        continue;
+      }
+      
+      this.uploadedFiles.push(file);
+      
+      if (file.type.startsWith('image/')) {
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const imgContainer = document.createElement('div');
+          imgContainer.style.position = 'relative';
+          imgContainer.style.marginRight = '8px';
+          
+          const img = document.createElement('img');
+          img.className = 'rr-assistant-preview-img';
+          img.src = e.target.result;
+          
+          const cancelBtn = document.createElement('button');
+          cancelBtn.className = 'rr-assistant-cancel-image';
+          cancelBtn.innerHTML = '<i class="fas fa-times"></i>';
+          cancelBtn.onclick = () => this.removeUploadedFile(file);
+          
+          imgContainer.appendChild(img);
+          imgContainer.appendChild(cancelBtn);
+          this.imagePreview.appendChild(imgContainer);
+          this.imagePreview.style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    if (this.uploadedFiles.length > 0) {
+      this.sendButton.disabled = false;
+      this.showNotification(`${this.uploadedFiles.length} file(s) ready for analysis`);
+    }
+    
+    // Reset file input
+    this.fileInput.value = '';
+  }
+
+  removeUploadedFile(file) {
+    this.uploadedFiles = this.uploadedFiles.filter(f => f !== file);
+    
+    // Update preview
+    this.imagePreview.innerHTML = '';
+    if (this.uploadedFiles.length === 0) {
+      this.imagePreview.style.display = 'none';
+      this.sendButton.disabled = this.chatTextarea.value.trim() === '';
+    } else {
+      this.uploadedFiles.forEach(f => {
+        if (f.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imgContainer = document.createElement('div');
+            imgContainer.style.position = 'relative';
+            imgContainer.style.marginRight = '8px';
+            
+            const img = document.createElement('img');
+            img.className = 'rr-assistant-preview-img';
+            img.src = e.target.result;
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'rr-assistant-cancel-image';
+            cancelBtn.innerHTML = '<i class="fas fa-times"></i>';
+            cancelBtn.onclick = () => this.removeUploadedFile(f);
+            
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(cancelBtn);
+            this.imagePreview.appendChild(imgContainer);
+          };
+          reader.readAsDataURL(f);
+        }
+      });
+      this.imagePreview.style.display = 'flex';
+    }
+  }
+
   async sendMessage() {
     if (this.isGenerating) return;
     
     const message = this.chatTextarea.value.trim();
-    if (!message) return;
+    const hasFiles = this.uploadedFiles.length > 0;
+    
+    if (!message && !hasFiles) return;
     
     // Add user message to UI
-    this.addMessage('user', message);
+    if (message) {
+      this.addMessage('user', message);
+    }
+    
+    // Add file preview to UI
+    if (hasFiles) {
+      const fileMessage = `Uploaded ${this.uploadedFiles.length} file(s): ${this.uploadedFiles.map(f => f.name).join(', ')}`;
+      this.addMessage('user', fileMessage);
+      
+      // Show thumbnails for images
+      this.uploadedFiles.forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = document.createElement('img');
+            img.className = 'rr-assistant-message-image';
+            img.src = e.target.result;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'rr-assistant-message user-message';
+            messageDiv.style.maxWidth = '100%';
+            messageDiv.style.padding = '5px';
+            messageDiv.appendChild(img);
+            
+            this.chatMessages.appendChild(messageDiv);
+            this.scrollToBottom();
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
     this.chatTextarea.value = '';
     this.sendButton.disabled = true;
     this.adjustTextareaHeight();
@@ -180,23 +338,30 @@ class RRAssistant {
       this.currentConversationId = 'conv-' + Date.now();
     }
     
-    this.conversationHistory.push({
-      conversationId: this.currentConversationId,
-      role: 'user',
-      content: message,
-      timestamp: new Date().toISOString()
-    });
+    if (message) {
+      this.conversationHistory.push({
+        conversationId: this.currentConversationId,
+        role: 'user',
+        content: message,
+        timestamp: new Date().toISOString()
+      });
+    }
     
     this.isGenerating = true;
     
     try {
-      // Stream the response
-      await this.streamChatCompletion(
-        this.getCurrentMessages(),
-        (content) => {
-          this.updateMessage(thinkingId, content);
-        }
-      );
+      if (hasFiles) {
+        // Handle file analysis
+        await this.analyzeFiles(thinkingId);
+      } else {
+        // Handle text message
+        await this.streamChatCompletion(
+          this.getCurrentMessages(),
+          (content) => {
+            this.updateMessage(thinkingId, content);
+          }
+        );
+      }
       
       // Add assistant response to history
       const lastMessage = document.getElementById(thinkingId);
@@ -215,6 +380,147 @@ class RRAssistant {
       this.updateMessage(thinkingId, 'Sorry, I encountered an error. Please try again.');
     } finally {
       this.isGenerating = false;
+      this.uploadedFiles = [];
+      this.imagePreview.innerHTML = '';
+      this.imagePreview.style.display = 'none';
+    }
+  }
+
+  async analyzeFiles(thinkingId) {
+    try {
+      let responseContent = '';
+      
+      for (const file of this.uploadedFiles) {
+        if (file.type.startsWith('image/')) {
+          // Analyze image
+          const base64Image = await this.fileToBase64(file);
+          const question = this.chatTextarea.value.trim() || "What's in this image?";
+          
+          const imageResponse = await this.analyzeImage(file, question);
+          responseContent += `Analysis of ${file.name}:\n${imageResponse}\n\n`;
+        } else {
+          // Handle other file types (PDF, text, etc.)
+          const textContent = await this.extractTextFromFile(file);
+          responseContent += `Contents of ${file.name}:\n${textContent}\n\n`;
+        }
+        
+        this.updateMessage(thinkingId, responseContent);
+        this.scrollToBottom();
+      }
+      
+      if (responseContent.trim() === '') {
+        responseContent = "I couldn't extract any meaningful content from the files.";
+      }
+      
+      this.updateMessage(thinkingId, responseContent);
+    } catch (error) {
+      console.error('Error analyzing files:', error);
+      this.updateMessage(thinkingId, "Sorry, I couldn't analyze the files. Please try again.");
+    }
+  }
+
+  async analyzeImage(file, question) {
+    const base64Image = await this.fileToBase64(file);
+    
+    const payload = {
+      model: "openai",
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: question },
+            {
+              type: "image_url",
+              image_url: {
+                url: base64Image,
+              },
+            },
+          ],
+        },
+      ],
+      max_tokens: 1000,
+    };
+
+    const response = await fetch("https://text.pollinations.ai/openai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result.choices[0].message.content;
+  }
+
+  async extractTextFromFile(file) {
+    // Simple implementation - for production you'd want proper text extraction
+    if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+      return await file.text();
+    } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+      // Note: PDF extraction would require a PDF.js library or backend service
+      return "PDF content extraction would require additional libraries. For now, please upload text files or images.";
+    } else if (file.type.includes('word') || file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+      // Note: DOCX extraction would require a library like mammoth.js
+      return "Word document content extraction would require additional libraries. For now, please upload text files or images.";
+    } else {
+      return "I can't process this file type. Please upload images, text files, or PDFs.";
+    }
+  }
+
+  fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result); // result includes 'data:mime/type;base64,' prefix
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  addMessage(role, content, isThinking = false) {
+    const messageId = 'msg-' + Date.now();
+    const messageElement = document.createElement('div');
+    messageElement.className = `rr-assistant-message ${role}-message`;
+    messageElement.id = messageId;
+    
+    if (isThinking) {
+      messageElement.classList.add('thinking');
+    }
+    
+    // Add avatar
+    const avatar = document.createElement('div');
+    avatar.className = 'rr-assistant-avatar';
+    avatar.innerHTML = role === 'user' 
+      ? '<i class="fas fa-user"></i>' 
+      : '<i class="fas fa-robot"></i>';
+    
+    // Add content
+    const contentElement = document.createElement('div');
+    contentElement.className = 'rr-assistant-content';
+    contentElement.textContent = content;
+    
+    messageElement.appendChild(avatar);
+    messageElement.appendChild(contentElement);
+    this.chatMessages.appendChild(messageElement);
+    
+    this.scrollToBottom();
+    return messageId;
+  }
+
+  updateMessage(id, newContent) {
+    const messageElement = document.getElementById(id);
+    if (messageElement) {
+      const contentElement = messageElement.querySelector('.rr-assistant-content');
+      if (contentElement) {
+        if (messageElement.classList.contains('thinking')) {
+          messageElement.classList.remove('thinking');
+          contentElement.textContent = newContent;
+        } else {
+          contentElement.textContent += newContent;
+        }
+      }
     }
   }
 
@@ -283,51 +589,6 @@ class RRAssistant {
     } catch (error) {
       console.error("Error during streaming chat completion:", error);
       throw error;
-    }
-  }
-
-  addMessage(role, content, isThinking = false) {
-    const messageId = 'msg-' + Date.now();
-    const messageElement = document.createElement('div');
-    messageElement.className = `rr-assistant-message ${role}-message`;
-    messageElement.id = messageId;
-    
-    if (isThinking) {
-      messageElement.classList.add('thinking');
-    }
-    
-    // Add avatar
-    const avatar = document.createElement('div');
-    avatar.className = 'rr-assistant-avatar';
-    avatar.innerHTML = role === 'user' 
-      ? '<i class="fas fa-user"></i>' 
-      : '<i class="fas fa-robot"></i>';
-    
-    // Add content
-    const contentElement = document.createElement('div');
-    contentElement.className = 'rr-assistant-content';
-    contentElement.textContent = content;
-    
-    messageElement.appendChild(avatar);
-    messageElement.appendChild(contentElement);
-    this.chatMessages.appendChild(messageElement);
-    
-    this.scrollToBottom();
-    return messageId;
-  }
-
-  updateMessage(id, newContent) {
-    const messageElement = document.getElementById(id);
-    if (messageElement) {
-      const contentElement = messageElement.querySelector('.rr-assistant-content');
-      if (contentElement) {
-        if (messageElement.classList.contains('thinking')) {
-          messageElement.classList.remove('thinking');
-          contentElement.textContent = newContent;
-        } else {
-          contentElement.textContent += newContent;
-        }
-      }
     }
   }
 
