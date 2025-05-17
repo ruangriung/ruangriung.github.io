@@ -666,11 +666,15 @@ const AIModelManager = (function() {
             modelSelectContainer.appendChild(expiryDisplay);
 
             modelSelect.innerHTML = `
-                <option value="flux">FLUX</option>
-                <option value="turbo">Turbo (AI NSFW)</option>
-                <option value="dalle3">DALL-E 3 (OpenAI)</option>
-                <option value="stability">Stability AI</option>
-            `;
+    <option value="flux">FLUX</option>
+    <option value="turbo">Turbo (AI NSFW)</option>
+    <option value="dalle3">DALL-E 3 (OpenAI)</option>
+    <option value="stability">Stability AI</option>
+    <option value="imagefx" disabled>ImageFX (Coming Soon)</option>
+        <option value="leonardo" disabled>Leonardo (Coming Soon)</option>
+        <option value="tensor" disabled>Tensor AI(Coming Soon)</option>
+        <option value="ideogram" disabled>Ideogram(Coming Soon)</option>
+`;
             modelSelect.value = currentModel;
             modelSelect.addEventListener('change', handleModelChange);
         }
