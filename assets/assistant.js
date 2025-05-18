@@ -496,13 +496,32 @@ class RRAssistant {
       ? '<i class="fas fa-user"></i>' 
       : '<i class="fas fa-robot"></i>';
     
+    // Create content container
+    const contentContainer = document.createElement('div');
+    contentContainer.className = 'rr-assistant-content-container';
+    
     // Add content
     const contentElement = document.createElement('div');
     contentElement.className = 'rr-assistant-content';
     contentElement.textContent = content;
     
+    // Add copy button (only for assistant messages)
+    if (role === 'assistant') {
+      const copyButton = document.createElement('button');
+      copyButton.className = 'rr-assistant-copy-btn';
+      copyButton.title = 'Copy to clipboard';
+      copyButton.innerHTML = '<i class="far fa-copy"></i>';
+      copyButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const finalContent = contentContainer.querySelector('.rr-assistant-content').textContent;
+        this.copyToClipboard(finalContent);
+      });
+      contentContainer.appendChild(copyButton);
+    }
+    
+    contentContainer.appendChild(contentElement);
     messageElement.appendChild(avatar);
-    messageElement.appendChild(contentElement);
+    messageElement.appendChild(contentContainer);
     this.chatMessages.appendChild(messageElement);
     
     this.scrollToBottom();
@@ -517,10 +536,74 @@ class RRAssistant {
         if (messageElement.classList.contains('thinking')) {
           messageElement.classList.remove('thinking');
           contentElement.textContent = newContent;
+          
+          // Add copy button if this is an assistant message
+          if (messageElement.classList.contains('assistant-message')) {
+            const copyButton = document.createElement('button');
+            copyButton.className = 'rr-assistant-copy-btn';
+            copyButton.title = 'Copy to clipboard';
+            copyButton.innerHTML = '<i class="far fa-copy"></i>';
+            copyButton.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const finalContent = messageElement.querySelector('.rr-assistant-content').textContent;
+              this.copyToClipboard(finalContent);
+            });
+            
+            const contentContainer = messageElement.querySelector('.rr-assistant-content-container');
+            if (contentContainer) {
+              // Remove existing copy button if any
+              const existingBtn = contentContainer.querySelector('.rr-assistant-copy-btn');
+              if (existingBtn) existingBtn.remove();
+              
+              contentContainer.appendChild(copyButton);
+            }
+          }
         } else {
           contentElement.textContent += newContent;
         }
       }
+    }
+  }
+
+  copyToClipboard(text) {
+    // First try the modern Clipboard API
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.showNotification('Copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy with Clipboard API:', err);
+        this.fallbackCopyToClipboard(text);
+      });
+    } else {
+      // Fallback for browsers without Clipboard API support
+      this.fallbackCopyToClipboard(text);
+    }
+  }
+
+  fallbackCopyToClipboard(text) {
+    try {
+      // Create a temporary textarea element
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed'; // Prevent scrolling to bottom
+      document.body.appendChild(textarea);
+      textarea.select();
+      
+      // Try the deprecated execCommand method
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      
+      if (successful) {
+        this.showNotification('Copied to clipboard!');
+      } else {
+        throw new Error('execCommand copy failed');
+      }
+    } catch (err) {
+      console.error('Fallback copy failed:', err);
+      this.showNotification('Failed to copy text. Please copy manually.');
+      
+      // As a last resort, show the text in an alert so they can copy manually
+      prompt('Please copy this text:', text);
     }
   }
 

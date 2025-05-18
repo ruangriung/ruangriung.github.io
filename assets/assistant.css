@@ -563,3 +563,55 @@
     max-height: 90vh;
   }
 }
+
+/* Add this to assistant.css */
+.rr-assistant-copy-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.rr-assistant-message:hover .rr-assistant-copy-btn {
+  opacity: 1;
+}
+
+.rr-assistant-copy-btn:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.assistant-message .rr-assistant-copy-btn {
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.assistant-message:hover .rr-assistant-copy-btn {
+  opacity: 1;
+}
+
+.rr-assistant-content-container {
+  position: relative;
+  padding-right: 30px;
+  width: 100%;
+}
+
+/* For dark mode */
+.dark-mode .assistant-message .rr-assistant-copy-btn {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .assistant-message .rr-assistant-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
