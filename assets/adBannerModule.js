@@ -5,6 +5,20 @@ const AdvancedAdBannerModule = (function() {
     // Private configuration
     const config = {
         banners: [
+            // New top banner that will appear above the header
+            {
+                id: 'adBannerTop',
+                imageId: 'adImageTop',
+                currentType: 'ai',
+                enabled: false,
+                aiPrompt: "Professional website header banner with modern design, clean layout",
+                localImage: '',
+                width: '100%',
+                height: 'auto',
+                clickUrl: "https://ruangriung.my.id",
+                overlayText: "Sponsored Content",
+                position: 'top'
+            },
             {
                 id: 'adBanner1',
                 imageId: 'adImage1',
@@ -12,8 +26,8 @@ const AdvancedAdBannerModule = (function() {
                 enabled: false,
                 aiPrompt: "Modern digital marketing concept with vibrant colors, abstract design",
                 localImage: '',
-                width: '100%',  // Full width
-                height: 'auto', // Auto height
+                width: '100%',
+                height: 'auto',
                 clickUrl: "https://ruangriung.my.id",
                 overlayText: "Advertisement by RuangRiung"
             },
@@ -24,8 +38,8 @@ const AdvancedAdBannerModule = (function() {
                 enabled: true,
                 aiPrompt: "",
                 localImage: 'ruangriung.png',
-                width: '100%',  // Full width
-                height: 'auto', // Auto height
+                width: '100%',
+                height: 'auto',
                 clickUrl: "https://ruangriung.my.id",
                 overlayText: "Advertisement by RuangRiung"
             },
@@ -36,8 +50,8 @@ const AdvancedAdBannerModule = (function() {
                 enabled: false,
                 aiPrompt: "Creative workspace with laptop and plants, professional environment",
                 localImage: '',
-                width: '100%',  // Full width
-                height: 'auto', // Auto height
+                width: '100%',
+                height: 'auto',
                 clickUrl: "https://ruangriung.my.id/",
                 overlayText: "Show your product here!"
             }
@@ -89,6 +103,14 @@ const AdvancedAdBannerModule = (function() {
         if (!banner.enabled) {
             elements[banner.id].style.display = 'none';
             return;
+        }
+
+        // Position the top banner above header
+        if (banner.position === 'top') {
+            const header = document.querySelector('header');
+            if (header) {
+                header.insertAdjacentElement('beforebegin', elements[banner.id]);
+            }
         }
 
         // Set initial random prompt for AI banners
@@ -168,7 +190,7 @@ const AdvancedAdBannerModule = (function() {
             if (banner.width === '100%') {
                 imageElement.style.width = '100%';
                 imageElement.style.height = 'auto';
-                imageElement.style.maxHeight = '400px'; // Prevent excessive height
+                imageElement.style.maxHeight = '400px';
             }
         };
         
@@ -190,7 +212,7 @@ const AdvancedAdBannerModule = (function() {
             if (banner.width === '100%') {
                 imageElement.style.width = '100%';
                 imageElement.style.height = 'auto';
-                imageElement.style.maxHeight = '400px'; // Prevent excessive height
+                imageElement.style.maxHeight = '400px';
             }
         };
         
