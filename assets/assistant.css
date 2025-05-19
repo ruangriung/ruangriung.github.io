@@ -615,3 +615,77 @@
 .dark-mode .assistant-message .rr-assistant-copy-btn:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* Add to assistant.css */
+.rr-assistant-model-select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 15px;
+  padding: 5px 7px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: all 0.2s ease;
+}
+
+.rr-assistant-model-select:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.rr-assistant-model-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.dark-mode .rr-assistant-model-select {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+/* Model Selector in Input Area */
+.rr-assistant-model-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 0 5px;
+}
+
+.rr-assistant-model-label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+.rr-assistant-model-select {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--shadow-dark);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: inset 2px 2px 4px var(--shadow-dark), 
+              inset -2px -2px 4px var(--shadow-light);
+}
+
+.rr-assistant-model-select:hover {
+  border-color: var(--primary);
+}
+
+.rr-assistant-model-select:focus {
+  outline: none;
+  box-shadow: inset 2px 2px 4px var(--shadow-dark), 
+              inset -2px -2px 4px var(--shadow-light),
+              0 0 0 2px var(--primary-light);
+}
+
+/* Dark mode adjustments */
+.dark-mode .rr-assistant-model-select {
+  background: var(--shadow-dark);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}

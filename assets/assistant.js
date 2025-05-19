@@ -1,4 +1,4 @@
-// assets/assistant.js
+// a// assets/assistant.js
 class RRAssistant {
   constructor() {
     this.chatContainer = null;
@@ -14,6 +14,8 @@ class RRAssistant {
     this.currentConversationId = null;
     this.savedConversations = [];
     this.uploadedFiles = [];
+    this.availableModels = [];
+    this.currentModel = "openai";
     
     this.init();
   }
@@ -23,6 +25,7 @@ class RRAssistant {
     this.setupEventListeners();
     this.loadConversationHistory();
     this.loadSavedConversations();
+    this.fetchAvailableModels();
   }
 
   createUI() {
@@ -56,7 +59,29 @@ class RRAssistant {
     // Create input container
     const inputContainer = document.createElement('div');
     inputContainer.className = 'rr-assistant-input-container';
+
+    // Create model selector container
+    const modelSelectorContainer = document.createElement('div');
+    modelSelectorContainer.className = 'rr-assistant-model-selector-container';
     
+    // Create model selector label
+    const modelLabel = document.createElement('span');
+    modelLabel.className = 'rr-assistant-model-label';
+    modelLabel.textContent = 'AI Model:';
+    
+    // Create model selector dropdown
+    this.modelSelect = document.createElement('select');
+    this.modelSelect.className = 'rr-assistant-model-select';
+    this.modelSelect.title = 'Select AI Model';
+    
+    const loadingOption = document.createElement('option');
+    loadingOption.value = 'loading';
+    loadingOption.textContent = 'Loading models...';
+    this.modelSelect.appendChild(loadingOption);
+    
+    modelSelectorContainer.appendChild(modelLabel);
+    modelSelectorContainer.appendChild(this.modelSelect);
+
     // Create file input container
     const fileInputContainer = document.createElement('div');
     fileInputContainer.className = 'rr-assistant-file-input-container';
@@ -103,6 +128,7 @@ class RRAssistant {
     sendButtonContainer.appendChild(this.sendButton);
     
     // Assemble input container
+    inputContainer.appendChild(modelSelectorContainer);
     inputContainer.appendChild(fileInputContainer);
     inputContainer.appendChild(this.chatTextarea);
     inputContainer.appendChild(sendButtonContainer);
@@ -130,6 +156,44 @@ class RRAssistant {
     this.clearButton = this.chatContainer.querySelector('.rr-assistant-clear-chat');
     this.fileInput = fileInput;
     this.imagePreview = imagePreview;
+  }
+
+  async fetchAvailableModels() {
+    try {
+      const response = await fetch('https://text.pollinations.ai/models');
+      if (!response.ok) {
+        throw new Error('Failed to fetch models');
+      }
+      this.availableModels = await response.json();
+      this.updateModelSelector();
+    } catch (error) {
+      console.error('Error fetching models:', error);
+      this.showNotification('Failed to load models. Using default.');
+      this.availableModels = [{ id: 'openai', name: 'OpenAI (Default)' }];
+      this.updateModelSelector();
+    }
+  }
+
+  updateModelSelector() {
+    if (!this.modelSelect) return;
+    
+    this.modelSelect.innerHTML = '';
+    
+    if (this.availableModels.length === 0) {
+      const option = document.createElement('option');
+      option.value = 'openai';
+      option.textContent = 'Default (OpenAI)';
+      this.modelSelect.appendChild(option);
+      return;
+    }
+    
+    this.availableModels.forEach(model => {
+      const option = document.createElement('option');
+      option.value = model.id;
+      option.textContent = model.name || model.id;
+      option.selected = model.id === this.currentModel;
+      this.modelSelect.appendChild(option);
+    });
   }
 
   setupEventListeners() {
@@ -174,6 +238,15 @@ class RRAssistant {
     uploadButton.addEventListener('click', () => this.fileInput.click());
     
     this.fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
+    
+    // Model selection change
+    if (this.modelSelect) {
+      this.modelSelect.addEventListener('change', (e) => {
+        this.currentModel = e.target.value;
+        const modelName = e.target.selectedOptions[0].textContent;
+        this.showNotification(`Model changed to: ${modelName}`);
+      });
+    }
   }
 
   adjustTextareaHeight() {
@@ -423,7 +496,7 @@ class RRAssistant {
     const base64Image = await this.fileToBase64(file);
     
     const payload = {
-      model: "openai",
+      model: this.currentModel,
       messages: [
         {
           role: "user",
@@ -616,7 +689,7 @@ class RRAssistant {
   async streamChatCompletion(messages, onChunkReceived) {
     const url = "https://text.pollinations.ai/openai";
     const payload = {
-      model: "openai",
+      model: this.currentModel,
       messages: messages,
       stream: true,
     };
