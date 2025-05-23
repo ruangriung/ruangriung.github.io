@@ -172,6 +172,23 @@
             </button>
           </div>
         </div>
+	      <!-- Add this right before the translation module -->
+<div class="negative-prompt-container">
+  <div class="negative-prompt-toggle" id="negative-prompt-toggle">
+    <span><i class="fas fa-exclamation-triangle"></i> Negative Prompt (Optional)</span>
+    <i class="fas fa-chevron-down negative-prompt-arrow"></i>
+  </div>
+  <div class="negative-prompt-content" id="negative-prompt-content">
+    <textarea 
+      id="negative-prompt-textarea" 
+      placeholder="Describe what you don't want in the image (e.g. blurry, distorted, extra limbs, bad anatomy)"
+    ></textarea>
+    <div class="negative-prompt-suggestions" id="negative-prompt-suggestions"></div>
+    <button class="refresh-suggestions" id="refresh-negative-suggestions">
+      <i class="fas fa-sync-alt"></i> Refresh Suggestions
+    </button>
+  </div>
+</div>
 <!-- Add this where you want the translation module to appear in your HTML -->
 <div class="translation-module">
   <div class="translation-toggle" id="translation-toggle">
@@ -1205,5 +1222,6 @@
 	  <script src="assets/pwa-installer.js"></script>
 	  <script src="assets/promptGen.js"></script>
 	  <script src="assets/assistant.js"></script>
+	  <script src="assets/negative.js"></script>
   </body>
 </html>
