@@ -3142,3 +3142,73 @@ input:checked + .toggle-slider:before {
         padding: 10px 12px;
     }
 }
+
+/* Negative Prompt Styles */
+.negative-prompt-container {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 100%;
+}
+
+.negative-prompt-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 12px 20px;
+    border-radius: 15px;
+    background: var(--bg);
+    color: var(--primary);
+    font-weight: 600;
+    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.negative-prompt-toggle:hover {
+    transform: translateY(-2px);
+}
+
+.negative-prompt-content {
+    display: none;
+    margin-top: 15px;
+}
+
+.negative-prompt-content.show {
+    display: block;
+}
+
+#negative-prompt-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 15px;
+    border-radius: 15px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Poppins", sans-serif;
+    box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
+    border: none;
+    outline: none;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+
+.negative-prompt-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .negative-prompt-toggle {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    #negative-prompt-textarea {
+        min-height: 60px;
+        padding: 10px;
+    }
+}
