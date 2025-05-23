@@ -30,14 +30,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                     <div class="form-group">
                         <label for="prompt-gen-model"><i class="fas fa-microchip"></i> AI Model</label>
                         <div class="select-container">
-
                             <select id="prompt-gen-model" class="form-control"></select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="prompt-gen-category"><i class="fas fa-tags"></i> Category</label>
                         <div class="select-container">
-
                             <select id="prompt-gen-category" class="form-control">
                                 <option value="random">Random</option>
                                 <option value="fantasy">Fantasy</option>
@@ -54,6 +52,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                 </div>
                 <button class="btn btn-primary" id="generate-prompt-btn">
                     <i class="fas fa-magic"></i> Generate Prompt
+                </button>
+                <button class="btn btn-secondary" id="clear-saved-inputs-btn" style="margin-top: 10px;">
+                    <i class="fas fa-trash"></i> Clear Saved Inputs
                 </button>
             </div>
             <div class="prompt-gen-result" id="promptGenResult"></div>
@@ -143,6 +144,59 @@ document.addEventListener('DOMContentLoaded', async function() {
     const subjectInput = document.getElementById('prompt-gen-subject');
     const detailsTextarea = document.getElementById('prompt-gen-details');
     const subjectError = document.getElementById('subject-error');
+    const clearSavedInputsBtn = document.getElementById('clear-saved-inputs-btn');
+
+    // Fungsi untuk menyimpan input ke localStorage
+    function saveInputs() {
+        localStorage.setItem('promptGenSubject', subjectInput.value);
+        localStorage.setItem('promptGenDetails', detailsTextarea.value);
+        localStorage.setItem('promptGenModel', modelSelect.value);
+        localStorage.setItem('promptGenCategory', document.getElementById('prompt-gen-category').value);
+    }
+
+    // Fungsi untuk memulihkan input dari localStorage
+    function restoreInputs() {
+        const savedSubject = localStorage.getItem('promptGenSubject');
+        const savedDetails = localStorage.getItem('promptGenDetails');
+        const savedModel = localStorage.getItem('promptGenModel');
+        const savedCategory = localStorage.getItem('promptGenCategory');
+        
+        if (savedSubject) subjectInput.value = savedSubject;
+        if (savedDetails) detailsTextarea.value = savedDetails;
+        if (savedModel) modelSelect.value = savedModel;
+        if (savedCategory) document.getElementById('prompt-gen-category').value = savedCategory;
+    }
+
+    // Panggil restoreInputs saat halaman dimuat
+    restoreInputs();
+
+    // Tambahkan event listener untuk menyimpan input saat berubah
+    subjectInput.addEventListener('input', saveInputs);
+    detailsTextarea.addEventListener('input', saveInputs);
+    modelSelect.addEventListener('change', saveInputs);
+    document.getElementById('prompt-gen-category').addEventListener('change', saveInputs);
+
+    // Juga simpan ketika generate button diklik
+    generatePromptBtn.addEventListener('click', saveInputs);
+
+    // Clear saved inputs
+    clearSavedInputsBtn.addEventListener('click', function() {
+        localStorage.removeItem('promptGenSubject');
+        localStorage.removeItem('promptGenDetails');
+        localStorage.removeItem('promptGenModel');
+        localStorage.removeItem('promptGenCategory');
+        subjectInput.value = '';
+        detailsTextarea.value = '';
+        modelSelect.value = 'openai';
+        document.getElementById('prompt-gen-category').value = 'random';
+        
+        // Show feedback
+        const feedback = document.createElement('div');
+        feedback.className = 'success-message';
+        feedback.innerHTML = '<i class="fas fa-check-circle"></i> Saved inputs cleared!';
+        promptGenResult.appendChild(feedback);
+        setTimeout(() => feedback.remove(), 3000);
+    });
 
     generatePromptBtn.addEventListener('click', async function() {
         // Validate main subject

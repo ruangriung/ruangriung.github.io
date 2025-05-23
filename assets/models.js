@@ -118,112 +118,112 @@ const AIModelManager = (function() {
             apiKeyInput.value = API_KEYS.stability.key;
             apiKeyInput.placeholder = 'sk-...';
             apiKeyInput.type = 'password';
-} else if (model === 'turbo') {
-    apiKeyTitle.innerHTML = '<i class="fas fa-bolt"></i> Turbo Model Access';
-    apiKeyInstructions.innerHTML = `
-        <div style="margin-bottom: 10px; font-weight: 500;">
-            Generate a password first, then enter it below to enable high-speed generation
-        </div>
-    `;
-    
-    apiKeyNote.innerHTML = `
-        <div style="background: linear-gradient(135deg, #6c5ce755, #a29bfe55); 
-            padding: 15px; border-radius: 12px; margin-bottom: 15px;
-            border: 1px dashed #6c5ce7;">
-            <div style="display: flex; justify-content: space-between; align-items: center;
-                background: #ffffff; padding: 12px; border-radius: 8px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 12px;">
-                <div style="font-weight: bold;">Generated Password:</div>
-                <div id="generated-password" style="font-family: 'Courier New', monospace; font-weight: bold;
-                    color: #6c5ce7; letter-spacing: 1px; word-break: break-all;"></div>
-            </div>
+        } else if (model === 'turbo') {
+            apiKeyTitle.innerHTML = '<i class="fas fa-bolt"></i> Turbo Model Access';
+            apiKeyInstructions.innerHTML = `
+                <div style="margin-bottom: 10px; font-weight: 500;">
+                    Generate a password first, then enter it below to enable high-speed generation
+                </div>
+            `;
             
-            <button id="generate-password-btn" style="width: 100%; 
-                background: #6c5ce7; color: white; border: none; 
-                padding: 12px; border-radius: 8px; cursor: pointer; 
-                transition: all 0.2s; font-weight: bold; margin-bottom: 8px;">
-                <i class="fas fa-sync-alt"></i> Generate New Password
-            </button>
-            
-            <button id="autofill-password-btn" style="width: 100%; 
-                background: #00b894; color: white; border: none; 
-                padding: 12px; border-radius: 8px; cursor: pointer; 
-                transition: all 0.2s; font-weight: bold;">
-                <i class="fas fa-magic"></i> Auto Fill Password
-            </button>
-            
-            <div style="display: flex; align-items: center; margin-top: 12px;">
-                <input type="checkbox" id="show-password" style="margin-right: 8px;">
-                <label for="show-password" style="font-size: 14px;">
-                    Show password field
-                </label>
-            </div>
-        </div>
-        
-        <div style="margin: 15px 0;">
-            <div style="display: flex; align-items: center; padding: 8px 12px;
-                background: #fff5f5; border-radius: 8px; margin-bottom: 8px;">
-                <i class="fas fa-exclamation-triangle" style="color: #d63031; margin-right: 8px;"></i>
-                <span style="font-size: 14px;">You are responsible for all generated content</span>
-            </div>
-            
-            <div style="display: flex; align-items: center; padding: 8px 12px;
-                background: #f0f5ff; border-radius: 8px; margin-bottom: 8px;">
-                <i class="fas fa-info-circle" style="color: #0984e3; margin-right: 8px;"></i>
-                <span style="font-size: 14px;">Generate a new password each time you want to use Turbo mode</span>
-            </div>
-            
-            <div style="display: flex; align-items: center; padding: 8px 12px;
-                background: #fff9e6; border-radius: 8px;">
-                <i class="fas fa-clock" style="color: #fdcb6e; margin-right: 8px;"></i>
-                <span style="font-size: 14px;">Password expires after 24 hours</span>
-            </div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 15px;">
-            <a href="https://www.facebook.com/groups/1182261482811767" target="_blank"
-                style="color: #6c5ce7; text-decoration: none; font-weight: bold;">
-                <i class="fab fa-facebook" style="margin-right: 5px;"></i> Contact Admin for Support
-            </a>
-        </div>
-    `;
+            apiKeyNote.innerHTML = `
+                <div style="background: linear-gradient(135deg, #6c5ce755, #a29bfe55); 
+                    padding: 15px; border-radius: 12px; margin-bottom: 15px;
+                    border: 1px dashed #6c5ce7;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;
+                        background: #ffffff; padding: 12px; border-radius: 8px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 12px;">
+                        <div style="font-weight: bold;">Generated Password:</div>
+                        <div id="generated-password" style="font-family: 'Courier New', monospace; font-weight: bold;
+                            color: #6c5ce7; letter-spacing: 1px; word-break: break-all;"></div>
+                    </div>
+                    
+                    <button id="generate-password-btn" style="width: 100%; 
+                        background: #6c5ce7; color: white; border: none; 
+                        padding: 12px; border-radius: 8px; cursor: pointer; 
+                        transition: all 0.2s; font-weight: bold; margin-bottom: 8px;">
+                        <i class="fas fa-sync-alt"></i> Generate New Password
+                    </button>
+                    
+                    <button id="autofill-password-btn" style="width: 100%; 
+                        background: #00b894; color: white; border: none; 
+                        padding: 12px; border-radius: 8px; cursor: pointer; 
+                        transition: all 0.2s; font-weight: bold;">
+                        <i class="fas fa-magic"></i> Auto Fill Password
+                    </button>
+                    
+                    <div style="display: flex; align-items: center; margin-top: 12px;">
+                        <input type="checkbox" id="show-password" style="margin-right: 8px;">
+                        <label for="show-password" style="font-size: 14px;">
+                            Show password field
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="margin: 15px 0;">
+                    <div style="display: flex; align-items: center; padding: 8px 12px;
+                        background: #fff5f5; border-radius: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-exclamation-triangle" style="color: #d63031; margin-right: 8px;"></i>
+                        <span style="font-size: 14px;">You are responsible for all generated content</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; padding: 8px 12px;
+                        background: #f0f5ff; border-radius: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-info-circle" style="color: #0984e3; margin-right: 8px;"></i>
+                        <span style="font-size: 14px;">Generate a new password each time you want to use Turbo mode</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; padding: 8px 12px;
+                        background: #fff9e6; border-radius: 8px;">
+                        <i class="fas fa-clock" style="color: #fdcb6e; margin-right: 8px;"></i>
+                        <span style="font-size: 14px;">Password expires after 24 hours</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="https://www.facebook.com/groups/1182261482811767" target="_blank"
+                        style="color: #6c5ce7; text-decoration: none; font-weight: bold;">
+                        <i class="fab fa-facebook" style="margin-right: 5px;"></i> Contact Admin for Support
+                    </a>
+                </div>
+            `;
 
-    // Generate initial password
-    const generatedPassword = generateRandomPassword();
-    document.getElementById('generated-password').textContent = generatedPassword;
-    
-    // Setup generate password button
-    document.getElementById('generate-password-btn')?.addEventListener('click', (e) => {
-        const newPassword = generateRandomPassword();
-        document.getElementById('generated-password').textContent = newPassword;
-        apiKeyInput.focus();
-    });
+            // Generate initial password
+            const generatedPassword = generateRandomPassword();
+            document.getElementById('generated-password').textContent = generatedPassword;
+            
+            // Setup generate password button
+            document.getElementById('generate-password-btn')?.addEventListener('click', (e) => {
+                const newPassword = generateRandomPassword();
+                document.getElementById('generated-password').textContent = newPassword;
+                apiKeyInput.focus();
+            });
 
-    // Setup autofill password button
-    document.getElementById('autofill-password-btn')?.addEventListener('click', (e) => {
-        const currentPassword = document.getElementById('generated-password').textContent;
-        apiKeyInput.value = currentPassword;
-        
-        // Beri feedback visual
-        const btn = e.target.closest('button');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-check"></i> Password Filled!';
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-        }, 2000);
-    });
+            // Setup autofill password button
+            document.getElementById('autofill-password-btn')?.addEventListener('click', (e) => {
+                const currentPassword = document.getElementById('generated-password').textContent;
+                apiKeyInput.value = currentPassword;
+                
+                // Beri feedback visual
+                const btn = e.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Password Filled!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            });
 
-    // Setup password field
-    apiKeyInput.value = '';
-    apiKeyInput.placeholder = 'Paste generated password here';
-    apiKeyInput.type = 'password';
-    apiKeyInput.readOnly = false;
+            // Setup password field
+            apiKeyInput.value = '';
+            apiKeyInput.placeholder = 'Paste generated password here';
+            apiKeyInput.type = 'password';
+            apiKeyInput.readOnly = false;
 
-    // Toggle password field visibility
-    document.getElementById('show-password')?.addEventListener('change', function(e) {
-        apiKeyInput.type = e.target.checked ? 'text' : 'password';
-    });
-}
+            // Toggle password field visibility
+            document.getElementById('show-password')?.addEventListener('change', function(e) {
+                apiKeyInput.type = e.target.checked ? 'text' : 'password';
+            });
+        }
         
         apiKeyModal.style.display = 'flex';
         apiKeyInput.focus();
@@ -567,6 +567,8 @@ const AIModelManager = (function() {
                     return await generateWithStability(prompt, settings);
                 case 'turbo':
                     return generateWithPollinations(prompt, settings, 'turbo');
+                case 'gptimage':
+                    return generateWithPollinations(prompt, settings, 'gptimage');
                 default:
                     return generateWithPollinations(prompt, settings, 'flux');
             }
@@ -666,15 +668,16 @@ const AIModelManager = (function() {
             modelSelectContainer.appendChild(expiryDisplay);
 
             modelSelect.innerHTML = `
-    <option value="flux">FLUX</option>
-    <option value="turbo">Turbo (AI NSFW)</option>
-    <option value="dalle3">DALL-E 3 (OpenAI)</option>
-    <option value="stability">Stability AI</option>
-    <option value="imagefx" disabled>ImageFX (Coming Soon)</option>
-        <option value="leonardo" disabled>Leonardo (Coming Soon)</option>
-        <option value="tensor" disabled>Tensor AI(Coming Soon)</option>
-        <option value="ideogram" disabled>Ideogram(Coming Soon)</option>
-`;
+                <option value="flux">FLUX</option>
+                <option value="turbo">Turbo (AI NSFW)</option>
+                <option value="gptimage">GPTImage</option>
+                <option value="dalle3">DALL-E 3 (OpenAI)</option>
+                <option value="stability">Stability AI</option>
+                <option value="imagefx" disabled>ImageFX (Coming Soon)</option>
+                <option value="leonardo" disabled>Leonardo (Coming Soon)</option>
+                <option value="tensor" disabled>Tensor AI (Coming Soon)</option>
+                <option value="ideogram" disabled>Ideogram (Coming Soon)</option>
+            `;
             modelSelect.value = currentModel;
             modelSelect.addEventListener('change', handleModelChange);
         }
