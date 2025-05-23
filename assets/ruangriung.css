@@ -3144,71 +3144,73 @@ input:checked + .toggle-slider:before {
 }
 
 /* Negative Prompt Styles */
-.negative-prompt-container {
-    margin-top: 20px;
-    width: 100%;
-    max-width: 100%;
-}
-
 .negative-prompt-toggle {
+	width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 8px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
     cursor: pointer;
-    padding: 12px 20px;
-    border-radius: 15px;
-    background: var(--bg);
-    color: var(--primary);
-    font-weight: 600;
-    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
-    transition: all 0.3s ease;
-    margin-bottom: 15px;
+    margin: 10px 0;
+    font-size: 14px;
+    transition: all 0.2s;
 }
 
 .negative-prompt-toggle:hover {
-    transform: translateY(-2px);
+    background: var(--primary-dark);
 }
 
-.negative-prompt-content {
-    display: none;
-    margin-top: 15px;
-}
-
-.negative-prompt-content.show {
-    display: block;
-}
-
-#negative-prompt-textarea {
-    width: 100%;
-    min-height: 80px;
+.negative-prompt-container {
+    margin-bottom: 15px;
+    background: var(--bg-light);
     padding: 15px;
-    border-radius: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.negative-prompt-textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
     background: var(--bg);
     color: var(--text);
-    font-family: "Poppins", sans-serif;
-    box-shadow: inset 3px 3px 5px var(--shadow-dark), inset -3px -3px 5px var(--shadow-light);
-    border: none;
-    outline: none;
-    resize: vertical;
-    margin-bottom: 10px;
+    resize: none;
+    font-family: inherit;
+    margin: 8px 0;
+    transition: all 0.3s ease;
 }
 
-.negative-prompt-suggestions {
+.negative-prompt-note {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 5px;
+}
+
+.common-negative-prompts {
     display: flex;
-    flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .negative-prompt-toggle {
-        padding: 10px 15px;
-        font-size: 14px;
-    }
-    
-    #negative-prompt-textarea {
-        min-height: 60px;
-        padding: 10px;
-    }
+.common-negative-prompt {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.common-negative-prompt:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
 }
