@@ -3143,74 +3143,170 @@ input:checked + .toggle-slider:before {
     }
 }
 
-/* Negative Prompt Styles */
+/* Add to ruangriung.css */
 .negative-prompt-toggle {
-	width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin: 10px 0;
-    font-size: 14px;
-    transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0;
+  cursor: pointer;
+  padding: 12px 20px;
+  border-radius: 15px;
+  background: var(--bg);
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow:
+    4px 4px 8px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+  transition: all 0.3s ease;
+  border: none;
+  width: 100%;
+  font-family: "Poppins", sans-serif;
 }
 
 .negative-prompt-toggle:hover {
-    background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow:
+    8px 8px 15px var(--shadow-dark),
+    -8px -8px 15px var(--shadow-light);
+  background: var(--primary-light);
+  color: white;
+}
+
+.negative-prompt-toggle i {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .negative-prompt-container {
-    margin-bottom: 15px;
-    background: var(--bg-light);
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
+  background: var(--bg);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow:
+    inset 3px 3px 5px var(--shadow-dark),
+    inset -3px -3px 5px var(--shadow-light);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
 }
 
 .negative-prompt-textarea {
-    width: 100%;
-    min-height: 60px;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text);
-    resize: none;
-    font-family: inherit;
-    margin: 8px 0;
-    transition: all 0.3s ease;
+  width: 100%;
+  min-height: 80px;
+  padding: 15px;
+  border-radius: 15px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Poppins", sans-serif;
+  box-shadow:
+    inset 3px 3px 5px var(--shadow-dark),
+    inset -3px -3px 5px var(--shadow-light);
+  border: none;
+  outline: none;
+  resize: vertical;
+  transition: all 0.3s ease;
+  margin: 10px 0;
+}
+
+.negative-prompt-textarea:focus {
+  box-shadow:
+    inset 5px 5px 8px var(--shadow-dark),
+    inset -5px -5px 8px var(--shadow-light);
 }
 
 .negative-prompt-note {
-    font-size: 12px;
-    color: var(--text-light);
-    margin-top: 5px;
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 10px;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .common-negative-prompts {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
 }
 
 .common-negative-prompt {
-    background: var(--bg-light);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 5px 8px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
+  background: var(--bg);
+  color: var(--primary);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow:
+    3px 3px 6px var(--shadow-dark),
+    -3px -3px 6px var(--shadow-light);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .common-negative-prompt:hover {
-    background: var(--primary-light);
-    border-color: var(--primary);
+  background: var(--primary-light);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.common-negative-prompt i {
+  font-size: 12px;
+}
+
+/* Dark mode adjustments */
+.dark-mode .negative-prompt-toggle {
+  background: var(--bg);
+  color: var(--primary-light);
+}
+
+.dark-mode .negative-prompt-toggle:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.dark-mode .common-negative-prompt {
+  box-shadow:
+    3px 3px 6px var(--shadow-dark),
+    -3px -3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .common-negative-prompt:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .negative-prompt-toggle {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+  
+  .negative-prompt-container {
+    padding: 15px;
+  }
+  
+  .negative-prompt-textarea {
+    padding: 12px;
+    min-height: 100px;
+  }
+  
+  .common-negative-prompts {
+    gap: 8px;
+  }
+  
+  .common-negative-prompt {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
 }

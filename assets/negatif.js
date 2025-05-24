@@ -1,4 +1,4 @@
-// negatif.js - Complete Negative Prompt Implementation for RuangRiung AI Image Generator
+// negatif.js - Updated Negative Prompt Implementation for RuangRiung Theme
 
 // Negative prompt translations
 const negativePromptTranslations = {
@@ -61,23 +61,28 @@ function initNegativePrompt() {
 }
 
 function createNegativePromptUI() {
-    const promptContainer = document.querySelector('.prompt-container');
+    const promptContainer = document.querySelector('.input-group');
     if (!promptContainer) return;
 
     const negativeHTML = `
-        <button id="negative-prompt-toggle" class="negative-prompt-toggle">
-            <i class="fas fa-eye-slash"></i> <span class="toggle-text">${negativePromptTranslations[currentLanguage].negativePromptToggle}</span>
-        </button>
-        <div id="negative-prompt-container" class="negative-prompt-container" style="display: none;">
-            <label for="negative-prompt-textarea">
-                <i class="fas fa-ban"></i> <span class="label-text">${negativePromptTranslations[currentLanguage].negativePromptLabel}</span>
-            </label>
-            <textarea id="negative-prompt-textarea" class="negative-prompt-textarea" 
-                    placeholder="${negativePromptTranslations[currentLanguage].negativePromptPlaceholder}"></textarea>
-            <div class="negative-prompt-note">
-                <i class="fas fa-circle-info"></i> <span class="note-text">${negativePromptTranslations[currentLanguage].negativePromptNote}</span>
+        <div class="negative-prompt-section">
+            <button id="negative-prompt-toggle" class="negative-prompt-toggle">
+                <i class="fas fa-eye-slash"></i> 
+                <span class="toggle-text">${negativePromptTranslations[currentLanguage].negativePromptToggle}</span>
+            </button>
+            <div id="negative-prompt-container" class="negative-prompt-container" style="display: none;">
+                <label for="negative-prompt-textarea">
+                    <i class="fas fa-ban"></i> 
+                    <span class="label-text">${negativePromptTranslations[currentLanguage].negativePromptLabel}</span>
+                </label>
+                <textarea id="negative-prompt-textarea" class="negative-prompt-textarea" 
+                        placeholder="${negativePromptTranslations[currentLanguage].negativePromptPlaceholder}"></textarea>
+                <div class="negative-prompt-note">
+                    <i class="fas fa-info-circle"></i> 
+                    <span class="note-text">${negativePromptTranslations[currentLanguage].negativePromptNote}</span>
+                </div>
+                <div class="common-negative-prompts"></div>
             </div>
-            <div class="common-negative-prompts"></div>
         </div>
     `;
 
@@ -92,13 +97,18 @@ function toggleNegativePromptVisibility() {
     
     const isHidden = negativeContainer.style.display === 'none';
     
-    // Toggle visibility
+    // Toggle visibility with animation
     negativeContainer.style.display = isHidden ? 'block' : 'none';
     
     // Update icon and text
     if (isHidden) {
         icon.classList.replace('fa-eye-slash', 'fa-eye');
         text.textContent = currentLanguage === 'en' ? 'Hide Negative Prompt' : 'Sembunyikan Prompt Negatif';
+        // Add animation class
+        negativeContainer.classList.add('animate-fade-in');
+        setTimeout(() => {
+            negativeContainer.classList.remove('animate-fade-in');
+        }, 300);
     } else {
         icon.classList.replace('fa-eye', 'fa-eye-slash');
         text.textContent = negativePromptTranslations[currentLanguage].negativePromptToggle;
@@ -141,7 +151,8 @@ function addCommonNegativePrompts() {
         button.addEventListener('click', function() {
             const textarea = document.getElementById('negative-prompt-textarea');
             if (textarea) {
-                textarea.value = prompt;
+                // Append to existing content if any
+                textarea.value = textarea.value ? `${textarea.value}, ${prompt}` : prompt;
                 textarea.dispatchEvent(new Event('input'));
                 textarea.focus();
             }
@@ -176,7 +187,7 @@ function setupNegativePromptIntegration() {
     // Integrate with language system
     const originalUpdateLanguage = window.updateLanguage;
     window.updateLanguage = function(lang) {
-        originalUpdateLanguage(lang);
+        if (originalUpdateLanguage) originalUpdateLanguage(lang);
         updateNegativePromptLanguage(lang);
     };
     
@@ -194,7 +205,7 @@ function setupNegativePromptIntegration() {
                 return;
             }
 
-            const prompt = promptTextarea.value.trim();
+            const prompt = document.getElementById('prompt-textarea')?.value.trim() || '';
             if (!prompt) {
                 showError(currentLanguage === 'en' 
                     ? 'Please enter a description for the image' 
@@ -211,125 +222,88 @@ function setupNegativePromptIntegration() {
             }
 
             // Prepare for generation
-            scrollToImageContainer();
-            generatedImage.style.display = 'none';
-            document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
-            errorMessage.style.display = 'none';
-            loadingElement.style.display = 'block';
-            filterControls.style.display = 'none';
-            aiEnhancePanel.style.display = 'none';
+            const generatedImage = document.getElementById('generated-image');
+            const loadingElement = document.querySelector('.loading');
+            if (generatedImage && loadingElement) {
+                scrollToImageContainer();
+                generatedImage.style.display = 'none';
+                document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'none');
+                const errorMessage = document.querySelector('.error-message');
+                if (errorMessage) errorMessage.style.display = 'none';
+                loadingElement.style.display = 'block';
+            }
             
             // Build full prompt with negative
-            let fullPrompt = buildFullPrompt(prompt);
-            
-            // Generate new seed
-            const randomSeed = generateRandomSeed();
-            seedInput.value = randomSeed;
-            
-            // Save current state
-            currentGeneration = {
-                prompt: fullPrompt,
-                negativePrompt: negativePrompt,
-                seed: randomSeed,
-                model: modelSelect.value,
-                settings: {
-                    width: widthSlider.value,
-                    height: heightSlider.value,
-                    style: styleSelect.value,
-                    quality: qualitySelect.value,
-                    lighting: lightingSelect.value,
-                    color: colorSelect.value,
-                    composition: compositionSelect.value,
-                    hd: hdCheckbox.checked,
-                    enhanceDetails: enhanceDetailsCheckbox.checked,
-                    safeFilter: safeFilterCheckbox.checked
-                }
-            };
+            const fullPrompt = `${prompt} | NOT: ${negativePrompt}`;
             
             try {
                 // Generate with negative prompt
-                const imageUrl = await generateWithNegativePrompt(
-                    fullPrompt, 
-                    negativePrompt,
-                    {
-                        ...currentGeneration.settings,
-                        seed: randomSeed
-                    }
-                );
+                const imageUrl = await generateWithNegativePrompt(prompt, negativePrompt);
                 
                 if (!imageUrl) {
-                    loadingElement.style.display = 'none';
+                    if (loadingElement) loadingElement.style.display = 'none';
                     return;
                 }
                 
                 // Display result
-                generatedImage.onload = function() {
-                    loadingElement.style.display = 'none';
-                    generatedImage.style.display = 'block';
-                    document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
-                    updateImageInfo();
-                    scrollToImageContainer();
+                if (generatedImage) {
+                    generatedImage.onload = function() {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                        generatedImage.style.display = 'block';
+                        document.querySelectorAll('.btn').forEach(btn => btn.style.display = 'flex');
+                        scrollToImageContainer();
+                    };
                     
-                    // Add to history
-                    if (!generatedImage.dataset.fromHistory) {
-                        addToHistory(fullPrompt, imageUrl);
-                    } else {
-                        delete generatedImage.dataset.fromHistory;
-                    }
-                };
-                
-                generatedImage.onerror = function() {
-                    loadingElement.style.display = 'none';
-                    showError(currentLanguage === 'en' 
-                        ? 'Failed to generate image. Please try a different prompt.' 
-                        : 'Gagal menghasilkan gambar. Silakan coba dengan deskripsi yang berbeda.');
-                };
-                
-                generatedImage.src = imageUrl;
+                    generatedImage.onerror = function() {
+                        if (loadingElement) loadingElement.style.display = 'none';
+                        showError(currentLanguage === 'en' 
+                            ? 'Failed to generate image. Please try a different prompt.' 
+                            : 'Gagal menghasilkan gambar. Silakan coba dengan deskripsi yang berbeda.');
+                    };
+                    
+                    generatedImage.src = imageUrl;
+                }
             } catch (error) {
                 console.error('Error generating image with negative prompt:', error);
-                loadingElement.style.display = 'none';
+                if (loadingElement) loadingElement.style.display = 'none';
                 showError(error.message || (currentLanguage === 'en' 
                     ? 'Failed to generate image. Please try again.' 
                     : 'Gagal menghasilkan gambar. Silakan coba lagi.'));
             }
         } else {
             // No negative prompt, use original function
-            return originalGenerateImage();
-        }
-    };
-    
-    // Add negative prompt support to batch generation
-    const originalGenerateBatch = window.generateBatch;
-    window.generateBatch = async function() {
-        const negativePrompt = document.getElementById('negative-prompt-textarea')?.value.trim() || '';
-        
-        if (negativePrompt) {
-            // ... (batch generation implementation with negative prompts)
-            // Similar modification as generateImage but for batch processing
-            // (Refer to previous implementation for complete batch code)
-            return originalGenerateBatch();
-        } else {
-            return originalGenerateBatch();
+            if (originalGenerateImage) return originalGenerateImage();
         }
     };
 }
 
-async function generateWithNegativePrompt(prompt, negativePrompt, options) {
+async function generateWithNegativePrompt(prompt, negativePrompt) {
     // Implementation for your specific AI model
     // For pollinations.ai, we append the negative prompt
     const fullPrompt = `${prompt} | NOT: ${negativePrompt}`;
     
     // Use your existing generation method
     if (typeof AIModelManager !== 'undefined' && AIModelManager.generateImage) {
-        return AIModelManager.generateImage(fullPrompt, options);
+        return AIModelManager.generateImage(fullPrompt);
     }
     
     // Fallback to default implementation
     return generateWithPollinations(fullPrompt);
 }
 
-// Helper function
-function generateRandomSeed() {
-    return Math.floor(Math.random() * 1000000);
+// Helper function to scroll to image container
+function scrollToImageContainer() {
+    const imageContainer = document.querySelector('.image-container');
+    if (imageContainer) {
+        imageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+// Helper function to show error messages
+function showError(message) {
+    const errorMessage = document.querySelector('.error-message');
+    if (errorMessage) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+    }
 }
