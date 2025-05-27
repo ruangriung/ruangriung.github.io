@@ -22,6 +22,8 @@ const AIModelManager = (function() {
         stability: 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image'
     };
     
+    const REFERRER_DOMAIN = 'ruangriung.my.id';
+    
     let TURBO_PASSWORD = ''; // Will be set when password is generated
     let currentModel = 'flux'; // Default to flux
     let expiryInterval;
@@ -629,19 +631,20 @@ const AIModelManager = (function() {
         return `data:image/png;base64,${(await response.json()).artifacts[0].base64}`;
     }
     
-    function generateWithPollinations(prompt, settings, modelType = 'flux') {
-        const params = new URLSearchParams({
-            width: settings.width || 1024,
-            height: settings.height || 1024,
-            nologo: true,
-            safe: modelType === 'turbo' ? false : settings.safeFilter !== false,
-            model: modelType
-        });
-        
-        if (settings.seed) params.set('seed', settings.seed);
-        
-        return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params}`;
-    }
+function generateWithPollinations(prompt, settings, modelType = 'flux') {
+    const params = new URLSearchParams({
+        width: settings.width || 1024,
+        height: settings.height || 1024,
+        nologo: true,
+        safe: modelType === 'turbo' ? false : settings.safeFilter !== false,
+        model: modelType,
+        referrer: REFERRER_DOMAIN  // Tambahkan parameter referrer di sini
+    });
+    
+    if (settings.seed) params.set('seed', settings.seed);
+    
+    return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params}`;
+}
     
     // Initialize
     function init() {

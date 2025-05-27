@@ -1,3 +1,6 @@
+// Di bagian atas file, setelah const translations
+const REFERRER_DOMAIN = 'ruangriung.my.id';
+
 // Language translations
 const translations = {
     en: {
@@ -959,10 +962,11 @@ document.querySelector('.analysis-loading p').textContent = t.analyzingImage;
     
     try {
         // **Gunakan seed acak untuk hasil berbeda setiap kali**
-        const imageUrl = await AIModelManager.generateImage(fullPrompt, {
-            ...currentGeneration.settings,
-            seed: randomSeed // Pastikan seed acak digunakan
-        });
+const imageUrl = await AIModelManager.generateImage(fullPrompt, {
+    ...currentGeneration.settings,
+    seed: randomSeed,
+    referrer: REFERRER_DOMAIN
+});
         
         if (!imageUrl) {
             loadingElement.style.display = 'none';
@@ -1336,23 +1340,23 @@ async function generateVariation() {
     }
     
     function generateWithPollinations(prompt) {
-        // Get dimensions from sliders
-        const width = widthSlider.value;
-        const height = heightSlider.value;
-        const safeFilter = safeFilterCheckbox.checked;
-        let ratioParam = `?width=${width}&height=${height}&nologo=true&safe=${safeFilter}`;
-        
-        // Add seed if provided
-        if (currentGeneration.seed) {
-            ratioParam += `&seed=${currentGeneration.seed}`;
-        }
-        
-        // Encode the prompt for URL
-        const encodedPrompt = encodeURIComponent(prompt);
-        
-        // Generate the image URL
-        return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
+    // Get dimensions from sliders
+    const width = widthSlider.value;
+    const height = heightSlider.value;
+    const safeFilter = safeFilterCheckbox.checked;
+    let ratioParam = `?width=${width}&height=${height}&nologo=true&safe=${safeFilter}&referrer=${REFERRER_DOMAIN}`;
+    
+    // Add seed if provided
+    if (currentGeneration.seed) {
+        ratioParam += `&seed=${currentGeneration.seed}`;
     }
+    
+    // Encode the prompt for URL
+    const encodedPrompt = encodeURIComponent(prompt);
+    
+    // Generate the image URL
+    return `https://image.pollinations.ai/prompt/${encodedPrompt}${ratioParam}`;
+}
     
     async function enhancePrompt() {
         const prompt = promptTextarea.value.trim();
