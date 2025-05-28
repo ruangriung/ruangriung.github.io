@@ -218,10 +218,10 @@
     </div>
   </div>
 </div>
-	<!-- Add this after the translation module -->
+<!-- Add this to your HTML where the TTS module is defined -->
 <div class="tts-module">
   <div class="tts-toggle" id="tts-toggle">
-    <span><i class="fas fa-volume-up"></i> Text-to-Speech Assistant</span>
+    <span><i class="fas fa-volume-up"></i>   Text-to-Audio</span>
     <i class="fas fa-chevron-down tts-arrow"></i>
   </div>
   <div class="tts-content" id="tts-content">
@@ -245,11 +245,14 @@
         <button class="tts-btn" id="tts-stop-btn" disabled>
           <i class="fas fa-stop"></i> Stop
         </button>
+        <button class="tts-clear-btn" id="tts-clear-btn">
+          <i class="fas fa-eraser"></i> Clear Text
+        </button>
       </div>
     </div>
     <div class="tts-audio-container" id="tts-audio-container" style="display: none;">
       <audio id="tts-audio-element" controls></audio>
-      <div style="margin-top: 10px;">
+      <div class="tts-download-container">
         <a id="tts-download-link" href="#" download="tts-output.mp3" class="tts-download-btn">
           <i class="fas fa-download"></i> Download Audio
         </a>
