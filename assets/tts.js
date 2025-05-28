@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ttsContent.style.display = isHidden ? 'block' : 'none';
         ttsArrow.className = isHidden ? 'fas fa-chevron-up tts-arrow' : 'fas fa-chevron-down tts-arrow';
         
-        // Add/remove active class for styling
         if (isHidden) {
             ttsToggle.classList.add('active');
         } else {
@@ -17,20 +16,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // TTS functionality
+    // TTS elements
     const ttsTextarea = document.getElementById('tts-textarea');
     const voiceSelect = document.getElementById('tts-voice-select');
     const generateBtn = document.getElementById('tts-generate-btn');
     const stopBtn = document.getElementById('tts-stop-btn');
+    const clearBtn = document.getElementById('tts-clear-btn');
     const audioElement = document.getElementById('tts-audio-element');
     const audioContainer = document.getElementById('tts-audio-container');
     const statusDiv = document.getElementById('tts-status');
     const downloadLink = document.getElementById('tts-download-link');
     
-    // Store original text to compare variations
-    let originalText = '';
-    let variationCount = 0;
+    // Load saved data
+    const savedText = localStorage.getItem('ttsText');
+    const savedVoice = localStorage.getItem('ttsVoice');
     
+    if (savedText) {
+        ttsTextarea.value = savedText;
+    }
+    
+    if (savedVoice) {
+        voiceSelect.value = savedVoice;
+    }
+
+    // Store text changes
+    ttsTextarea.addEventListener('input', function() {
+        localStorage.setItem('ttsText', this.value);
+    });
+
+    // Store voice changes
+    voiceSelect.addEventListener('change', function() {
+        localStorage.setItem('ttsVoice', this.value);
+    });
+
+    // State variables
+    let originalText = savedText || '';
+    let variationCount = 0;
+    let currentAudioUrl = '';
+    
+    // Clear functionality
+    clearBtn.addEventListener('click', function() {
+        ttsTextarea.value = '';
+        originalText = '';
+        variationCount = 0;
+        currentAudioUrl = '';
+        audioContainer.style.display = 'none';
+        statusDiv.style.display = 'none';
+        localStorage.removeItem('ttsText');
+    });
+
+    // Generate audio
     generateBtn.addEventListener('click', async function() {
         const currentText = ttsTextarea.value.trim();
         
@@ -39,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Check if this is a new text or a variation of the same text
         if (currentText !== originalText) {
             originalText = currentText;
             variationCount = 0;
@@ -57,13 +91,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const variedText = applyTextVariation(currentText, variationCount);
             const result = await generateAudio(variedText, voice);
             
-            audioElement.src = result.audioUrl;
+            currentAudioUrl = result.audioUrl;
+            audioElement.src = currentAudioUrl;
             audioContainer.style.display = 'block';
             
-            // Set download link
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            downloadLink.href = result.audioUrl;
-            downloadLink.download = `tts-${voice}-${timestamp}.mp3`;
+            downloadLink.href = currentAudioUrl;
+            downloadLink.download = `tts-${voice}-v${variationCount+1}-${timestamp}.mp3`;
             
             showStatus(`Audio generated (variation ${variationCount + 1})!`, 'success');
             
@@ -91,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
         statusDiv.className = `status ${type}`;
         statusDiv.style.display = 'block';
         
-        // Auto-hide success messages after 5 seconds
         if (type === 'success') {
             setTimeout(() => {
                 statusDiv.style.display = 'none';
@@ -99,35 +132,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    /**
-     * Apply variations to the text to generate different audio outputs
-     */
     function applyTextVariation(text, variationIndex) {
-        if (variationIndex === 0) {
-            return text; // Return original text for first generation
-        }
+        if (variationIndex === 0) return text;
         
-        // Different variation techniques based on variation count
         const variationMethod = variationIndex % 5;
         
         switch(variationMethod) {
-            case 0:
-                // Add subtle pauses with commas
-                return insertRandomPauses(text);
-            case 1:
-                // Add slight emphasis with capitalization
-                return addRandomEmphasis(text);
-            case 2:
-                // Modify punctuation
-                return modifyPunctuation(text);
-            case 3:
-                // Add very slight word variations
-                return addWordVariations(text);
-            case 4:
-                // Change spacing slightly
-                return adjustSpacing(text);
-            default:
-                return text;
+            case 0: return insertRandomPauses(text);
+            case 1: return addRandomEmphasis(text);
+            case 2: return modifyPunctuation(text);
+            case 3: return addWordVariations(text);
+            case 4: return adjustSpacing(text);
+            default: return text;
         }
     }
     
@@ -147,21 +163,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function addRandomEmphasis(text) {
         const words = text.split(' ');
         if (words.length < 3) return text;
-        
         const emphasizePos = Math.floor(Math.random() * (words.length - 2)) + 1;
         words[emphasizePos] = words[emphasizePos].toUpperCase();
         return words.join(' ');
     }
     
     function modifyPunctuation(text) {
-        return text
-            .replace(/([^.!?])([.!?])/g, (m, p1, p2) => {
-                // Occasionally add or remove punctuation
-                if (Math.random() > 0.8) {
-                    return p1 + (p2 === '.' ? '!' : '.');
-                }
-                return m;
-            });
+        return text.replace(/([^.!?])([.!?])/g, (m, p1, p2) => {
+            if (Math.random() > 0.8) return p1 + (p2 === '.' ? '!' : '.');
+            return m;
+        });
     }
     
     function addWordVariations(text) {
@@ -182,31 +193,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function adjustSpacing(text) {
-        // Occasionally add slight pauses with extra spaces
         if (Math.random() > 0.7) {
             return text.replace(/([,;:])\s*/g, '$1  ');
         }
         return text;
     }
     
-    /**
-     * Generate audio with variation parameters
-     */
     async function generateAudio(text, voice = "alloy") {
         const encodedText = encodeURIComponent(text);
-        
-        // Add random seed parameter to vary the output
         const randomSeed = Math.floor(Math.random() * 10000);
         const params = new URLSearchParams({
             model: "openai-audio",
             voice: voice,
             seed: randomSeed,
-            variation: randomSeed % 3 + 1 // Add variation parameter
+            variation: randomSeed % 3 + 1
         });
         
         const url = `https://text.pollinations.ai/${encodedText}?${params.toString()}`;
-        console.log("Generating audio with variation:", url);
-
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -224,12 +227,11 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         } else {
             const errorText = await response.text();
-            console.error("Expected audio, received:", response.headers.get("Content-Type"), errorText);
             throw new Error("API did not return audio content.");
         }
     }
 
-    // Auto-populate TTS textarea with selected text from prompt textarea
+    // Auto-populate from prompt selection
     const promptTextarea = document.getElementById('prompt-textarea');
     promptTextarea.addEventListener('mouseup', function() {
         const selectedText = window.getSelection().toString().trim();
@@ -237,20 +239,16 @@ document.addEventListener('DOMContentLoaded', function() {
             ttsTextarea.value = selectedText;
             originalText = selectedText;
             variationCount = 0;
+            localStorage.setItem('ttsText', selectedText);
         }
     });
 
-    // Add event listener for dark mode changes to update styles
+    // Dark mode style updates
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     darkModeToggle.addEventListener('click', updateTTSStyles);
 
-    // Initial style update
-    updateTTSStyles();
-
     function updateTTSStyles() {
         const isDarkMode = document.body.classList.contains('dark-mode');
-        
-        // Update status colors based on dark mode
         const status = document.querySelector('.tts-status');
         if (status) {
             if (status.classList.contains('loading')) {

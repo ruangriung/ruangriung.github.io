@@ -45,6 +45,7 @@
 
 .tts-textarea {
   width: 100%;
+  height: 170px;
   padding: 15px;
   border: none;
   border-radius: 15px;
@@ -173,7 +174,7 @@
   display: inline-block;
   padding: 10px 15px;
   background: var(--success);
-  color: white;
+  color: black;
   border-radius: 15px;
   text-decoration: none;
   font-weight: 600;
@@ -248,5 +249,99 @@
   
   .tts-btn {
     width: 100%;
+  }
+}
+
+/* Modern download button */
+.tts-download-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.tts-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--success), var(--success-dark));
+  color: dark;
+  border-radius: 15px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 
+    3px 3px 6px var(--shadow-dark),
+    -3px -3px 6px var(--shadow-light);
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.tts-download-btn:hover {
+  background: linear-gradient(135deg, var(--success-dark), var(--success));
+  transform: translateY(-2px);
+  box-shadow: 
+    4px 4px 8px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+}
+
+.tts-download-btn:active {
+  transform: translateY(0);
+}
+
+/* Clear button */
+.tts-clear-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 15px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 120px;
+  background: var(--bg);
+  color: var(--danger);
+  box-shadow: 
+    4px 4px 8px var(--shadow-dark),
+    -4px -4px 8px var(--shadow-light);
+}
+
+.tts-clear-btn:hover {
+  background: rgba(214, 48, 49, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Audio controls styling */
+.tts-audio-container audio {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 
+    3px 3px 6px var(--shadow-dark),
+    -3px -3px 6px var(--shadow-light);
+  background: var(--bg);
+  padding: 10px;
+}
+
+/* Button group adjustments */
+.tts-buttons {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.tts-buttons .tts-btn {
+  flex: 1;
+  min-width: calc(50% - 5px);
+}
+
+@media (max-width: 768px) {
+  .tts-buttons .tts-btn {
+    min-width: 100%;
   }
 }
