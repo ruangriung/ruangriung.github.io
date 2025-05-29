@@ -3041,7 +3041,7 @@ input:checked + .toggle-slider:before {
 }
 
 #prompt-gen-details {
-    min-height: 80px;
+    min-height: 180px;
     resize: vertical;
 }
 
