@@ -1,125 +1,192 @@
-// promptGen.js - AI Prompt Generator Module with Dynamic Model Loading and Subject Field
+// promptGen.js - AI Prompt Generator Module with Enhanced Features
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Create the HTML structure
-    const promptGenContainer = document.createElement('div');
-    promptGenContainer.className = 'prompt-gen-module';
-    promptGenContainer.innerHTML = `
-        <div class="prompt-gen-toggle" id="promptGenToggle">
-            <span><i class="fas fa-wand-magic-sparkles"></i> Prompt Generator</span>
-            <i class="fas fa-chevron-down prompt-gen-arrow"></i>
-        </div>
-        <div class="prompt-gen-content" id="promptGenContent">
-            <div class="prompt-gen-loading-models" id="promptGenLoadingModels">
-                <div class="spinner"></div>
-                <span>Loading available models...</span>
-            </div>
-            <div class="prompt-gen-controls" id="promptGenControls" style="display: none;">
-                <div class="form-group">
-                    <label for="prompt-gen-subject"><i class="fas fa-asterisk"></i> Main Subject <span style="color:#e62984">(required)</span></label>
-                    <input type="text" id="prompt-gen-subject" class="form-control" 
-                           placeholder="e.g. Cyberpunk city, Portrait of a warrior" required>
-                    <div class="error-message" id="subject-error" style="display: none;"></div>
-                </div>
-                <div class="form-group">
-                    <label for="prompt-gen-details"><i class="fas fa-align-left"></i> Additional Details</label>
-                    <textarea id="prompt-gen-details" class="form-control" 
-                              placeholder="Optional: Add specific details like style, lighting, composition"></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="prompt-gen-model"><i class="fas fa-microchip"></i> AI Model</label>
-                        <div class="select-container">
-                            <select id="prompt-gen-model" class="form-control"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="prompt-gen-category"><i class="fas fa-tags"></i> Category</label>
-                        <div class="select-container">
-                            <select id="prompt-gen-category" class="form-control">
-                                <option value="random">Random</option>
-                                <option value="fantasy">Fantasy</option>
-                                <option value="sci-fi">Sci-Fi</option>
-                                <option value="realism">Realism</option>
-                                <option value="anime">Anime</option>
-                                <option value="photography">Photography</option>
-                                <option value="cyberpunk">Cyberpunk</option>
-                                <option value="portrait">Portrait</option>
-                                <option value="landscape">Landscape</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn btn-primary" id="generate-prompt-btn">
-                    <i class="fas fa-magic"></i> Generate Prompt
-                </button>
-                <button class="btn btn-secondary" id="clear-saved-inputs-btn" style="margin-top: 10px;">
-                    <i class="fas fa-trash"></i> Clear Saved Inputs
-                </button>
-            </div>
-            <div class="prompt-gen-result" id="promptGenResult"></div>
-            <div class="prompt-gen-loading" id="promptGenLoading" style="display: none;">
-                <div class="spinner"></div>
-                <span>Generating creative prompt...</span>
-            </div>
-        </div>
-    `;
+    // Initialize the module
+    const promptGenerator = new PromptGenerator();
+    await promptGenerator.init();
+});
 
-    // Insert after the translation module
-    const translationModule = document.querySelector('.translation-module');
-    if (translationModule) {
-        translationModule.insertAdjacentElement('afterend', promptGenContainer);
-    } else {
-        const inputGroup = document.querySelector('.input-group');
-        if (inputGroup) {
-            inputGroup.insertAdjacentElement('beforebegin', promptGenContainer);
+class PromptGenerator {
+    constructor() {
+        this.promptTemplates = {
+            'portrait': {
+                name: 'Portrait',
+                template: 'High-quality portrait of [subject], [details], 8k resolution, professional photography, Canon EOS 5D, bokeh effect'
+            },
+            'landscape': {
+                name: 'Landscape',
+                template: 'Breathtaking landscape of [subject], [details], golden hour lighting, ultra HD, Ansel Adams style'
+            },
+            'cyberpunk': {
+                name: 'Cyberpunk',
+                template: 'Cyberpunk style [subject], neon lights, rainy streets, [details], futuristic cityscape, Blade Runner 2049 inspired'
+            },
+            'product': {
+                name: 'Product Shot',
+                template: 'Professional product photography of [subject], [details], clean white background, studio lighting, commercial style'
+            }
+        };
+        
+        this.MAX_HISTORY_ITEMS = 20;
+        this.storageKeys = {
+            subject: 'promptGenSubject',
+            details: 'promptGenDetails',
+            model: 'promptGenModel',
+            category: 'promptGenCategory',
+            template: 'promptGenTemplate',
+            history: 'promptHistory'
+        };
+        this.lastGeneratedPrompt = ''; // Store the last generated prompt
+    }
+
+    async init() {
+        this.createUI();
+        await this.loadModels();
+        this.setupEventListeners();
+        this.restoreInputs();
+        this.restoreLastPrompt(); // Restore last prompt if exists
+    }
+
+    createUI() {
+        // Create main container
+        this.container = document.createElement('div');
+        this.container.className = 'prompt-gen-module';
+        this.container.innerHTML = `
+            <div class="prompt-gen-toggle" id="promptGenToggle">
+                <span><i class="fas fa-wand-magic-sparkles"></i> Prompt Generator</span>
+                <i class="fas fa-chevron-down prompt-gen-arrow"></i>
+            </div>
+            <div class="prompt-gen-content" id="promptGenContent">
+                <div class="prompt-gen-loading-models" id="promptGenLoadingModels">
+                    <div class="spinner"></div>
+                    <span>Loading available models...</span>
+                </div>
+                <div class="prompt-gen-controls" id="promptGenControls" style="display: none;">
+                    <div class="form-group">
+                        <label for="prompt-gen-subject"><i class="fas fa-asterisk"></i> Main Subject <span style="color:#e62984">(required)</span></label>
+                        <input type="text" id="prompt-gen-subject" class="form-control" 
+                               placeholder="e.g. Cyberpunk city, Portrait of a warrior" required>
+                        <div class="error-message" id="subject-error" style="display: none;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="prompt-gen-details"><i class="fas fa-align-left"></i> Additional Details</label>
+                        <textarea id="prompt-gen-details" class="form-control" 
+                                  placeholder="Optional: Add specific details like style, lighting, composition"></textarea>
+                    </div>
+                    ${this.createTemplateSelector()}
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prompt-gen-model"><i class="fas fa-microchip"></i> AI Model</label>
+                            <div class="select-container">
+                                <select id="prompt-gen-model" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="prompt-gen-category"><i class="fas fa-tags"></i> Category</label>
+                            <div class="select-container">
+                                <select id="prompt-gen-category" class="form-control">
+                                    <option value="random">Random</option>
+                                    <option value="fantasy">Fantasy</option>
+                                    <option value="sci-fi">Sci-Fi</option>
+                                    <option value="realism">Realism</option>
+                                    <option value="anime">Anime</option>
+                                    <option value="photography">Photography</option>
+                                    <option value="cyberpunk">Cyberpunk</option>
+                                    <option value="portrait">Portrait</option>
+                                    <option value="landscape">Landscape</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="generate-prompt-btn">
+                        <i class="fas fa-magic"></i> Generate Prompt
+                    </button>
+                    <button class="btn btn-secondary" id="clear-saved-inputs-btn" style="margin-top: 10px;">
+                        <i class="fas fa-trash"></i> Clear Saved Inputs
+                    </button>
+                </div>
+                <div class="prompt-gen-result" id="promptGenResult"></div>
+                <div class="prompt-gen-loading" id="promptGenLoading" style="display: none;">
+                    <div class="spinner"></div>
+                    <span>Generating creative prompt...</span>
+                </div>
+            </div>
+        `;
+
+        // Insert into DOM
+        const translationModule = document.querySelector('.translation-module');
+        if (translationModule) {
+            translationModule.insertAdjacentElement('afterend', this.container);
+        } else {
+            const inputGroup = document.querySelector('.input-group');
+            if (inputGroup) {
+                inputGroup.insertAdjacentElement('beforebegin', this.container);
+            }
+        }
+
+        // Initialize visual builder
+        this.initVisualBuilder();
+    }
+
+    createTemplateSelector() {
+        const options = Object.entries(this.promptTemplates).map(([key, val]) => 
+            `<option value="${key}">${val.name}</option>`).join('');
+        
+        return `
+            <div class="form-group">
+                <label for="prompt-gen-template"><i class="fas fa-clipboard-list"></i> Template</label>
+                <div class="select-container">
+                    <select id="prompt-gen-template" class="form-control">
+                        <option value="none">None (Custom)</option>
+                        ${options}
+                    </select>
+                </div>
+            </div>
+        `;
+    }
+
+    async loadModels() {
+        const modelSelect = document.getElementById('prompt-gen-model');
+        const loadingModelsDiv = document.getElementById('promptGenLoadingModels');
+        const controlsDiv = document.getElementById('promptGenControls');
+
+        try {
+            const response = await fetch('https://text.pollinations.ai/models');
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const models = await response.json();
+            
+            loadingModelsDiv.style.display = 'none';
+            controlsDiv.style.display = 'block';
+            
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.id;
+                option.textContent = model.name;
+                modelSelect.appendChild(option);
+            });
+
+            if (models.some(model => model.id === 'openai')) {
+                modelSelect.value = 'openai';
+            }
+
+        } catch (error) {
+            console.error('Error loading models:', error);
+            this.showModelLoadError(loadingModelsDiv);
+            this.loadDefaultModels(modelSelect);
+            controlsDiv.style.display = 'block';
         }
     }
 
-    // Toggle functionality
-    const promptGenToggle = document.getElementById('promptGenToggle');
-    const promptGenContent = document.getElementById('promptGenContent');
-    const promptGenArrow = document.querySelector('.prompt-gen-arrow');
-
-    promptGenToggle.addEventListener('click', function() {
-        promptGenContent.classList.toggle('show');
-        promptGenArrow.classList.toggle('fa-chevron-down');
-        promptGenArrow.classList.toggle('fa-chevron-up');
-    });
-
-    // Load models from API
-    const modelSelect = document.getElementById('prompt-gen-model');
-    const loadingModelsDiv = document.getElementById('promptGenLoadingModels');
-    const controlsDiv = document.getElementById('promptGenControls');
-
-    try {
-        const response = await fetch('https://text.pollinations.ai/models');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const models = await response.json();
-        
-        loadingModelsDiv.style.display = 'none';
-        controlsDiv.style.display = 'block';
-        
-        models.forEach(model => {
-            const option = document.createElement('option');
-            option.value = model.id;
-            option.textContent = model.name;
-            modelSelect.appendChild(option);
-        });
-
-        if (models.some(model => model.id === 'openai')) {
-            modelSelect.value = 'openai';
-        }
-
-    } catch (error) {
-        console.error('Error loading models:', error);
-        loadingModelsDiv.innerHTML = `
+    showModelLoadError(loadingDiv) {
+        loadingDiv.innerHTML = `
             <div class="error-message">
                 <i class="fas fa-exclamation-triangle"></i> Failed to load models. Using default options.
             </div>
         `;
-        
+    }
+
+    loadDefaultModels(modelSelect) {
         const defaultModels = [
             { id: 'openai', name: 'OpenAI GPT-4' },
             { id: 'anthropic', name: 'Anthropic Claude' },
@@ -132,168 +199,254 @@ document.addEventListener('DOMContentLoaded', async function() {
             option.textContent = model.name;
             modelSelect.appendChild(option);
         });
-        
-        controlsDiv.style.display = 'block';
     }
 
-    // Generate prompt button
-    const generatePromptBtn = document.getElementById('generate-prompt-btn');
-    const promptGenResult = document.getElementById('promptGenResult');
-    const promptGenLoading = document.getElementById('promptGenLoading');
-    const promptTextarea = document.getElementById('prompt-textarea');
-    const subjectInput = document.getElementById('prompt-gen-subject');
-    const detailsTextarea = document.getElementById('prompt-gen-details');
-    const subjectError = document.getElementById('subject-error');
-    const clearSavedInputsBtn = document.getElementById('clear-saved-inputs-btn');
-
-    // Fungsi untuk menyimpan input ke localStorage
-    function saveInputs() {
-        localStorage.setItem('promptGenSubject', subjectInput.value);
-        localStorage.setItem('promptGenDetails', detailsTextarea.value);
-        localStorage.setItem('promptGenModel', modelSelect.value);
-        localStorage.setItem('promptGenCategory', document.getElementById('prompt-gen-category').value);
+    setupEventListeners() {
+        // Toggle functionality
+        document.getElementById('promptGenToggle').addEventListener('click', () => this.toggleContent());
+        
+        // Template selection handler
+        document.getElementById('prompt-gen-template').addEventListener('change', () => this.handleTemplateChange());
+        
+        // Generate prompt button
+        document.getElementById('generate-prompt-btn').addEventListener('click', () => this.generatePrompt());
+        
+        // Clear saved inputs
+        document.getElementById('clear-saved-inputs-btn').addEventListener('click', () => this.clearSavedInputs());
+        
+        // Input change handlers for saving state
+        document.getElementById('prompt-gen-subject').addEventListener('input', () => this.saveInputs());
+        document.getElementById('prompt-gen-details').addEventListener('input', () => this.saveInputs());
+        document.getElementById('prompt-gen-model').addEventListener('change', () => this.saveInputs());
+        document.getElementById('prompt-gen-category').addEventListener('change', () => this.saveInputs());
+        document.getElementById('prompt-gen-template').addEventListener('change', () => this.saveInputs());
     }
 
-    // Fungsi untuk memulihkan input dari localStorage
-    function restoreInputs() {
-        const savedSubject = localStorage.getItem('promptGenSubject');
-        const savedDetails = localStorage.getItem('promptGenDetails');
-        const savedModel = localStorage.getItem('promptGenModel');
-        const savedCategory = localStorage.getItem('promptGenCategory');
+    toggleContent() {
+        const content = document.getElementById('promptGenContent');
+        const arrow = document.querySelector('.prompt-gen-arrow');
         
-        if (savedSubject) subjectInput.value = savedSubject;
-        if (savedDetails) detailsTextarea.value = savedDetails;
-        if (savedModel) modelSelect.value = savedModel;
-        if (savedCategory) document.getElementById('prompt-gen-category').value = savedCategory;
+        content.classList.toggle('show');
+        arrow.classList.toggle('fa-chevron-down');
+        arrow.classList.toggle('fa-chevron-up');
+        
+        if (content.classList.contains('show')) {
+            this.showHistory();
+            this.restoreLastPrompt(); // Restore last prompt when opening
+        }
     }
 
-    // Panggil restoreInputs saat halaman dimuat
-    restoreInputs();
+    handleTemplateChange() {
+        const selectedTemplate = document.getElementById('prompt-gen-template').value;
+        if (selectedTemplate !== 'none') {
+            const template = this.promptTemplates[selectedTemplate].template;
+            document.getElementById('prompt-gen-details').placeholder = 
+                `Optional details (will replace [details] in template)`;
+            
+            // Auto-fill category if matching
+            const categorySelect = document.getElementById('prompt-gen-category');
+            if (this.promptTemplates[selectedTemplate].name.toLowerCase() === categorySelect.value) {
+                categorySelect.value = selectedTemplate;
+            }
+        }
+    }
 
-    // Tambahkan event listener untuk menyimpan input saat berubah
-    subjectInput.addEventListener('input', saveInputs);
-    detailsTextarea.addEventListener('input', saveInputs);
-    modelSelect.addEventListener('change', saveInputs);
-    document.getElementById('prompt-gen-category').addEventListener('change', saveInputs);
-
-    // Juga simpan ketika generate button diklik
-    generatePromptBtn.addEventListener('click', saveInputs);
-
-    // Clear saved inputs
-    clearSavedInputsBtn.addEventListener('click', function() {
-        localStorage.removeItem('promptGenSubject');
-        localStorage.removeItem('promptGenDetails');
-        localStorage.removeItem('promptGenModel');
-        localStorage.removeItem('promptGenCategory');
-        subjectInput.value = '';
-        detailsTextarea.value = '';
-        modelSelect.value = 'openai';
-        document.getElementById('prompt-gen-category').value = 'random';
+    initVisualBuilder() {
+        const visualBuilderToggle = document.createElement('div');
+        visualBuilderToggle.className = 'visual-builder-toggle';
+        visualBuilderToggle.innerHTML = `
+            <button class="btn btn-sm btn-outline-primary" id="show-visual-builder">
+                <i class="fas fa-palette"></i> Visual Builder
+            </button>
+        `;
+        document.querySelector('.prompt-gen-controls').appendChild(visualBuilderToggle);
         
-        // Show feedback
-        const feedback = document.createElement('div');
-        feedback.className = 'success-message';
-        feedback.innerHTML = '<i class="fas fa-check-circle"></i> Saved inputs cleared!';
-        promptGenResult.appendChild(feedback);
-        setTimeout(() => feedback.remove(), 3000);
-    });
+        const visualBuilderPanel = document.createElement('div');
+        visualBuilderPanel.className = 'visual-builder-panel';
+        visualBuilderPanel.style.display = 'none';
+        visualBuilderPanel.innerHTML = `
+            <div class="visual-options">
+                <div class="visual-option">
+                    <label><i class="fas fa-brush"></i> Style</label>
+                    <select class="visual-style-select form-control">
+                        <option value="realistic">Realistic</option>
+                        <option value="painting">Painting</option>
+                        <option value="cartoon">Cartoon</option>
+                        <option value="anime">Anime</option>
+                        <option value="watercolor">Watercolor</option>
+                        <option value="digital art">Digital Art</option>
+                    </select>
+                </div>
+                <div class="visual-option">
+                    <label><i class="fas fa-lightbulb"></i> Lighting</label>
+                    <select class="visual-lighting-select form-control">
+                        <option value="natural">Natural</option>
+                        <option value="studio">Studio</option>
+                        <option value="dramatic">Dramatic</option>
+                        <option value="neon">Neon</option>
+                        <option value="soft">Soft</option>
+                        <option value="backlit">Backlit</option>
+                    </select>
+                </div>
+                <div class="visual-option">
+                    <label><i class="fas fa-palette"></i> Color Palette</label>
+                    <div class="color-palette-container">
+                        <div class="color-palette">
+                            <div class="color-option selected" data-color="warm" style="background: linear-gradient(135deg, #ff9a9e, #fad0c4)" title="Warm Colors"></div>
+                            <div class="color-option" data-color="cool" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb)" title="Cool Colors"></div>
+                            <div class="color-option" data-color="vibrant" style="background: linear-gradient(135deg, #ff758c, #ff7eb3)" title="Vibrant Colors"></div>
+                            <div class="color-option" data-color="pastel" style="background: linear-gradient(135deg, #d4fc79, #96e6a1)" title="Pastel Colors"></div>
+                            <div class="color-option" data-color="monochrome" style="background: linear-gradient(135deg, #000000, #434343)" title="Monochrome"></div>
+                            <div class="color-option" data-color="earthy" style="background: linear-gradient(135deg, #614385, #516395)" title="Earthy Tones"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-primary" id="apply-visual-settings">
+                    <i class="fas fa-check"></i> Apply to Prompt
+                </button>
+            </div>
+        `;
+        document.querySelector('.prompt-gen-controls').appendChild(visualBuilderPanel);
+        
+        // Toggle visual builder
+        document.getElementById('show-visual-builder').addEventListener('click', () => {
+            visualBuilderPanel.style.display = visualBuilderPanel.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        // Apply visual settings
+        document.getElementById('apply-visual-settings').addEventListener('click', () => {
+            const style = document.querySelector('.visual-style-select').value;
+            const lighting = document.querySelector('.visual-lighting-select').value;
+            const color = document.querySelector('.color-option.selected')?.dataset.color || 'natural';
+            
+            let details = document.getElementById('prompt-gen-details').value;
+            if (details) details += ', ';
+            
+            details += `${style} style, ${lighting} lighting, ${color} color palette`;
+            document.getElementById('prompt-gen-details').value = details;
+        });
+        
+        // Color selection
+        visualBuilderPanel.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                visualBuilderPanel.querySelectorAll('.color-option').forEach(opt => 
+                    opt.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+    }
 
-    generatePromptBtn.addEventListener('click', async function() {
-        // Validate main subject
+    async generatePrompt() {
+        // Validate inputs
+        if (!this.validateInputs()) return;
+
+        // Get input values
+        const { mainSubject, additionalDetails, selectedModel, selectedCategory } = this.getInputValues();
+        
+        // Show loading state
+        this.showLoadingState(true);
+
+        try {
+            // Generate the prompt
+            const fullPrompt = await this.generateAIResponse(mainSubject, additionalDetails, selectedModel, selectedCategory);
+            
+            // Store the last generated prompt
+            this.lastGeneratedPrompt = fullPrompt;
+            
+            // Display the result
+            this.displayPromptResult(fullPrompt);
+            
+            // Save to history
+            this.saveToHistory(fullPrompt, selectedModel, selectedCategory);
+            
+            // Show history
+            this.showHistory();
+
+        } catch (error) {
+            console.error('Error generating prompt:', error);
+            this.showError();
+        } finally {
+            this.showLoadingState(false);
+        }
+    }
+
+    validateInputs() {
+        const subjectInput = document.getElementById('prompt-gen-subject');
+        const subjectError = document.getElementById('subject-error');
+        
         if (!subjectInput.value.trim()) {
             subjectError.textContent = 'Please enter a main subject';
             subjectError.style.display = 'block';
             subjectInput.focus();
-            return;
+            return false;
         }
+        
         subjectError.style.display = 'none';
-        
-        const selectedModel = modelSelect.value;
+        return true;
+    }
+
+    getInputValues() {
+        const selectedModel = document.getElementById('prompt-gen-model').value;
         const selectedCategory = document.getElementById('prompt-gen-category').value;
-        const mainSubject = subjectInput.value.trim();
-        const additionalDetails = detailsTextarea.value.trim();
+        const selectedTemplate = document.getElementById('prompt-gen-template').value;
+        let mainSubject = document.getElementById('prompt-gen-subject').value.trim();
+        let additionalDetails = document.getElementById('prompt-gen-details').value.trim();
         
-        // Show loading state
-        promptGenResult.textContent = '';
-        promptGenLoading.style.display = 'flex';
-        generatePromptBtn.disabled = true;
-
-        try {
-            // System message to guide the AI
-            const systemMessage = {
-                role: "system",
-                content: `You are a creative AI prompt generator. Generate a detailed prompt for: "${mainSubject}"${additionalDetails ? ` with these details: ${additionalDetails}` : ''}.
-                The prompt should be in the ${selectedCategory} category (unless random).
-                Include details about style (${selectedCategory === 'random' ? 'appropriate for the subject' : selectedCategory}), composition, lighting, and quality.
-                Focus on visual elements and keep it 1-2 sentences.`
-            };
-
-            // User message
-            const userMessage = {
-                role: "user",
-                content: `Generate an AI image prompt for: ${mainSubject}${additionalDetails ? ` (Details: ${additionalDetails})` : ''}`
-            };
-
-            let fullPrompt = "";
-
-            // Call the streaming API
-            await streamChatCompletion(
-                [systemMessage, userMessage],
-                { 
-                    model: selectedModel,
-                    seed: Math.floor(Math.random() * 1000000)
-                },
-                (textChunk) => {
-                    fullPrompt += textChunk;
-                    promptGenResult.textContent = fullPrompt;
-                    promptGenResult.scrollTop = promptGenResult.scrollHeight;
-                }
-            );
-
-            // Add "Use this prompt" button
-            const usePromptBtn = document.createElement('button');
-            usePromptBtn.className = 'btn btn-secondary';
-            usePromptBtn.innerHTML = '<i class="fas fa-check"></i> Use this Prompt';
-            usePromptBtn.addEventListener('click', function() {
-                promptTextarea.value = fullPrompt;
-                promptTextarea.focus();
-            });
-            
-            const copyPromptBtn = document.createElement('button');
-            copyPromptBtn.className = 'btn btn-secondary';
-            copyPromptBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
-            copyPromptBtn.addEventListener('click', function() {
-                navigator.clipboard.writeText(fullPrompt);
-                const tooltip = document.createElement('span');
-                tooltip.className = 'tooltip-text';
-                tooltip.textContent = 'Copied!';
-                copyPromptBtn.appendChild(tooltip);
-                setTimeout(() => tooltip.remove(), 2000);
-            });
-            
-            const btnContainer = document.createElement('div');
-            btnContainer.className = 'prompt-action-buttons';
-            btnContainer.appendChild(usePromptBtn);
-            btnContainer.appendChild(copyPromptBtn);
-            
-            promptGenResult.appendChild(document.createElement('br'));
-            promptGenResult.appendChild(btnContainer);
-
-        } catch (error) {
-            console.error('Error generating prompt:', error);
-            promptGenResult.innerHTML = `
-                <div class="error-message">
-                    <i class="fas fa-exclamation-triangle"></i> Failed to generate prompt. Please try again.
-                </div>
-            `;
-        } finally {
-            promptGenLoading.style.display = 'none';
-            generatePromptBtn.disabled = false;
+        // Apply template if selected
+        if (selectedTemplate !== 'none') {
+            const template = this.promptTemplates[selectedTemplate].template;
+            mainSubject = template.replace('[subject]', mainSubject);
+            additionalDetails = template.replace('[details]', additionalDetails);
         }
-    });
+        
+        return { mainSubject, additionalDetails, selectedModel, selectedCategory };
+    }
 
-    // Stream chat completion function
-    async function streamChatCompletion(messages, options = {}, onChunkReceived) {
+    showLoadingState(show) {
+        document.getElementById('promptGenLoading').style.display = show ? 'flex' : 'none';
+        document.getElementById('generate-prompt-btn').disabled = show;
+        if (!show && !this.lastGeneratedPrompt) {
+            document.getElementById('promptGenResult').textContent = '';
+        }
+    }
+
+    async generateAIResponse(mainSubject, additionalDetails, selectedModel, selectedCategory) {
+        // System message to guide the AI
+        const systemMessage = {
+            role: "system",
+            content: `You are a creative AI prompt generator. Generate a detailed prompt for: "${mainSubject}"${additionalDetails ? ` with these details: ${additionalDetails}` : ''}.
+            The prompt should be in the ${selectedCategory} category (unless random).
+            Include details about style (${selectedCategory === 'random' ? 'appropriate for the subject' : selectedCategory}), composition, lighting, and quality.
+            Focus on visual elements and keep it 1-2 sentences.`
+        };
+
+        // User message
+        const userMessage = {
+            role: "user",
+            content: `Generate an AI image prompt for: ${mainSubject}${additionalDetails ? ` (Details: ${additionalDetails})` : ''}`
+        };
+
+        let fullPrompt = "";
+
+        // Call the streaming API
+        await this.streamChatCompletion(
+            [systemMessage, userMessage],
+            { 
+                model: selectedModel,
+                seed: Math.floor(Math.random() * 1000000)
+            },
+            (textChunk) => {
+                fullPrompt += textChunk;
+                document.getElementById('promptGenResult').textContent = fullPrompt;
+                document.getElementById('promptGenResult').scrollTop = 
+                    document.getElementById('promptGenResult').scrollHeight;
+            }
+        );
+
+        return fullPrompt;
+    }
+
+    async streamChatCompletion(messages, options = {}, onChunkReceived) {
         const url = "https://text.pollinations.ai/openai";
         const payload = {
             model: options.model || "openai",
@@ -351,4 +504,187 @@ document.addEventListener('DOMContentLoaded', async function() {
             throw error;
         }
     }
-});
+
+    displayPromptResult(fullPrompt) {
+        const promptGenResult = document.getElementById('promptGenResult');
+        promptGenResult.innerHTML = '';
+        promptGenResult.textContent = fullPrompt;
+
+        // Add action buttons
+        const usePromptBtn = document.createElement('button');
+        usePromptBtn.className = 'btn btn-secondary';
+        usePromptBtn.innerHTML = '<i class="fas fa-check"></i> Use this Prompt';
+        usePromptBtn.addEventListener('click', () => {
+            const promptTextarea = document.getElementById('prompt-textarea');
+            if (promptTextarea) {
+                promptTextarea.value = fullPrompt;
+                promptTextarea.focus();
+            }
+        });
+        
+        const copyPromptBtn = document.createElement('button');
+        copyPromptBtn.className = 'btn btn-secondary';
+        copyPromptBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+        copyPromptBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(fullPrompt);
+            const tooltip = document.createElement('span');
+            tooltip.className = 'tooltip-text';
+            tooltip.textContent = 'Copied!';
+            copyPromptBtn.appendChild(tooltip);
+            setTimeout(() => tooltip.remove(), 2000);
+        });
+        
+        const btnContainer = document.createElement('div');
+        btnContainer.className = 'prompt-action-buttons';
+        btnContainer.appendChild(usePromptBtn);
+        btnContainer.appendChild(copyPromptBtn);
+        
+        promptGenResult.appendChild(document.createElement('br'));
+        promptGenResult.appendChild(btnContainer);
+    }
+
+    showError() {
+        document.getElementById('promptGenResult').innerHTML = `
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i> Failed to generate prompt. Please try again.
+            </div>
+        `;
+    }
+
+    saveToHistory(promptText, model, category) {
+        const history = JSON.parse(localStorage.getItem(this.storageKeys.history) || '[]');
+        // Avoid duplicates
+        if (!history.some(item => item.prompt === promptText)) {
+            history.unshift({
+                prompt: promptText,
+                timestamp: new Date().toISOString(),
+                model: model,
+                category: category
+            });
+            
+            // Limit history size
+            localStorage.setItem(this.storageKeys.history, 
+                JSON.stringify(history.slice(0, this.MAX_HISTORY_ITEMS)));
+        }
+    }
+
+    showHistory() {
+        const history = JSON.parse(localStorage.getItem(this.storageKeys.history) || '[]');
+        const historyPanel = document.createElement('div');
+        historyPanel.className = 'prompt-history-panel';
+        
+        if (history.length === 0) {
+            historyPanel.innerHTML = '<p class="no-history">No history yet. Generated prompts will appear here.</p>';
+        } else {
+            historyPanel.innerHTML = `
+                <div class="history-header">
+                    <h4><i class="fas fa-history"></i> Recent Prompts</h4>
+                    <button id="clear-history-btn" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+                <ul class="history-list">
+                    ${history.map((item, index) => `
+                        <li class="history-item" data-index="${index}">
+                            <div class="history-prompt">${item.prompt}</div>
+                            <div class="history-meta">
+                                <span class="model-badge">${item.model}</span>
+                                <span class="category-badge">${item.category}</span>
+                                <span class="history-date">${this.formatTimeAgo(item.timestamp)}</span>
+                            </div>
+                            <button class="btn btn-secondary use-prompt-btn">
+                                <i class="fas fa-redo"></i> Use
+                            </button>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+        }
+        
+        // Clear existing history panel if any
+        const existingPanel = document.querySelector('.prompt-history-panel');
+        if (existingPanel) existingPanel.remove();
+        
+        // Insert history panel after the prompt result container
+        this.container.insertAdjacentElement('beforeend', historyPanel);
+        
+        // Add event listeners for history items
+        document.querySelectorAll('.use-prompt-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const index = btn.closest('li').getAttribute('data-index');
+                const history = JSON.parse(localStorage.getItem(this.storageKeys.history));
+                const promptTextarea = document.getElementById('prompt-textarea');
+                if (promptTextarea) {
+                    promptTextarea.value = history[index].prompt;
+                    promptTextarea.focus();
+                }
+            });
+        });
+        
+        // Clear history button
+        if (document.getElementById('clear-history-btn')) {
+            document.getElementById('clear-history-btn').addEventListener('click', () => {
+                localStorage.removeItem(this.storageKeys.history);
+                this.showHistory(); // Refresh view
+            });
+        }
+    }
+
+    restoreLastPrompt() {
+        if (this.lastGeneratedPrompt) {
+            this.displayPromptResult(this.lastGeneratedPrompt);
+        }
+    }
+
+    formatTimeAgo(timestamp) {
+        const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+        if (seconds < 60) return 'just now';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        const days = Math.floor(hours / 24);
+        return `${days}d ago`;
+    }
+
+    saveInputs() {
+        localStorage.setItem(this.storageKeys.subject, document.getElementById('prompt-gen-subject').value);
+        localStorage.setItem(this.storageKeys.details, document.getElementById('prompt-gen-details').value);
+        localStorage.setItem(this.storageKeys.model, document.getElementById('prompt-gen-model').value);
+        localStorage.setItem(this.storageKeys.category, document.getElementById('prompt-gen-category').value);
+        localStorage.setItem(this.storageKeys.template, document.getElementById('prompt-gen-template').value);
+    }
+
+    restoreInputs() {
+        const savedSubject = localStorage.getItem(this.storageKeys.subject);
+        const savedDetails = localStorage.getItem(this.storageKeys.details);
+        const savedModel = localStorage.getItem(this.storageKeys.model);
+        const savedCategory = localStorage.getItem(this.storageKeys.category);
+        const savedTemplate = localStorage.getItem(this.storageKeys.template);
+        
+        if (savedSubject) document.getElementById('prompt-gen-subject').value = savedSubject;
+        if (savedDetails) document.getElementById('prompt-gen-details').value = savedDetails;
+        if (savedModel) document.getElementById('prompt-gen-model').value = savedModel;
+        if (savedCategory) document.getElementById('prompt-gen-category').value = savedCategory;
+        if (savedTemplate) document.getElementById('prompt-gen-template').value = savedTemplate;
+    }
+
+    clearSavedInputs() {
+        Object.values(this.storageKeys).forEach(key => {
+            if (key !== 'promptHistory') localStorage.removeItem(key);
+        });
+        
+        document.getElementById('prompt-gen-subject').value = '';
+        document.getElementById('prompt-gen-details').value = '';
+        document.getElementById('prompt-gen-model').value = 'openai';
+        document.getElementById('prompt-gen-category').value = 'random';
+        document.getElementById('prompt-gen-template').value = 'none';
+        
+        // Show feedback
+        const feedback = document.createElement('div');
+        feedback.className = 'success-message';
+        feedback.innerHTML = '<i class="fas fa-check-circle"></i> Saved inputs cleared!';
+        document.getElementById('promptGenResult').appendChild(feedback);
+        setTimeout(() => feedback.remove(), 3000);
+    }
+}
