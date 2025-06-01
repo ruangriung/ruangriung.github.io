@@ -576,3 +576,143 @@
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
 }
+/* Sub-options styling */
+.sub-options {
+    background: rgba(108, 92, 231, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    border-left: 3px solid var(--primary);
+}
+
+.sub-options h5 {
+    color: var(--primary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sub-options h5 i {
+    font-size: 14px;
+}
+
+/* Nested settings grid */
+.sub-options .settings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sub-options .settings-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Add these new styles to your existing CSS file */
+
+/* Narration Input */
+#narration-input {
+    min-height: 80px;
+}
+
+/* Advanced Effects Section */
+.effects-category h4 {
+    color: var(--primary);
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.effects-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    accent-color: var(--primary);
+}
+
+/* Prompt Tabs */
+.prompt-tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(108, 92, 231, 0.2);
+    margin-bottom: 15px;
+}
+
+.prompt-tab {
+    padding: 8px 15px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+}
+
+.prompt-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.prompt-tab:hover:not(.active) {
+    color: var(--primary-light);
+}
+
+.prompt-tab-content {
+    display: none;
+}
+
+.prompt-tab-content.active {
+    display: block;
+}
+
+/* Advanced Settings */
+#advancedContent .settings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .effects-checkboxes {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+    
+    .prompt-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .prompt-tab {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .effects-checkboxes {
+        grid-template-columns: 1fr;
+    }
+    
+    .prompt-tabs {
+        flex-direction: column;
+    }
+    
+    .prompt-tab {
+        border-bottom: none;
+        border-left: 2px solid transparent;
+        text-align: left;
+    }
+    
+    .prompt-tab.active {
+        border-bottom: none;
+        border-left-color: var(--primary);
+    }
+}

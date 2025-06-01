@@ -36,6 +36,14 @@
                 <textarea id="video-concept-input" placeholder="Describe your video concept (e.g. 'A cyberpunk detective chasing a target through neon-lit alleyways at night')"></textarea>
             </div>
 
+            <!-- Narration/Dialog Input -->
+            <div class="input-group" style="margin-top: 20px;">
+                <div class="input-icon">
+                    <i class="fas fa-comment-alt"></i>
+                </div>
+                <textarea id="narration-input" placeholder="Enter narration/dialog (optional)"></textarea>
+            </div>
+
             <!-- Main Settings Sections -->
             <div class="settings-sections">
                 <!-- Basic Settings Section -->
@@ -296,29 +304,45 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- In the Visual Effects section, add these new options -->
-<div class="effects-category">
-    <h4>Advanced Effects</h4>
-    <div class="effects-checkboxes">
-        <!-- Add these new checkboxes -->
-        <div class="checkbox-group">
-            <input type="checkbox" id="split-screen">
-            <label for="split-screen">Split Screen</label>
-        </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="reverse-motion">
-            <label for="reverse-motion">Reverse Motion</label>
-        </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="time-freeze">
-            <label for="time-freeze">Time Freeze</label>
-        </div>
-        <div class="checkbox-group">
-            <input type="checkbox" id="parallax">
-            <label for="parallax">Parallax Effect</label>
-        </div>
-    </div>
-</div>
+
+                        <!-- Advanced Effects -->
+                        <div class="effects-category">
+                            <h4>Advanced Effects</h4>
+                            <div class="effects-checkboxes">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="split-screen">
+                                    <label for="split-screen">Split Screen</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="reverse-motion">
+                                    <label for="reverse-motion">Reverse Motion</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="time-freeze">
+                                    <label for="time-freeze">Time Freeze</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="parallax">
+                                    <label for="parallax">Parallax Effect</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="j-cut">
+                                    <label for="j-cut">J-Cut Transition</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="l-cut">
+                                    <label for="l-cut">L-Cut Transition</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="match-cut">
+                                    <label for="match-cut">Match Cut</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="contrast-cut">
+                                    <label for="contrast-cut">Contrast Cut</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -370,6 +394,60 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Advanced Settings Section -->
+                <div class="section-toggle" id="advancedToggle">
+                    <h3><i class="fas fa-cogs"></i> Advanced Settings</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="section-content" id="advancedContent">
+                    <div class="settings-grid">
+                        <!-- Video Engine -->
+<!-- In the Advanced Settings section -->
+<div class="setting-group">
+    <label for="video-engine"><i class="fas fa-cog"></i> Video Engine</label>
+    <div class="enhanced-select">
+        <select id="video-engine">
+            <option value="stable-video-diffusion">Stable Video Diffusion</option>
+            <option value="animatediff">AnimateDiff</option>
+            <option value="sora">Sora (AI)</option>
+            <option value="pika">Pika Labs</option>
+            <option value="runway">Runway ML</option>
+            <option value="veo3">Veo3 (Google)</option>
+            <option value="veo2">Veo2 (Google)</option>
+            <option value="tensor-video">Tensor Video</option>
+        </select>
+    </div>
+</div>
+
+                        <!-- Seed Value -->
+                        <div class="setting-group">
+                            <label for="seed-value"><i class="fas fa-seedling"></i> Seed Value</label>
+                            <div class="number-input-container">
+                                <i class="fas fa-hashtag"></i>
+                                <input type="number" id="seed-value" min="-1" max="999999" value="-1" placeholder="-1 for random">
+                            </div>
+                        </div>
+
+                        <!-- Consistency -->
+                        <div class="setting-group">
+                            <label for="consistency"><i class="fas fa-link"></i> Frame Consistency</label>
+                            <div class="range-container">
+                                <input type="range" id="consistency" min="0" max="100" value="75">
+                                <span id="consistency-value">75%</span>
+                            </div>
+                        </div>
+
+                        <!-- Motion Intensity -->
+                        <div class="setting-group">
+                            <label for="motion-intensity"><i class="fas fa-bolt"></i> Motion Intensity</label>
+                            <div class="range-container">
+                                <input type="range" id="motion-intensity" min="0" max="100" value="50">
+                                <span id="motion-intensity-value">50%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Action Buttons -->
@@ -392,6 +470,7 @@
                     <button class="prompt-tab active" data-tab="final-prompt">Final Prompt</button>
                     <button class="prompt-tab" data-tab="technical-specs">Technical Specs</button>
                     <button class="prompt-tab" data-tab="visual-description">Visual Description</button>
+                    <button class="prompt-tab" data-tab="narration">Narration</button>
                 </div>
                 
                 <div class="prompt-tab-content active" id="final-prompt">
@@ -404,6 +483,10 @@
                 
                 <div class="prompt-tab-content" id="visual-description">
                     <pre id="visual-description-output"></pre>
+                </div>
+                
+                <div class="prompt-tab-content" id="narration">
+                    <pre id="narration-output"></pre>
                 </div>
                 
                 <div class="action-buttons">
