@@ -36,255 +36,315 @@
                 <textarea id="video-concept-input" placeholder="Describe your video concept (e.g. 'A cyberpunk detective chasing a target through neon-lit alleyways at night')"></textarea>
             </div>
 
-            <!-- Basic Settings Toggle -->
-            <div class="section-toggle" id="basicToggle">
-                <h3><i class="fas fa-sliders-h"></i> Basic Settings</h3>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="section-content" id="basicContent">
-                <div class="settings-grid">
-                    <!-- Visual Style -->
-                    <div class="setting-group">
-                        <label for="visual-style"><i class="fas fa-palette"></i> Visual Style</label>
-                        <div class="enhanced-select">
-                            <select id="visual-style">
-                                <option value="cinematic">Cinematic</option>
-                                <option value="anime">Anime</option>
-                                <option value="realistic">Photorealistic</option>
-                                <option value="watercolor">Watercolor</option>
-                                <option value="pixel-art">Pixel Art</option>
-                                <option value="cyberpunk">Cyberpunk</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Duration -->
-                    <div class="setting-group">
-                        <label for="video-duration"><i class="fas fa-clock"></i> Duration (sec)</label>
-                        <div class="number-input-container">
-                            <i class="fas fa-hourglass-half"></i>
-                            <input type="number" id="video-duration" min="1" max="120" value="10">
-                        </div>
-                    </div>
-
-                    <!-- Aspect Ratio -->
-                    <div class="setting-group">
-                        <label for="aspect-ratio"><i class="fas fa-expand"></i> Aspect Ratio</label>
-                        <div class="enhanced-select">
-                            <select id="aspect-ratio">
-                                <option value="16:9">16:9 (Widescreen)</option>
-                                <option value="9:16">9:16 (Vertical)</option>
-                                <option value="1:1">1:1 (Square)</option>
-                                <option value="4:3">4:3 (Classic)</option>
-                                <option value="21:9">21:9 (Cinematic)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Frame Rate -->
-                    <div class="setting-group">
-                        <label for="frame-rate"><i class="fas fa-film"></i> Frame Rate</label>
-                        <div class="enhanced-select">
-                            <select id="frame-rate">
-                                <option value="24">24 fps (Cinematic)</option>
-                                <option value="30">30 fps (Standard)</option>
-                                <option value="60">60 fps (Smooth)</option>
-                                <option value="120">120 fps (Slow Motion)</option>
-                            </select>
-                        </div>
-                    </div>
+            <!-- Main Settings Sections -->
+            <div class="settings-sections">
+                <!-- Basic Settings Section -->
+                <div class="section-toggle" id="basicToggle">
+                    <h3><i class="fas fa-sliders-h"></i> Basic Settings</h3>
+                    <i class="fas fa-chevron-down"></i>
                 </div>
-            </div>
-
-            <!-- Cinematography Toggle -->
-            <div class="section-toggle" id="cinematographyToggle">
-                <h3><i class="fas fa-camera"></i> Cinematography</h3>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="section-content" id="cinematographyContent">
-                <div class="settings-grid">
-                    <!-- Camera Movement -->
-                    <div class="setting-group">
-                        <label for="camera-movement"><i class="fas fa-video"></i> Camera Movement</label>
-                        <div class="enhanced-select">
-                            <select id="camera-movement">
-                                <option value="static">Static</option>
-                                <option value="slow-pan">Slow Pan</option>
-                                <option value="dolly">Dolly</option>
-                                <option value="tracking">Tracking</option>
-                                <option value="crane">Crane</option>
-                                <option value="steadycam">Steadycam</option>
-                            </select>
+                <div class="section-content" id="basicContent">
+                    <div class="settings-grid">
+                        <!-- Visual Style -->
+                        <div class="setting-group">
+                            <label for="visual-style"><i class="fas fa-palette"></i> Visual Style</label>
+                            <div class="enhanced-select">
+                                <select id="visual-style">
+                                    <option value="cinematic">Cinematic</option>
+                                    <option value="anime">Anime</option>
+                                    <option value="realistic">Photorealistic</option>
+                                    <option value="watercolor">Watercolor</option>
+                                    <option value="pixel-art">Pixel Art</option>
+                                    <option value="cyberpunk">Cyberpunk</option>
+                                    <option value="retro">Retro</option>
+                                    <option value="futuristic">Futuristic</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Camera Angle -->
-                    <div class="setting-group">
-                        <label for="camera-angle"><i class="fas fa-angle-up"></i> Camera Angle</label>
-                        <div class="enhanced-select">
-                            <select id="camera-angle">
-                                <option value="eye-level">Eye Level</option>
-                                <option value="low-angle">Low Angle</option>
-                                <option value="high-angle">High Angle</option>
-                                <option value="dutch-angle">Dutch Angle</option>
-                                <option value="overhead">Overhead</option>
-                            </select>
+                        <!-- Duration -->
+                        <div class="setting-group">
+                            <label for="video-duration"><i class="fas fa-clock"></i> Duration (sec)</label>
+                            <div class="number-input-container">
+                                <i class="fas fa-hourglass-half"></i>
+                                <input type="number" id="video-duration" min="1" max="120" value="10">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Lens Type -->
-                    <div class="setting-group">
-                        <label for="lens-type"><i class="fas fa-camera-retro"></i> Lens Type</label>
-                        <div class="enhanced-select">
-                            <select id="lens-type">
-                                <option value="standard">Standard (50mm)</option>
-                                <option value="wide-angle">Wide Angle (24mm)</option>
-                                <option value="telephoto">Telephoto (85mm+)</option>
-                                <option value="fisheye">Fisheye</option>
-                                <option value="anamorphic">Anamorphic</option>
-                            </select>
+                        <!-- Aspect Ratio -->
+                        <div class="setting-group">
+                            <label for="aspect-ratio"><i class="fas fa-expand"></i> Aspect Ratio</label>
+                            <div class="enhanced-select">
+                                <select id="aspect-ratio">
+                                    <option value="16:9">16:9 (Widescreen)</option>
+                                    <option value="9:16">9:16 (Vertical)</option>
+                                    <option value="1:1">1:1 (Square)</option>
+                                    <option value="4:3">4:3 (Classic)</option>
+                                    <option value="21:9">21:9 (Cinematic)</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Depth of Field -->
-                    <div class="setting-group">
-                        <label for="depth-of-field"><i class="fas fa-layer-group"></i> Depth of Field</label>
-                        <div class="enhanced-select">
-                            <select id="depth-of-field">
-                                <option value="shallow">Shallow</option>
-                                <option value="medium">Medium</option>
-                                <option value="deep">Deep</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Visual Effects Toggle -->
-            <div class="section-toggle" id="effectsToggle">
-                <h3><i class="fas fa-magic"></i> Visual Effects</h3>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="section-content" id="effectsContent">
-                <div class="settings-grid">
-                    <!-- Film Grain -->
-                    <div class="setting-group">
-                        <label for="film-grain"><i class="fas fa-spray-can"></i> Film Grain</label>
-                        <div class="range-container">
-                            <input type="range" id="film-grain" min="0" max="100" value="20">
-                            <span id="grain-value">20%</span>
-                        </div>
-                    </div>
-
-                    <!-- In the Visual Effects Toggle section, add these new checkbox options -->
-<div class="checkbox-group">
-    <input type="checkbox" id="vhs-glitch">
-    <label for="vhs-glitch">VHS Glitch</label>
-</div>
-<div class="checkbox-group">
-    <input type="checkbox" id="montage">
-    <label for="montage">Montage Effect</label>
-</div>
-<div class="checkbox-group">
-    <input type="checkbox" id="datamosh">
-    <label for="datamosh">Datamosh</label>
-</div>
-<div class="checkbox-group">
-    <input type="checkbox" id="scanlines">
-    <label for="scanlines">Scanlines</label>
-</div>
-<div class="checkbox-group">
-    <input type="checkbox" id="vignette">
-    <label for="vignette">Vignette</label>
-</div>
-<div class="checkbox-group">
-    <input type="checkbox" id="double-exposure">
-    <label for="double-exposure">Double Exposure</label>
-</div>
-                    <!-- Chromatic Aberration -->
-                    <div class="setting-group">
-                        <label for="chromatic-aberration"><i class="fas fa-rainbow"></i> Chromatic Aberration</label>
-                        <div class="range-container">
-                            <input type="range" id="chromatic-aberration" min="0" max="100" value="10">
-                            <span id="chromatic-value">10%</span>
-                        </div>
-                    </div>
-
-                    <!-- Color Grading -->
-                    <div class="setting-group">
-                        <label for="color-grading"><i class="fas fa-fill-drip"></i> Color Grading</label>
-                        <div class="enhanced-select">
-                            <select id="color-grading">
-                                <option value="neutral">Neutral</option>
-                                <option value="teal-orange">Teal & Orange</option>
-                                <option value="cool">Cool Tone</option>
-                                <option value="warm">Warm Tone</option>
-                                <option value="high-contrast">High Contrast</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Range -->
-                    <div class="setting-group">
-                        <label for="dynamic-range"><i class="fas fa-sun"></i> Dynamic Range</label>
-                        <div class="enhanced-select">
-                            <select id="dynamic-range">
-                                <option value="standard">Standard</option>
-                                <option value="high">High (HDR)</option>
-                                <option value="log">Log (Flat Profile)</option>
-                            </select>
+                        <!-- Frame Rate -->
+                        <div class="setting-group">
+                            <label for="frame-rate"><i class="fas fa-film"></i> Frame Rate</label>
+                            <div class="enhanced-select">
+                                <select id="frame-rate">
+                                    <option value="24">24 fps (Cinematic)</option>
+                                    <option value="30">30 fps (Standard)</option>
+                                    <option value="60">60 fps (Smooth)</option>
+                                    <option value="120">120 fps (Slow Motion)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Checkbox Effects -->
-                <div class="settings-grid" style="margin-top: 15px;">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="motion-blur" checked>
-                        <label for="motion-blur">Motion Blur</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="lens-flare">
-                        <label for="lens-flare">Lens Flare</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="light-leaks">
-                        <label for="light-leaks">Light Leaks</label>
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="film-scratches">
-                        <label for="film-scratches">Film Scratches</label>
+                <!-- Cinematography Section -->
+                <div class="section-toggle" id="cinematographyToggle">
+                    <h3><i class="fas fa-camera"></i> Cinematography</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="section-content" id="cinematographyContent">
+                    <div class="settings-grid">
+                        <!-- Camera Movement -->
+                        <div class="setting-group">
+                            <label for="camera-movement"><i class="fas fa-video"></i> Camera Movement</label>
+                            <div class="enhanced-select">
+                                <select id="camera-movement">
+                                    <option value="static">Static</option>
+                                    <option value="slow-pan">Slow Pan</option>
+                                    <option value="dolly">Dolly</option>
+                                    <option value="tracking">Tracking</option>
+                                    <option value="crane">Crane</option>
+                                    <option value="steadycam">Steadycam</option>
+                                    <option value="handheld">Handheld</option>
+                                    <option value="drone">Drone</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Camera Angle -->
+                        <div class="setting-group">
+                            <label for="camera-angle"><i class="fas fa-angle-up"></i> Camera Angle</label>
+                            <div class="enhanced-select">
+                                <select id="camera-angle">
+                                    <option value="eye-level">Eye Level</option>
+                                    <option value="low-angle">Low Angle</option>
+                                    <option value="high-angle">High Angle</option>
+                                    <option value="dutch-angle">Dutch Angle</option>
+                                    <option value="overhead">Overhead</option>
+                                    <option value="point-of-view">Point of View</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Lens Type -->
+                        <div class="setting-group">
+                            <label for="lens-type"><i class="fas fa-camera-retro"></i> Lens Type</label>
+                            <div class="enhanced-select">
+                                <select id="lens-type">
+                                    <option value="standard">Standard (50mm)</option>
+                                    <option value="wide-angle">Wide Angle (24mm)</option>
+                                    <option value="telephoto">Telephoto (85mm+)</option>
+                                    <option value="fisheye">Fisheye</option>
+                                    <option value="anamorphic">Anamorphic</option>
+                                    <option value="macro">Macro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Depth of Field -->
+                        <div class="setting-group">
+                            <label for="depth-of-field"><i class="fas fa-layer-group"></i> Depth of Field</label>
+                            <div class="enhanced-select">
+                                <select id="depth-of-field">
+                                    <option value="shallow">Shallow</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="deep">Deep</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Mood & Atmosphere Toggle -->
-            <div class="section-toggle" id="moodToggle">
-                <h3><i class="fas fa-cloud-sun"></i> Mood & Atmosphere</h3>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="section-content" id="moodContent">
-                <div class="setting-group">
-                    <label for="time-of-day"><i class="fas fa-clock"></i> Time of Day</label>
-                    <div class="enhanced-select">
-                        <select id="time-of-day">
-                            <option value="golden-hour">Golden Hour</option>
-                            <option value="blue-hour">Blue Hour</option>
-                            <option value="midday">Midday</option>
-                            <option value="night">Night</option>
-                            <option value="sunrise">Sunrise</option>
-                        </select>
+                <!-- Visual Effects Section -->
+                <div class="section-toggle" id="effectsToggle">
+                    <h3><i class="fas fa-magic"></i> Visual Effects</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="section-content" id="effectsContent">
+                    <div class="effects-grid">
+                        <!-- Film Grain -->
+                        <div class="setting-group">
+                            <label for="film-grain"><i class="fas fa-spray-can"></i> Film Grain</label>
+                            <div class="range-container">
+                                <input type="range" id="film-grain" min="0" max="100" value="20">
+                                <span id="grain-value">20%</span>
+                            </div>
+                        </div>
+
+                        <!-- Chromatic Aberration -->
+                        <div class="setting-group">
+                            <label for="chromatic-aberration"><i class="fas fa-rainbow"></i> Chromatic Aberration</label>
+                            <div class="range-container">
+                                <input type="range" id="chromatic-aberration" min="0" max="100" value="10">
+                                <span id="chromatic-value">10%</span>
+                            </div>
+                        </div>
+
+                        <!-- Color Grading -->
+                        <div class="setting-group">
+                            <label for="color-grading"><i class="fas fa-fill-drip"></i> Color Grading</label>
+                            <div class="enhanced-select">
+                                <select id="color-grading">
+                                    <option value="neutral">Neutral</option>
+                                    <option value="teal-orange">Teal & Orange</option>
+                                    <option value="cool">Cool Tone</option>
+                                    <option value="warm">Warm Tone</option>
+                                    <option value="high-contrast">High Contrast</option>
+                                    <option value="monochrome">Monochrome</option>
+                                    <option value="vintage">Vintage</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Range -->
+                        <div class="setting-group">
+                            <label for="dynamic-range"><i class="fas fa-sun"></i> Dynamic Range</label>
+                            <div class="enhanced-select">
+                                <select id="dynamic-range">
+                                    <option value="standard">Standard</option>
+                                    <option value="high">High (HDR)</option>
+                                    <option value="log">Log (Flat Profile)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Effects Categories -->
+                    <div class="effects-categories">
+                        <!-- Basic Effects -->
+                        <div class="effects-category">
+                            <h4>Basic Effects</h4>
+                            <div class="effects-checkboxes">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="motion-blur" checked>
+                                    <label for="motion-blur">Motion Blur</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="lens-flare">
+                                    <label for="lens-flare">Lens Flare</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="light-leaks">
+                                    <label for="light-leaks">Light Leaks</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="film-scratches">
+                                    <label for="film-scratches">Film Scratches</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="vignette">
+                                    <label for="vignette">Vignette</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Glitch Effects -->
+                        <div class="effects-category">
+                            <h4>Glitch Effects</h4>
+                            <div class="effects-checkboxes">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="vhs-glitch">
+                                    <label for="vhs-glitch">VHS Glitch</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="datamosh">
+                                    <label for="datamosh">Datamosh</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="scanlines">
+                                    <label for="scanlines">Scanlines</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="pixel-sorting">
+                                    <label for="pixel-sorting">Pixel Sorting</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Creative Effects -->
+                        <div class="effects-category">
+                            <h4>Creative Effects</h4>
+                            <div class="effects-checkboxes">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="double-exposure">
+                                    <label for="double-exposure">Double Exposure</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="montage">
+                                    <label for="montage">Montage Effect</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="time-remapping">
+                                    <label for="time-remapping">Time Remapping</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="texture-overlay">
+                                    <label for="texture-overlay">Texture Overlay</label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="setting-group" style="margin-top: 15px;">
-                    <label><i class="fas fa-tags"></i> Mood Tags</label>
-                    <div class="tag-container" id="mood-tags">
-                        <!-- Tags will be added here -->
+                <!-- Mood & Atmosphere Section -->
+                <div class="section-toggle" id="moodToggle">
+                    <h3><i class="fas fa-cloud-sun"></i> Mood & Atmosphere</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="section-content" id="moodContent">
+                    <div class="settings-grid">
+                        <div class="setting-group">
+                            <label for="time-of-day"><i class="fas fa-clock"></i> Time of Day</label>
+                            <div class="enhanced-select">
+                                <select id="time-of-day">
+                                    <option value="golden-hour">Golden Hour</option>
+                                    <option value="blue-hour">Blue Hour</option>
+                                    <option value="midday">Midday</option>
+                                    <option value="night">Night</option>
+                                    <option value="sunrise">Sunrise</option>
+                                    <option value="sunset">Sunset</option>
+                                    <option value="twilight">Twilight</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label for="weather"><i class="fas fa-cloud-rain"></i> Weather</label>
+                            <div class="enhanced-select">
+                                <select id="weather">
+                                    <option value="clear">Clear</option>
+                                    <option value="cloudy">Cloudy</option>
+                                    <option value="rainy">Rainy</option>
+                                    <option value="foggy">Foggy</option>
+                                    <option value="snowy">Snowy</option>
+                                    <option value="stormy">Stormy</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-group" style="margin-top: 10px;">
-                        <input type="text" id="new-mood-tag" placeholder="Add mood tag (e.g. mysterious, joyful)" style="flex: 1; padding: 10px 15px;">
-                        <button id="add-mood-tag" class="btn btn-secondary" style="margin-left: 10px; min-width: 80px;">Add</button>
+
+                    <div class="setting-group" style="margin-top: 15px;">
+                        <label><i class="fas fa-tags"></i> Mood Tags</label>
+                        <div class="tag-container" id="mood-tags">
+                            <!-- Tags will be added here -->
+                        </div>
+                        <div class="input-group" style="margin-top: 10px;">
+                            <input type="text" id="new-mood-tag" placeholder="Add mood tag (e.g. mysterious, joyful)" style="flex: 1; padding: 10px 15px;">
+                            <button id="add-mood-tag" class="btn btn-secondary" style="margin-left: 10px; min-width: 80px;">Add</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -297,18 +357,41 @@
                 <button id="reset-all-btn" class="btn btn-danger">
                     <i class="fas fa-undo"></i> Reset All
                 </button>
+                <button id="save-preset-btn" class="btn btn-secondary">
+                    <i class="fas fa-save"></i> Save Preset
+                </button>
             </div>
 
             <!-- Result Section -->
             <div class="prompt-result" id="prompt-result">
                 <h3><i class="fas fa-scroll"></i> Professional Video Prompt:</h3>
-                <pre id="generated-prompt-output"></pre>
+                <div class="prompt-tabs">
+                    <button class="prompt-tab active" data-tab="final-prompt">Final Prompt</button>
+                    <button class="prompt-tab" data-tab="technical-specs">Technical Specs</button>
+                    <button class="prompt-tab" data-tab="visual-description">Visual Description</button>
+                </div>
+                
+                <div class="prompt-tab-content active" id="final-prompt">
+                    <pre id="generated-prompt-output"></pre>
+                </div>
+                
+                <div class="prompt-tab-content" id="technical-specs">
+                    <pre id="technical-specs-output"></pre>
+                </div>
+                
+                <div class="prompt-tab-content" id="visual-description">
+                    <pre id="visual-description-output"></pre>
+                </div>
+                
                 <div class="action-buttons">
                     <button id="copy-prompt-btn" class="btn btn-secondary">
                         <i class="fas fa-copy"></i> Copy Prompt
                     </button>
                     <button id="clear-prompt-btn" class="btn btn-danger">
                         <i class="fas fa-trash"></i> Clear
+                    </button>
+                    <button id="export-json-btn" class="btn btn-secondary">
+                        <i class="fas fa-file-export"></i> Export JSON
                     </button>
                 </div>
             </div>
