@@ -117,6 +117,12 @@ const saveFormData = () => {
     lensFlare: document.getElementById('lens-flare')?.checked || false,
     lightLeaks: document.getElementById('light-leaks')?.checked || false,
     filmScratches: document.getElementById('film-scratches')?.checked || false,
+    vhsGlitch: document.getElementById('vhs-glitch')?.checked || false,
+    montage: document.getElementById('montage')?.checked || false,
+    datamosh: document.getElementById('datamosh')?.checked || false,
+    scanlines: document.getElementById('scanlines')?.checked || false,
+    vignette: document.getElementById('vignette')?.checked || false,
+    doubleExposure: document.getElementById('double-exposure')?.checked || false,
     moodTags: [...document.querySelectorAll('#mood-tags .tag')].map(tag => tag.dataset.tag),
     generatedPrompt: document.getElementById('generated-prompt-output')?.textContent || ''
   };
@@ -160,6 +166,12 @@ const loadFormData = () => {
     setChecked('lens-flare', formData.lensFlare);
     setChecked('light-leaks', formData.lightLeaks);
     setChecked('film-scratches', formData.filmScratches);
+    setChecked('vhs-glitch', formData.vhsGlitch);
+    setChecked('montage', formData.montage);
+    setChecked('datamosh', formData.datamosh);
+    setChecked('scanlines', formData.scanlines);
+    setChecked('vignette', formData.vignette);
+    setChecked('double-exposure', formData.doubleExposure);
 
     // Restore mood tags
     const moodTagsContainer = document.getElementById('mood-tags');
@@ -191,7 +203,7 @@ const loadFormData = () => {
 // AI-Optimized Prompt Generation
 const generateAIPrompt = (concept, params) => {
   const aspectRatio = params.aspectRatio.replace(':', 'x');
-  const fps = Math.min(60, Math.max(24, parseInt(params.frameRate)));
+  const fps = Math.min(120, Math.max(24, parseInt(params.frameRate)));
   
   return `[VIDEO PROMPT]
 === VISUAL DESCRIPTION ===
@@ -212,10 +224,18 @@ ${concept}
 - Dynamic Range: ${params.dynamicRange}
 
 === EFFECTS ===
-${Object.entries(params.effects)
-  .filter(([_, val]) => val)
-  .map(([key]) => `- ${key.replace('-', ' ')}`)
-  .join('\n')}
+${[
+  params.effects.motionBlur && '- Motion Blur',
+  params.effects.lensFlare && '- Lens Flare',
+  params.effects.lightLeaks && '- Light Leaks',
+  params.effects.filmScratches && '- Film Scratches',
+  params.effects.vhsGlitch && '- VHS Glitch',
+  params.effects.montage && '- Montage Effect',
+  params.effects.datamosh && '- Datamosh',
+  params.effects.scanlines && '- Scanlines',
+  params.effects.vignette && '- Vignette',
+  params.effects.doubleExposure && '- Double Exposure'
+].filter(Boolean).join('\n')}
 
 === MOOD & COMPOSITION ===
 Keywords: ${params.moodTags.join(', ')}`;
@@ -332,7 +352,13 @@ const setupPromptGeneration = () => {
           motionBlur: document.getElementById('motion-blur')?.checked || false,
           lensFlare: document.getElementById('lens-flare')?.checked || false,
           lightLeaks: document.getElementById('light-leaks')?.checked || false,
-          filmScratches: document.getElementById('film-scratches')?.checked || false
+          filmScratches: document.getElementById('film-scratches')?.checked || false,
+          vhsGlitch: document.getElementById('vhs-glitch')?.checked || false,
+          montage: document.getElementById('montage')?.checked || false,
+          datamosh: document.getElementById('datamosh')?.checked || false,
+          scanlines: document.getElementById('scanlines')?.checked || false,
+          vignette: document.getElementById('vignette')?.checked || false,
+          doubleExposure: document.getElementById('double-exposure')?.checked || false
         },
         moodTags: [...document.querySelectorAll('#mood-tags .tag')].map(tag => tag.dataset.tag) || []
       };
@@ -436,7 +462,13 @@ const setupActionButtons = () => {
       'motion-blur': true,
       'lens-flare': false,
       'light-leaks': false,
-      'film-scratches': false
+      'film-scratches': false,
+      'vhs-glitch': false,
+      'montage': false,
+      'datamosh': false,
+      'scanlines': false,
+      'vignette': false,
+      'double-exposure': false
     };
 
     Object.entries(defaults).forEach(([id, value]) => {

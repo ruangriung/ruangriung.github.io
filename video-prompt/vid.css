@@ -565,3 +565,14 @@
   margin-top: 15px;
   border-left: 3px solid var(--danger);
 }
+
+/* Add this to ensure proper spacing with more checkboxes */
+.settings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+@media (max-width: 768px) {
+    .settings-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
