@@ -123,6 +123,10 @@ const saveFormData = () => {
     scanlines: document.getElementById('scanlines')?.checked || false,
     vignette: document.getElementById('vignette')?.checked || false,
     doubleExposure: document.getElementById('double-exposure')?.checked || false,
+    splitScreen: document.getElementById('split-screen')?.checked || false,
+    reverseMotion: document.getElementById('reverse-motion')?.checked || false,
+    timeFreeze: document.getElementById('time-freeze')?.checked || false,
+    parallax: document.getElementById('parallax')?.checked || false,
     moodTags: [...document.querySelectorAll('#mood-tags .tag')].map(tag => tag.dataset.tag),
     generatedPrompt: document.getElementById('generated-prompt-output')?.textContent || ''
   };
@@ -172,6 +176,10 @@ const loadFormData = () => {
     setChecked('scanlines', formData.scanlines);
     setChecked('vignette', formData.vignette);
     setChecked('double-exposure', formData.doubleExposure);
+    setChecked('split-screen', formData.splitScreen);
+    setChecked('reverse-motion', formData.reverseMotion);
+    setChecked('time-freeze', formData.timeFreeze);
+    setChecked('parallax', formData.parallax);
 
     // Restore mood tags
     const moodTagsContainer = document.getElementById('mood-tags');
@@ -234,7 +242,11 @@ ${[
   params.effects.datamosh && '- Datamosh',
   params.effects.scanlines && '- Scanlines',
   params.effects.vignette && '- Vignette',
-  params.effects.doubleExposure && '- Double Exposure'
+  params.effects.doubleExposure && '- Double Exposure',
+  params.effects.splitScreen && '- Split Screen',
+  params.effects.reverseMotion && '- Reverse Motion',
+  params.effects.timeFreeze && '- Time Freeze',
+  params.effects.parallax && '- Parallax Effect'
 ].filter(Boolean).join('\n')}
 
 === MOOD & COMPOSITION ===
@@ -358,7 +370,11 @@ const setupPromptGeneration = () => {
           datamosh: document.getElementById('datamosh')?.checked || false,
           scanlines: document.getElementById('scanlines')?.checked || false,
           vignette: document.getElementById('vignette')?.checked || false,
-          doubleExposure: document.getElementById('double-exposure')?.checked || false
+          doubleExposure: document.getElementById('double-exposure')?.checked || false,
+          splitScreen: document.getElementById('split-screen')?.checked || false,
+          reverseMotion: document.getElementById('reverse-motion')?.checked || false,
+          timeFreeze: document.getElementById('time-freeze')?.checked || false,
+          parallax: document.getElementById('parallax')?.checked || false
         },
         moodTags: [...document.querySelectorAll('#mood-tags .tag')].map(tag => tag.dataset.tag) || []
       };
@@ -468,7 +484,11 @@ const setupActionButtons = () => {
       'datamosh': false,
       'scanlines': false,
       'vignette': false,
-      'double-exposure': false
+      'double-exposure': false,
+      'split-screen': false,
+      'reverse-motion': false,
+      'time-freeze': false,
+      'parallax': false
     };
 
     Object.entries(defaults).forEach(([id, value]) => {
