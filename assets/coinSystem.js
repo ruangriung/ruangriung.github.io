@@ -1,18 +1,18 @@
-// coinSystem.js - Sistem Koin dengan Integrasi API Admin
+// coinSystem.js - Sistem Koin dengan Vercel Backend
 document.addEventListener('DOMContentLoaded', function() {
     // ====================== KONFIGURASI ======================
     const COIN_KEY = 'ruangriung_coin_data';
     const INITIAL_COINS = 500;
     const COIN_RESET_HOURS = 24;
-    const API_URL = 'https://ariftirtana.com/admin-api/';
+    const API_URL = 'https://your-vercel-app.vercel.app/api/password'; // Ganti dengan URL Vercel Anda
     const API_KEY = 'hryhfjfh776(';
-    
+
     // ====================== ELEMEN UI ======================
     const coinCount = document.getElementById('coin-count');
     const resetBtn = document.getElementById('coin-reset-btn');
     const generateBtn = document.getElementById('generate-btn');
     const resetTimer = document.getElementById('reset-timer');
-    
+
     // ====================== STATE ======================
     let coins = INITIAL_COINS;
     let lastResetTime = Date.now();
@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====================== INISIALISASI ======================
     initCoinSystem();
 
-    // ====================== FUNGSI UTAMA ======================
     function initCoinSystem() {
         loadCoinData();
         updateUI();
@@ -29,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setupEventListeners();
     }
 
+    // ====================== FUNGSI MANAJEMEN KOIN ======================
     function loadCoinData() {
         const savedData = localStorage.getItem(COIN_KEY);
         if (savedData) {
@@ -43,7 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     coins = data.coins;
                     lastResetTime = data.lastResetTime;
                 }
-            } catch {
+            } catch (e) {
+                console.error("Error loading coin data:", e);
                 resetCoins();
             }
         } else {
@@ -52,9 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveCoinData() {
-        localStorage.setItem(COIN_KEY, JSON.stringify({ 
-            coins, 
-            lastResetTime 
+        localStorage.setItem(COIN_KEY, JSON.stringify({
+            coins: coins,
+            lastResetTime: lastResetTime
         }));
     }
 
@@ -63,12 +64,12 @@ document.addEventListener('DOMContentLoaded', function() {
         lastResetTime = Date.now();
         saveCoinData();
         updateUI();
-        showAlert('Coins Reset!', 'Your coins have been reset to 500!', 'success');
+        showAlert('Coins Reset!', 'Your coins have been reset to ' + INITIAL_COINS, 'success');
     }
 
     function spendCoin() {
         if (coins <= 0) {
-            showAlert('No Coins Left', 'Coins will reset in 24 hours', 'warning');
+            showAlert('No Coins Left', 'Please wait for automatic reset', 'warning');
             return false;
         }
         
@@ -77,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateUI();
         
         if (coins === 0) {
-            showAlert('No Coins Left', 'Wait for automatic reset', 'info');
+            showAlert('Info', 'You have used all coins. Reset in 24 hours.', 'info');
         }
         return true;
     }
@@ -86,26 +87,29 @@ document.addEventListener('DOMContentLoaded', function() {
     async function fetchAdminPassword() {
         try {
             const response = await fetch(API_URL, {
-                headers: { 
+                method: 'GET',
+                headers: {
                     'X-API-Key': API_KEY,
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                    'Origin': 'https://ruangriung.my.id'
+                },
+                cache: 'no-store'
             });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
             return data.password;
         } catch (error) {
-            console.error('API Error:', error);
-            showAlert('Connection Failed', 'Cannot verify admin password', 'error');
+            console.error('Failed to fetch admin password:', error);
+            showAlert('Connection Error', 'Cannot verify admin password. Please try again later.', 'error');
             return null;
         }
     }
 
-    // ====================== TIMER FUNCTIONS ======================
+    // ====================== FUNGSI TIMER ======================
     function startResetTimer() {
         clearInterval(timerInterval);
         updateResetTimerDisplay();
@@ -135,38 +139,39 @@ document.addEventListener('DOMContentLoaded', function() {
         return num.toString().padStart(2, '0');
     }
 
-    // ====================== UI FUNCTIONS ======================
+    // ====================== FUNGSI UI ======================
     function updateUI() {
         if (coinCount) coinCount.textContent = coins;
         if (generateBtn) {
-            generateBtn.disabled = coins <= 0;
-            generateBtn.title = coins <= 0 ? 'Wait for coin reset' : '';
+            generateBtn.classList.toggle('disabled', coins <= 0);
+            generateBtn.title = coins <= 0 ? 'No coins available. Wait for reset.' : '';
         }
     }
 
     function showAlert(title, text, icon) {
         return Swal.fire({
-            title,
-            text,
-            icon,
+            title: title,
+            text: text,
+            icon: icon,
             confirmButtonColor: '#6c5ce7',
             background: '#2d3436',
-            color: '#fff'
+            color: '#ffffff',
+            allowOutsideClick: false
         });
     }
 
     // ====================== EVENT HANDLERS ======================
     function setupEventListeners() {
-        // Tombol Reset Coin
+        // Tombol Reset Coin (Admin)
         if (resetBtn) {
-            resetBtn.addEventListener('click', async (e) => {
+            resetBtn.addEventListener('click', async function(e) {
                 e.preventDefault();
-                await handlePasswordVerification();
+                await handleAdminVerification();
             });
         }
     }
 
-    async function handlePasswordVerification() {
+    async function handleAdminVerification() {
         const { value: inputPassword } = await Swal.fire({
             title: 'Admin Verification',
             input: 'password',
@@ -178,13 +183,20 @@ document.addEventListener('DOMContentLoaded', function() {
             showCancelButton: true,
             confirmButtonText: 'Verify',
             cancelButtonText: 'Cancel',
-            backdrop: `
-                rgba(0,0,0,0.7)
-                url("https://ruangriung.my.id/images/admin-bg.png")
-                center top
-                no-repeat
-            `,
-            allowOutsideClick: false
+            background: '#2d3436',
+            color: '#ffffff',
+            confirmButtonColor: '#6c5ce7',
+            cancelButtonColor: '#d63031',
+            allowOutsideClick: false,
+            customClass: {
+                validationMessage: 'swal-validation-message'
+            },
+            preConfirm: (value) => {
+                if (!value) {
+                    Swal.showValidationMessage('Password cannot be empty');
+                }
+                return value;
+            }
         });
 
         if (inputPassword) {
@@ -192,8 +204,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (adminPassword && inputPassword === adminPassword) {
                 resetCoins();
-            } else {
-                showAlert('Access Denied', 'Invalid admin credentials', 'error');
+            } else if (adminPassword) {
+                showAlert('Access Denied', 'The admin password you entered is incorrect.', 'error');
             }
         }
     }
@@ -204,12 +216,21 @@ document.addEventListener('DOMContentLoaded', function() {
     window.canGenerateImage = () => coins > 0;
 });
 
-// Inisialisasi SweetAlert theme
-const swalTheme = document.createElement('style');
-swalTheme.textContent = `
+// Style tambahan untuk SweetAlert
+const style = document.createElement('style');
+style.textContent = `
     .swal2-popup {
         background: #2d3436 !important;
-        color: #fff !important;
+        border: 1px solid #636e72 !important;
+    }
+    .swal2-title {
+        color: #f5f6fa !important;
+    }
+    .swal2-content {
+        color: #dfe6e9 !important;
+    }
+    .swal-validation-message {
+        color: #fab1a0 !important;
     }
 `;
-document.head.appendChild(swalTheme);
+document.head.appendChild(style);
