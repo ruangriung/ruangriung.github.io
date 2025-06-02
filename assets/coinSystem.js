@@ -1,24 +1,30 @@
-// coinSystem.js
+// coinSystem.js - Sistem Koin dengan API Password Eksternal
 document.addEventListener('DOMContentLoaded', function() {
+    // ====================== KONFIGURASI ======================
     const COIN_KEY = 'ruangriung_coin_data';
     const INITIAL_COINS = 500;
     const COIN_RESET_HOURS = 24;
-    const ADMIN_PASSWORD = "ruangriungadmin123"; // Ganti password production!
+    const API_ENDPOINT = 'https://ariftirtana.com/admin-api/'; 
+    const API_KEY = 'hryhfjfh776('; // Harus sama dengan di config.php
 
+    // ====================== ELEMEN UI ======================
     const coinCount = document.getElementById('coin-count');
     const resetBtn = document.getElementById('coin-reset-btn');
     const generateBtn = document.getElementById('generate-btn');
     const resetTimer = document.getElementById('reset-timer');
 
+    // ====================== STATE ======================
     let coins = INITIAL_COINS;
     let lastResetTime = Date.now();
     let timerInterval;
 
+    // ====================== INISIALISASI ======================
     loadCoinData();
     updateUI();
-    setupEventListeners();
     startResetTimer();
+    setupEventListeners();
 
+    // ====================== FUNGSI UTAMA ======================
     function loadCoinData() {
         const savedData = localStorage.getItem(COIN_KEY);
         if (savedData) {
@@ -26,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = JSON.parse(savedData);
                 const now = Date.now();
                 const hoursSinceReset = (now - data.lastResetTime) / (1000 * 60 * 60);
+                
                 if (hoursSinceReset >= COIN_RESET_HOURS) {
                     resetCoins();
                 } else {
@@ -41,7 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveCoinData() {
-        localStorage.setItem(COIN_KEY, JSON.stringify({ coins, lastResetTime }));
+        localStorage.setItem(COIN_KEY, JSON.stringify({ 
+            coins, 
+            lastResetTime 
+        }));
     }
 
     function resetCoins() {
@@ -57,15 +67,40 @@ document.addEventListener('DOMContentLoaded', function() {
             showSweetAlert('No Coins Left', 'You have no coins left! Coins will reset in 24 hours.', 'warning');
             return false;
         }
+        
         coins--;
         saveCoinData();
         updateUI();
+        
         if (coins === 0) {
             showSweetAlert('No Coins Left', 'You have no coins left! Coins will reset in 24 hours.', 'warning');
         }
         return true;
     }
 
+    // ====================== FUNGSI API ======================
+    async function fetchAdminPassword() {
+        try {
+            const response = await fetch(API_ENDPOINT, {
+                method: 'GET',
+                headers: { 
+                    'X-API-Key': API_KEY,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            return data.password;
+        } catch (error) {
+            console.error('Failed to fetch admin password:', error);
+            showSweetAlert('Connection Error', 'Cannot connect to admin server. Please try again later.', 'error');
+            return null;
+        }
+    }
+
+    // ====================== TIMER FUNCTIONS ======================
     function startResetTimer() {
         clearInterval(timerInterval);
         updateResetTimerDisplay();
@@ -91,64 +126,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // ====================== UI FUNCTIONS ======================
     function updateUI() {
         if (coinCount) coinCount.textContent = coins;
         if (generateBtn) {
             generateBtn.classList.toggle('no-coins', coins <= 0);
             generateBtn.title = coins <= 0 ? 'No coins - wait for 24h reset' : '';
-        }
-    }
-
-    function setupEventListeners() {
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Enter Admin Password',
-                    html: `
-                        <div style="display:flex;flex-direction:column;gap:10px;">
-                            <input id="admin-password" type="password" class="swal2-input" placeholder="Enter admin password...">
-                            <label style="font-size:0.9em;cursor:pointer;display:flex;align-items:center;gap:8px;">
-                                <input type="checkbox" id="toggle-password">
-                                Show Password
-                            </label>
-                        </div>
-                        <div style="margin-top:10px;text-align:left;font-size:0.8em;color:#666;">
-                            Contact admin:<br>
-                            - <a href="https://www.facebook.com/groups/1182261482811767" target="_blank">Facebook Group</a><br>
-                            - <a href="mailto:admin@ruangriung.my.id">admin@ruangriung.my.id</a>
-                        </div>
-                    `,
-                    focusConfirm: false,
-                    preConfirm: () => document.getElementById('admin-password').value,
-                    showCancelButton: true,
-                    confirmButtonText: 'Confirm',
-                    cancelButtonText: 'Cancel',
-                    background: getComputedStyle(document.body).getPropertyValue('--bg'),
-                    color: getComputedStyle(document.body).getPropertyValue('--text'),
-                    confirmButtonColor: '#6c5ce7',
-                    cancelButtonColor: '#d63031'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        if (result.value === ADMIN_PASSWORD) {
-                            resetCoins();
-                            startResetTimer();
-                        } else {
-                            showSweetAlert('Wrong Password!', 'The admin password you entered is incorrect.', 'error');
-                        }
-                    }
-                });
-
-                setTimeout(() => {
-                    const toggle = document.getElementById('toggle-password');
-                    const passwordField = document.getElementById('admin-password');
-                    if (toggle && passwordField) {
-                        toggle.addEventListener('change', function() {
-                            passwordField.type = this.checked ? 'text' : 'password';
-                        });
-                    }
-                }, 300);
-            });
         }
     }
 
@@ -164,7 +147,50 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Public API
+    // ====================== EVENT HANDLERS ======================
+    function setupEventListeners() {
+        // Tombol Reset Coin (Admin)
+        if (resetBtn) {
+            resetBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                const { value: inputPassword } = await Swal.fire({
+                    title: 'Enter Admin Password',
+                    input: 'password',
+                    inputAttributes: { autocapitalize: 'off' },
+                    html: `
+                        <div style="margin-top:10px;text-align:left;font-size:0.8em;color:#666;">
+                            Contact admin if you forgot the password
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    cancelButtonText: 'Cancel',
+                    backdrop: true,
+                    preConfirm: () => {
+                        const password = document.getElementById('swal-input1').value;
+                        if (!password) {
+                            Swal.showValidationMessage('Password cannot be empty');
+                        }
+                        return password;
+                    }
+                });
+
+                if (inputPassword) {
+                    const adminPassword = await fetchAdminPassword();
+                    
+                    if (adminPassword && inputPassword === adminPassword) {
+                        resetCoins();
+                        startResetTimer();
+                    } else {
+                        showSweetAlert('Wrong Password!', 'The admin password you entered is incorrect.', 'error');
+                    }
+                }
+            });
+        }
+    }
+
+    // ====================== PUBLIC API ======================
     window.getCoins = () => coins;
     window.spendCoin = spendCoin;
     window.canGenerateImage = () => coins > 0;
