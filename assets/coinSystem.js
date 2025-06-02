@@ -1,126 +1,149 @@
 // coinSystem.js - Sistem Koin dengan Vercel Backend
 document.addEventListener('DOMContentLoaded', function() {
     // ====================== KONFIGURASI ======================
-    const COIN_KEY = 'ruangriung_coin_data';
+    const COIN_KEY = 'ruangriung_coin_data_v2';
     const INITIAL_COINS = 500;
     const COIN_RESET_HOURS = 24;
     const API_URL = 'https://arif-rouge.vercel.app/api/password';
     const API_KEY = 'hryhfjfh776(';
+    const DEBUG_MODE = true; // Set false di production
 
     // ====================== ELEMEN UI ======================
-    const coinCount = document.getElementById('coin-count');
-    const resetBtn = document.getElementById('coin-reset-btn');
-    const generateBtn = document.getElementById('generate-btn');
-    const resetTimer = document.getElementById('reset-timer');
+    const ui = {
+        coinCount: document.getElementById('coin-count'),
+        resetBtn: document.getElementById('coin-reset-btn'),
+        generateBtn: document.getElementById('generate-btn'),
+        resetTimer: document.getElementById('reset-timer')
+    };
 
     // ====================== STATE ======================
-    let coins = INITIAL_COINS;
-    let lastResetTime = Date.now();
-    let timerInterval;
+    let state = {
+        coins: INITIAL_COINS,
+        lastResetTime: Date.now(),
+        timerInterval: null
+    };
 
     // ====================== INISIALISASI ======================
-    initCoinSystem();
+    init();
 
-    function initCoinSystem() {
+    function init() {
+        logDebug('System initialized');
         loadCoinData();
         updateUI();
         startResetTimer();
         setupEventListeners();
     }
 
-    // ====================== FUNGSI MANAJEMEN KOIN ======================
+    // ====================== CORE FUNCTIONS ======================
     function loadCoinData() {
-        const savedData = localStorage.getItem(COIN_KEY);
-        if (savedData) {
-            try {
-                const data = JSON.parse(savedData);
-                const now = Date.now();
-                const hoursSinceReset = (now - data.lastResetTime) / (1000 * 60 * 60);
-                
-                if (hoursSinceReset >= COIN_RESET_HOURS) {
-                    resetCoins();
-                } else {
-                    coins = data.coins;
-                    lastResetTime = data.lastResetTime;
-                }
-            } catch (e) {
-                console.error("Error loading coin data:", e);
+        try {
+            const savedData = localStorage.getItem(COIN_KEY);
+            if (!savedData) {
+                logDebug('No saved data, using defaults');
                 resetCoins();
+                return;
             }
-        } else {
+
+            const data = JSON.parse(savedData);
+            const hoursSinceReset = (Date.now() - data.lastResetTime) / (1000 * 60 * 60);
+            
+            if (hoursSinceReset >= COIN_RESET_HOURS) {
+                logDebug('Auto-resetting coins (24h passed)');
+                resetCoins();
+            } else {
+                state.coins = data.coins;
+                state.lastResetTime = data.lastResetTime;
+                logDebug(`Loaded coins: ${state.coins}, last reset: ${new Date(state.lastResetTime)}`);
+            }
+        } catch (e) {
+            console.error('Load error:', e);
             resetCoins();
         }
     }
 
     function saveCoinData() {
         localStorage.setItem(COIN_KEY, JSON.stringify({
-            coins: coins,
-            lastResetTime: lastResetTime
+            coins: state.coins,
+            lastResetTime: state.lastResetTime
         }));
+        logDebug('Data saved to localStorage');
     }
 
     function resetCoins() {
-        coins = INITIAL_COINS;
-        lastResetTime = Date.now();
+        state.coins = INITIAL_COINS;
+        state.lastResetTime = Date.now();
         saveCoinData();
         updateUI();
-        showAlert('Coins Reset!', 'Your coins have been reset to ' + INITIAL_COINS, 'success');
+        showAlert('Coins Reset!', `Your coins have been reset to ${INITIAL_COINS}`, 'success');
+        logDebug('Coins reset performed');
     }
 
     function spendCoin() {
-        if (coins <= 0) {
+        if (state.coins <= 0) {
             showAlert('No Coins Left', 'Please wait for automatic reset', 'warning');
             return false;
         }
         
-        coins--;
+        state.coins--;
         saveCoinData();
         updateUI();
         
-        if (coins === 0) {
-            showAlert('Info', 'You have used all coins. Reset in 24 hours.', 'info');
+        if (state.coins === 0) {
+            showAlert('Info', 'Coins will reset in 24 hours', 'info');
         }
+        logDebug(`Coin spent. Remaining: ${state.coins}`);
         return true;
     }
 
-    // ====================== FUNGSI API ======================
-  async function fetchAdminPassword() {
-  try {
-    const response = await fetch(API_URL, {
-      method: 'GET',
-      headers: {
-        'X-API-Key': API_KEY,
-        'Origin': 'https://ruangriung.my.id' // Wajib disertakan
-      },
-      cache: 'no-cache'
-    });
+    // ====================== API INTEGRATION ======================
+    async function fetchAdminPassword() {
+        try {
+            logDebug('Fetching admin password...');
+            const timestamp = Date.now();
+            
+            const response = await fetch(`${API_URL}?t=${timestamp}`, {
+                headers: { 
+                    'X-API-Key': API_KEY,
+                    'Origin': 'https://ruangriung.my.id'
+                },
+                cache: 'no-store'
+            });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            logDebug('API response:', data);
+            
+            if (!data.password) {
+                throw new Error('Invalid response format');
+            }
+            
+            return data.password;
+        } catch (error) {
+            console.error('API Error:', error);
+            showAlert(
+                'Connection Error', 
+                `Cannot verify admin password. ${DEBUG_MODE ? error.message : ''}`, 
+                'error'
+            );
+            return null;
+        }
     }
-    
-    const data = await response.json();
-    if (!data.password) throw new Error("Invalid response format");
-    return data.password;
-    
-  } catch (error) {
-    console.error('API Error:', error);
-    showAlert('Connection Error', 'Failed to connect: ' + error.message, 'error');
-    return null;
-  }
-}
 
-    // ====================== FUNGSI TIMER ======================
+    // ====================== TIMER FUNCTIONS ======================
     function startResetTimer() {
-        clearInterval(timerInterval);
+        clearInterval(state.timerInterval);
         updateResetTimerDisplay();
-        timerInterval = setInterval(updateResetTimerDisplay, 1000);
+        state.timerInterval = setInterval(updateResetTimerDisplay, 1000);
+        logDebug('Reset timer started');
     }
 
     function updateResetTimerDisplay() {
-        const now = Date.now();
-        const resetTime = lastResetTime + (COIN_RESET_HOURS * 60 * 60 * 1000);
-        const timeLeft = resetTime - now;
+        const resetTime = state.lastResetTime + (COIN_RESET_HOURS * 60 * 60 * 1000);
+        const timeLeft = resetTime - Date.now();
 
         if (timeLeft <= 0) {
             resetCoins();
@@ -131,29 +154,27 @@ document.addEventListener('DOMContentLoaded', function() {
         const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        if (resetTimer) {
-            resetTimer.textContent = `Reset in ${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+        if (ui.resetTimer) {
+            ui.resetTimer.textContent = `Reset in ${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
         }
     }
 
-    function padZero(num) {
-        return num.toString().padStart(2, '0');
-    }
-
-    // ====================== FUNGSI UI ======================
+    // ====================== UI FUNCTIONS ======================
     function updateUI() {
-        if (coinCount) coinCount.textContent = coins;
-        if (generateBtn) {
-            generateBtn.classList.toggle('disabled', coins <= 0);
-            generateBtn.title = coins <= 0 ? 'No coins available. Wait for reset.' : '';
+        if (ui.coinCount) ui.coinCount.textContent = state.coins;
+        if (ui.generateBtn) {
+            ui.generateBtn.classList.toggle('disabled', state.coins <= 0);
+            ui.generateBtn.title = state.coins <= 0 ? 'No coins available' : '';
         }
+        logDebug('UI updated', { coins: state.coins });
     }
 
     function showAlert(title, text, icon) {
+        logDebug(`Alert shown: ${title} - ${text}`);
         return Swal.fire({
-            title: title,
-            text: text,
-            icon: icon,
+            title,
+            text,
+            icon,
             confirmButtonColor: '#6c5ce7',
             background: '#2d3436',
             color: '#ffffff',
@@ -163,38 +184,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ====================== EVENT HANDLERS ======================
     function setupEventListeners() {
-        // Tombol Reset Coin (Admin)
-        if (resetBtn) {
-            resetBtn.addEventListener('click', async function(e) {
+        if (ui.resetBtn) {
+            ui.resetBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
                 await handleAdminVerification();
             });
         }
+        logDebug('Event listeners setup');
     }
 
     async function handleAdminVerification() {
+        logDebug('Admin verification initiated');
+        
         const { value: inputPassword } = await Swal.fire({
             title: 'Admin Verification',
             input: 'password',
             inputPlaceholder: 'Enter admin password',
-            inputAttributes: {
-                autocapitalize: 'off',
-                autocorrect: 'off'
-            },
             showCancelButton: true,
             confirmButtonText: 'Verify',
             cancelButtonText: 'Cancel',
             background: '#2d3436',
             color: '#ffffff',
-            confirmButtonColor: '#6c5ce7',
-            cancelButtonColor: '#d63031',
             allowOutsideClick: false,
-            customClass: {
-                validationMessage: 'swal-validation-message'
-            },
             preConfirm: (value) => {
                 if (!value) {
                     Swal.showValidationMessage('Password cannot be empty');
+                    return false;
                 }
                 return value;
             }
@@ -206,32 +221,47 @@ document.addEventListener('DOMContentLoaded', function() {
             if (adminPassword && inputPassword === adminPassword) {
                 resetCoins();
             } else if (adminPassword) {
-                showAlert('Access Denied', 'The admin password you entered is incorrect.', 'error');
+                showAlert('Access Denied', 'Incorrect admin password', 'error');
             }
         }
     }
 
+    // ====================== UTILITIES ======================
+    function padZero(num) {
+        return num.toString().padStart(2, '0');
+    }
+
+    function logDebug(...messages) {
+        if (DEBUG_MODE) {
+            console.log('[DEBUG]', ...messages);
+        }
+    }
+
     // ====================== PUBLIC API ======================
-    window.getCoins = () => coins;
-    window.spendCoin = spendCoin;
-    window.canGenerateImage = () => coins > 0;
+    window.ruangriungCoin = {
+        getCoins: () => state.coins,
+        spendCoin: spendCoin,
+        canGenerate: () => state.coins > 0,
+        debug: () => {
+            console.log('Current state:', state);
+            return state;
+        }
+    };
 });
 
-// Style tambahan untuk SweetAlert
+// ====================== STYLE INJECTION ======================
 const style = document.createElement('style');
 style.textContent = `
     .swal2-popup {
         background: #2d3436 !important;
-        border: 1px solid #636e72 !important;
+        border-radius: 12px !important;
     }
     .swal2-title {
-        color: #f5f6fa !important;
+        font-size: 1.5rem !important;
     }
-    .swal2-content {
-        color: #dfe6e9 !important;
-    }
-    .swal-validation-message {
-        color: #fab1a0 !important;
+    .disabled {
+        opacity: 0.5;
+        cursor: not-allowed !important;
     }
 `;
 document.head.appendChild(style);
