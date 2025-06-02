@@ -1,149 +1,81 @@
-// coinSystem.js - Sistem Koin dengan Vercel Backend
+// coinSystem.js
 document.addEventListener('DOMContentLoaded', function() {
-    // ====================== KONFIGURASI ======================
-    const COIN_KEY = 'ruangriung_coin_data_v2';
+    const COIN_KEY = 'ruangriung_coin_data';
     const INITIAL_COINS = 500;
     const COIN_RESET_HOURS = 24;
-    const API_URL = 'https://arif-rouge.vercel.app/api/password';
-    const API_KEY = 'hryhfjfh776(';
-    const DEBUG_MODE = true; // Set false di production
+    const ADMIN_PASSWORD = "ruangriungadmin123"; // Ganti password production!
 
-    // ====================== ELEMEN UI ======================
-    const ui = {
-        coinCount: document.getElementById('coin-count'),
-        resetBtn: document.getElementById('coin-reset-btn'),
-        generateBtn: document.getElementById('generate-btn'),
-        resetTimer: document.getElementById('reset-timer')
-    };
+    const coinCount = document.getElementById('coin-count');
+    const resetBtn = document.getElementById('coin-reset-btn');
+    const generateBtn = document.getElementById('generate-btn');
+    const resetTimer = document.getElementById('reset-timer');
 
-    // ====================== STATE ======================
-    let state = {
-        coins: INITIAL_COINS,
-        lastResetTime: Date.now(),
-        timerInterval: null
-    };
+    let coins = INITIAL_COINS;
+    let lastResetTime = Date.now();
+    let timerInterval;
 
-    // ====================== INISIALISASI ======================
-    init();
+    loadCoinData();
+    updateUI();
+    setupEventListeners();
+    startResetTimer();
 
-    function init() {
-        logDebug('System initialized');
-        loadCoinData();
-        updateUI();
-        startResetTimer();
-        setupEventListeners();
-    }
-
-    // ====================== CORE FUNCTIONS ======================
     function loadCoinData() {
-        try {
-            const savedData = localStorage.getItem(COIN_KEY);
-            if (!savedData) {
-                logDebug('No saved data, using defaults');
+        const savedData = localStorage.getItem(COIN_KEY);
+        if (savedData) {
+            try {
+                const data = JSON.parse(savedData);
+                const now = Date.now();
+                const hoursSinceReset = (now - data.lastResetTime) / (1000 * 60 * 60);
+                if (hoursSinceReset >= COIN_RESET_HOURS) {
+                    resetCoins();
+                } else {
+                    coins = data.coins;
+                    lastResetTime = data.lastResetTime;
+                }
+            } catch {
                 resetCoins();
-                return;
             }
-
-            const data = JSON.parse(savedData);
-            const hoursSinceReset = (Date.now() - data.lastResetTime) / (1000 * 60 * 60);
-            
-            if (hoursSinceReset >= COIN_RESET_HOURS) {
-                logDebug('Auto-resetting coins (24h passed)');
-                resetCoins();
-            } else {
-                state.coins = data.coins;
-                state.lastResetTime = data.lastResetTime;
-                logDebug(`Loaded coins: ${state.coins}, last reset: ${new Date(state.lastResetTime)}`);
-            }
-        } catch (e) {
-            console.error('Load error:', e);
+        } else {
             resetCoins();
         }
     }
 
     function saveCoinData() {
-        localStorage.setItem(COIN_KEY, JSON.stringify({
-            coins: state.coins,
-            lastResetTime: state.lastResetTime
-        }));
-        logDebug('Data saved to localStorage');
+        localStorage.setItem(COIN_KEY, JSON.stringify({ coins, lastResetTime }));
     }
 
     function resetCoins() {
-        state.coins = INITIAL_COINS;
-        state.lastResetTime = Date.now();
+        coins = INITIAL_COINS;
+        lastResetTime = Date.now();
         saveCoinData();
         updateUI();
-        showAlert('Coins Reset!', `Your coins have been reset to ${INITIAL_COINS}`, 'success');
-        logDebug('Coins reset performed');
+        showSweetAlert('Coins Reset!', 'Your coins have been reset to 500!', 'success');
     }
 
     function spendCoin() {
-        if (state.coins <= 0) {
-            showAlert('No Coins Left', 'Please wait for automatic reset', 'warning');
+        if (coins <= 0) {
+            showSweetAlert('No Coins Left', 'You have no coins left! Coins will reset in 24 hours.', 'warning');
             return false;
         }
-        
-        state.coins--;
+        coins--;
         saveCoinData();
         updateUI();
-        
-        if (state.coins === 0) {
-            showAlert('Info', 'Coins will reset in 24 hours', 'info');
+        if (coins === 0) {
+            showSweetAlert('No Coins Left', 'You have no coins left! Coins will reset in 24 hours.', 'warning');
         }
-        logDebug(`Coin spent. Remaining: ${state.coins}`);
         return true;
     }
 
-    // ====================== API INTEGRATION ======================
-    async function fetchAdminPassword() {
-        try {
-            logDebug('Fetching admin password...');
-            const timestamp = Date.now();
-            
-            const response = await fetch(`${API_URL}?t=${timestamp}`, {
-                headers: { 
-                    'X-API-Key': API_KEY,
-                    'Origin': 'https://ruangriung.my.id'
-                },
-                cache: 'no-store'
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || `HTTP ${response.status}`);
-            }
-
-            const data = await response.json();
-            logDebug('API response:', data);
-            
-            if (!data.password) {
-                throw new Error('Invalid response format');
-            }
-            
-            return data.password;
-        } catch (error) {
-            console.error('API Error:', error);
-            showAlert(
-                'Connection Error', 
-                `Cannot verify admin password. ${DEBUG_MODE ? error.message : ''}`, 
-                'error'
-            );
-            return null;
-        }
-    }
-
-    // ====================== TIMER FUNCTIONS ======================
     function startResetTimer() {
-        clearInterval(state.timerInterval);
+        clearInterval(timerInterval);
         updateResetTimerDisplay();
-        state.timerInterval = setInterval(updateResetTimerDisplay, 1000);
-        logDebug('Reset timer started');
+        timerInterval = setInterval(updateResetTimerDisplay, 1000);
     }
 
     function updateResetTimerDisplay() {
-        const resetTime = state.lastResetTime + (COIN_RESET_HOURS * 60 * 60 * 1000);
-        const timeLeft = resetTime - Date.now();
+        const now = Date.now();
+        const resetTime = lastResetTime + (COIN_RESET_HOURS * 60 * 60 * 1000);
+        const timeLeft = resetTime - now;
 
         if (timeLeft <= 0) {
             resetCoins();
@@ -154,114 +86,87 @@ document.addEventListener('DOMContentLoaded', function() {
         const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        if (ui.resetTimer) {
-            ui.resetTimer.textContent = `Reset in ${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+        if (resetTimer) {
+            resetTimer.textContent = `Reset in ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
     }
 
-    // ====================== UI FUNCTIONS ======================
     function updateUI() {
-        if (ui.coinCount) ui.coinCount.textContent = state.coins;
-        if (ui.generateBtn) {
-            ui.generateBtn.classList.toggle('disabled', state.coins <= 0);
-            ui.generateBtn.title = state.coins <= 0 ? 'No coins available' : '';
+        if (coinCount) coinCount.textContent = coins;
+        if (generateBtn) {
+            generateBtn.classList.toggle('no-coins', coins <= 0);
+            generateBtn.title = coins <= 0 ? 'No coins - wait for 24h reset' : '';
         }
-        logDebug('UI updated', { coins: state.coins });
     }
 
-    function showAlert(title, text, icon) {
-        logDebug(`Alert shown: ${title} - ${text}`);
+    function setupEventListeners() {
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Enter Admin Password',
+                    html: `
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <input id="admin-password" type="password" class="swal2-input" placeholder="Enter admin password...">
+                            <label style="font-size:0.9em;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                                <input type="checkbox" id="toggle-password">
+                                Show Password
+                            </label>
+                        </div>
+                        <div style="margin-top:10px;text-align:left;font-size:0.8em;color:#666;">
+                            Contact admin:<br>
+                            - <a href="https://www.facebook.com/groups/1182261482811767" target="_blank">Facebook Group</a><br>
+                            - <a href="mailto:admin@ruangriung.my.id">admin@ruangriung.my.id</a>
+                        </div>
+                    `,
+                    focusConfirm: false,
+                    preConfirm: () => document.getElementById('admin-password').value,
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm',
+                    cancelButtonText: 'Cancel',
+                    background: getComputedStyle(document.body).getPropertyValue('--bg'),
+                    color: getComputedStyle(document.body).getPropertyValue('--text'),
+                    confirmButtonColor: '#6c5ce7',
+                    cancelButtonColor: '#d63031'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (result.value === ADMIN_PASSWORD) {
+                            resetCoins();
+                            startResetTimer();
+                        } else {
+                            showSweetAlert('Wrong Password!', 'The admin password you entered is incorrect.', 'error');
+                        }
+                    }
+                });
+
+                setTimeout(() => {
+                    const toggle = document.getElementById('toggle-password');
+                    const passwordField = document.getElementById('admin-password');
+                    if (toggle && passwordField) {
+                        toggle.addEventListener('change', function() {
+                            passwordField.type = this.checked ? 'text' : 'password';
+                        });
+                    }
+                }, 300);
+            });
+        }
+    }
+
+    function showSweetAlert(title, text, icon = 'success') {
         return Swal.fire({
             title,
             text,
             icon,
+            confirmButtonText: 'OK',
             confirmButtonColor: '#6c5ce7',
-            background: '#2d3436',
-            color: '#ffffff',
-            allowOutsideClick: false
+            background: getComputedStyle(document.body).getPropertyValue('--bg'),
+            color: getComputedStyle(document.body).getPropertyValue('--text')
         });
     }
 
-    // ====================== EVENT HANDLERS ======================
-    function setupEventListeners() {
-        if (ui.resetBtn) {
-            ui.resetBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                await handleAdminVerification();
-            });
-        }
-        logDebug('Event listeners setup');
-    }
-
-    async function handleAdminVerification() {
-        logDebug('Admin verification initiated');
-        
-        const { value: inputPassword } = await Swal.fire({
-            title: 'Admin Verification',
-            input: 'password',
-            inputPlaceholder: 'Enter admin password',
-            showCancelButton: true,
-            confirmButtonText: 'Verify',
-            cancelButtonText: 'Cancel',
-            background: '#2d3436',
-            color: '#ffffff',
-            allowOutsideClick: false,
-            preConfirm: (value) => {
-                if (!value) {
-                    Swal.showValidationMessage('Password cannot be empty');
-                    return false;
-                }
-                return value;
-            }
-        });
-
-        if (inputPassword) {
-            const adminPassword = await fetchAdminPassword();
-            
-            if (adminPassword && inputPassword === adminPassword) {
-                resetCoins();
-            } else if (adminPassword) {
-                showAlert('Access Denied', 'Incorrect admin password', 'error');
-            }
-        }
-    }
-
-    // ====================== UTILITIES ======================
-    function padZero(num) {
-        return num.toString().padStart(2, '0');
-    }
-
-    function logDebug(...messages) {
-        if (DEBUG_MODE) {
-            console.log('[DEBUG]', ...messages);
-        }
-    }
-
-    // ====================== PUBLIC API ======================
-    window.ruangriungCoin = {
-        getCoins: () => state.coins,
-        spendCoin: spendCoin,
-        canGenerate: () => state.coins > 0,
-        debug: () => {
-            console.log('Current state:', state);
-            return state;
-        }
-    };
+    // Public API
+    window.getCoins = () => coins;
+    window.spendCoin = spendCoin;
+    window.canGenerateImage = () => coins > 0;
+    window.updateResetTimer = updateResetTimerDisplay;
 });
-
-// ====================== STYLE INJECTION ======================
-const style = document.createElement('style');
-style.textContent = `
-    .swal2-popup {
-        background: #2d3436 !important;
-        border-radius: 12px !important;
-    }
-    .swal2-title {
-        font-size: 1.5rem !important;
-    }
-    .disabled {
-        opacity: 0.5;
-        cursor: not-allowed !important;
-    }
-`;
-document.head.appendChild(style);
