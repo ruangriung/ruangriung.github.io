@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const COIN_KEY = 'ruangriung_coin_data';
     const INITIAL_COINS = 500;
     const COIN_RESET_HOURS = 24;
-    const API_URL = 'https://arif-rouge.vercel.app/api/password'; 
+    const API_URL = 'https://arif-rouge.vercel.app/api/password';
     const API_KEY = 'hryhfjfh776(';
 
     // ====================== ELEMEN UI ======================
@@ -84,30 +84,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ====================== FUNGSI API ======================
-    async function fetchAdminPassword() {
-        try {
-            const response = await fetch(API_URL, {
-                method: 'GET',
-                headers: {
-                    'X-API-Key': API_KEY,
-                    'Content-Type': 'application/json',
-                    'Origin': 'https://ruangriung.my.id'
-                },
-                cache: 'no-store'
-            });
+  async function fetchAdminPassword() {
+  try {
+    const response = await fetch(API_URL, {
+      method: 'GET',
+      headers: {
+        'X-API-Key': API_KEY,
+        'Origin': 'https://ruangriung.my.id' // Wajib disertakan
+      },
+      cache: 'no-cache'
+    });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data.password;
-        } catch (error) {
-            console.error('Failed to fetch admin password:', error);
-            showAlert('Connection Error', 'Cannot verify admin password. Please try again later.', 'error');
-            return null;
-        }
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
+    
+    const data = await response.json();
+    if (!data.password) throw new Error("Invalid response format");
+    return data.password;
+    
+  } catch (error) {
+    console.error('API Error:', error);
+    showAlert('Connection Error', 'Failed to connect: ' + error.message, 'error');
+    return null;
+  }
+}
 
     // ====================== FUNGSI TIMER ======================
     function startResetTimer() {
