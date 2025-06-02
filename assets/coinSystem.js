@@ -1,24 +1,28 @@
-// coinSystem.js
+// coinSystem.js - Versi Lengkap dengan Penyembunyian Password
 document.addEventListener('DOMContentLoaded', function() {
+    // Konfigurasi Sistem Coin
     const COIN_KEY = 'ruangriung_coin_data';
     const INITIAL_COINS = 500;
     const COIN_RESET_HOURS = 24;
-    const ADMIN_PASSWORD = "ruangriungadmin123"; // Ganti password production!
 
+    // Elemen UI
     const coinCount = document.getElementById('coin-count');
     const resetBtn = document.getElementById('coin-reset-btn');
     const generateBtn = document.getElementById('generate-btn');
     const resetTimer = document.getElementById('reset-timer');
 
+    // State
     let coins = INITIAL_COINS;
     let lastResetTime = Date.now();
     let timerInterval;
 
+    // Inisialisasi
     loadCoinData();
     updateUI();
     setupEventListeners();
     startResetTimer();
 
+    // Fungsi Utama
     function loadCoinData() {
         const savedData = localStorage.getItem(COIN_KEY);
         if (savedData) {
@@ -26,13 +30,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = JSON.parse(savedData);
                 const now = Date.now();
                 const hoursSinceReset = (now - data.lastResetTime) / (1000 * 60 * 60);
+                
                 if (hoursSinceReset >= COIN_RESET_HOURS) {
                     resetCoins();
                 } else {
                     coins = data.coins;
                     lastResetTime = data.lastResetTime;
                 }
-            } catch {
+            } catch (e) {
+                console.error("Error parsing coin data:", e);
                 resetCoins();
             }
         } else {
@@ -41,7 +47,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveCoinData() {
-        localStorage.setItem(COIN_KEY, JSON.stringify({ coins, lastResetTime }));
+        localStorage.setItem(COIN_KEY, JSON.stringify({ 
+            coins, 
+            lastResetTime 
+        }));
     }
 
     function resetCoins() {
@@ -49,21 +58,27 @@ document.addEventListener('DOMContentLoaded', function() {
         lastResetTime = Date.now();
         saveCoinData();
         updateUI();
-        showSweetAlert('Coins Reset!', 'Your coins have been reset to 500!', 'success');
+        showSweetAlert('Success', 'Your coins have been reset to 500!', 'success');
     }
 
     function spendCoin() {
         if (coins <= 0) {
-            showSweetAlert('No Coins Left', 'You have no coins left! Coins will reset in 24 hours.', 'warning');
+            showSweetAlert('No Coins', 'You have no coins left! Coins will reset in 24 hours.', 'warning');
             return false;
         }
         coins--;
         saveCoinData();
         updateUI();
-        if (coins === 0) {
-            showSweetAlert('No Coins Left', 'You have no coins left! Coins will reset in 24 hours.', 'warning');
-        }
         return true;
+    }
+
+    // Fungsi Pendukung UI
+    function updateUI() {
+        if (coinCount) coinCount.textContent = coins;
+        if (generateBtn) {
+            generateBtn.classList.toggle('disabled', coins <= 0);
+            generateBtn.title = coins <= 0 ? 'No coins available' : '';
+        }
     }
 
     function startResetTimer() {
@@ -87,80 +102,75 @@ document.addEventListener('DOMContentLoaded', function() {
         const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
         if (resetTimer) {
-            resetTimer.textContent = `Reset in ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            resetTimer.textContent = `Reset in ${hours}h ${minutes}m ${seconds}s`;
         }
     }
 
-    function updateUI() {
-        if (coinCount) coinCount.textContent = coins;
-        if (generateBtn) {
-            generateBtn.classList.toggle('no-coins', coins <= 0);
-            generateBtn.title = coins <= 0 ? 'No coins - wait for 24h reset' : '';
-        }
-    }
-
-    function setupEventListeners() {
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Enter Admin Password',
-                    html: `
-                        <div style="display:flex;flex-direction:column;gap:10px;">
-                            <input id="admin-password" type="password" class="swal2-input" placeholder="Enter admin password...">
-                            <label style="font-size:0.9em;cursor:pointer;display:flex;align-items:center;gap:8px;">
-                                <input type="checkbox" id="toggle-password">
-                                Show Password
-                            </label>
-                        </div>
-                        <div style="margin-top:10px;text-align:left;font-size:0.8em;color:#666;">
-                            Contact admin:<br>
-                            - <a href="https://www.facebook.com/groups/1182261482811767" target="_blank">Facebook Group</a><br>
-                            - <a href="mailto:admin@ruangriung.my.id">admin@ruangriung.my.id</a>
-                        </div>
-                    `,
-                    focusConfirm: false,
-                    preConfirm: () => document.getElementById('admin-password').value,
-                    showCancelButton: true,
-                    confirmButtonText: 'Confirm',
-                    cancelButtonText: 'Cancel',
-                    background: getComputedStyle(document.body).getPropertyValue('--bg'),
-                    color: getComputedStyle(document.body).getPropertyValue('--text'),
-                    confirmButtonColor: '#6c5ce7',
-                    cancelButtonColor: '#d63031'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        if (result.value === ADMIN_PASSWORD) {
-                            resetCoins();
-                            startResetTimer();
-                        } else {
-                            showSweetAlert('Wrong Password!', 'The admin password you entered is incorrect.', 'error');
-                        }
-                    }
-                });
-
-                setTimeout(() => {
-                    const toggle = document.getElementById('toggle-password');
-                    const passwordField = document.getElementById('admin-password');
-                    if (toggle && passwordField) {
-                        toggle.addEventListener('change', function() {
-                            passwordField.type = this.checked ? 'text' : 'password';
-                        });
-                    }
-                }, 300);
+    // Fungsi Validasi Password via API
+    async function validateAdminPassword(inputPassword) {
+        try {
+            const response = await fetch('/api/validate-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: inputPassword })
             });
+            
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const data = await response.json();
+            return data.valid;
+        } catch (error) {
+            console.error('Password validation failed:', error);
+            return false;
         }
     }
 
-    function showSweetAlert(title, text, icon = 'success') {
+    // Event Listeners
+    function setupEventListeners() {
+        if (!resetBtn) return;
+
+        resetBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const { value: password } = await Swal.fire({
+                title: 'Admin Access',
+                html: `
+                    <input type="password" id="password-input" class="swal2-input" placeholder="Enter admin password">
+                    <label class="password-toggle">
+                        <input type="checkbox" id="show-password"> Show password
+                    </label>
+                `,
+                focusConfirm: false,
+                preConfirm: () => {
+                    return document.getElementById('password-input').value;
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    popup: 'custom-swal'
+                }
+            });
+
+            if (password) {
+                const isValid = await validateAdminPassword(password);
+                if (isValid) {
+                    resetCoins();
+                } else {
+                    showSweetAlert('Error', 'Incorrect admin password', 'error');
+                }
+            }
+        });
+    }
+
+    // Helper Function
+    function showSweetAlert(title, text, icon) {
         return Swal.fire({
             title,
             text,
             icon,
             confirmButtonText: 'OK',
-            confirmButtonColor: '#6c5ce7',
-            background: getComputedStyle(document.body).getPropertyValue('--bg'),
-            color: getComputedStyle(document.body).getPropertyValue('--text')
+            confirmButtonColor: '#3085d6',
         });
     }
 
@@ -168,5 +178,4 @@ document.addEventListener('DOMContentLoaded', function() {
     window.getCoins = () => coins;
     window.spendCoin = spendCoin;
     window.canGenerateImage = () => coins > 0;
-    window.updateResetTimer = updateResetTimerDisplay;
 });
