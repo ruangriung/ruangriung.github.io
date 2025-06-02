@@ -107,24 +107,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Fungsi Validasi Password via API
-    async function validateAdminPassword(inputPassword) {
-        try {
-            const response = await fetch('/api/validate-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password: inputPassword })
-            });
-            
-            if (!response.ok) throw new Error('Network response was not ok');
-            
-            const data = await response.json();
-            return data.valid;
-        } catch (error) {
-            console.error('Password validation failed:', error);
-            return false;
-        }
-    }
-
+   async function validateAdminPassword(inputPassword) {
+  try {
+    const response = await fetch('/api/validate-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: inputPassword }),
+    });
+    
+    // Debugging: Log full response
+    console.log("API Response:", await response.clone().json()); 
+    
+    const data = await response.json();
+    return data.valid;
+  } catch (error) {
+    console.error('API Error:', error);
+    return false;
+  }
+}
     // Event Listeners
     function setupEventListeners() {
         if (!resetBtn) return;
