@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const COIN_KEY = 'ruangriung_coin_data';
     const INITIAL_COINS = 500;
     const COIN_RESET_HOURS = 24;
-    const API_URL = 'https://arif-rouge.vercel.app/api/password'; // Ganti dengan URL Vercel Anda
+    const API_URL = 'https://arif-rouge.vercel.app/api/password'; 
     const API_KEY = 'hryhfjfh776(';
 
     // ====================== ELEMEN UI ======================
