@@ -1,4 +1,4 @@
-// coinSystem.js - Versi Lengkap dengan Penyembunyian Password
+
 document.addEventListener('DOMContentLoaded', function() {
     // Konfigurasi Sistem Coin
     const COIN_KEY = 'ruangriung_coin_data';
