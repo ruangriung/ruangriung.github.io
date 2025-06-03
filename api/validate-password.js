@@ -1,31 +1,24 @@
+// api/validate-password.js
 export default function handler(req, res) {
-  // Debugging: Log environment variables
-  console.log("ENV:", process.env.ADMIN_PASSWORD); 
+  // 1. Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', 'https://ruangriung.my.id');
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+  // 2. Hanya terima POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // 3. Validasi password
   try {
     const { password } = req.body;
-    
-    // Debugging: Log input password
-    console.log("Input Password:", password); 
-    
     const isValid = password === process.env.ADMIN_PASSWORD;
-    
-    // Debugging: Log validation result
-    console.log("Is Valid:", isValid); 
-    
-    res.status(200).json({ 
-      valid: isValid,
-      debug: {
-        envPassword: process.env.ADMIN_PASSWORD,
-        inputPassword: password
-      }
-    });
+
+    // 4. Response aman
+    res.status(200).json({ valid: isValid });
   } catch (error) {
-    console.error("Error:", error);
+    console.error('API Error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
