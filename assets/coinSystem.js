@@ -107,21 +107,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Fungsi Validasi Password via API
-   async function validateAdminPassword(inputPassword) {
+ // Ganti fungsi validasi dengan ini:
+async function validateAdminPassword(inputPassword) {
   try {
-    const response = await fetch('/api/validate-password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: inputPassword }),
-    });
-    
-    // Debugging: Log full response
-    console.log("API Response:", await response.clone().json()); 
+    const response = await fetch(
+      'https://ruangriung-github-f5n2so7gz-ruangriungs-projects.vercel.app/api/validate-password', 
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: inputPassword }),
+      }
+    );
     
     const data = await response.json();
     return data.valid;
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('Validation error:', error);
     return false;
   }
 }
