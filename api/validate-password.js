@@ -1,8 +1,5 @@
-// Import dependencies if needed (e.g., for hashing passwords)
-// import bcrypt from 'bcrypt';
-
 export default async function handler(req, res) {
-  // Only allow POST requests
+  // Hanya izinkan metode POST
   if (req.method !== 'POST') {
     return res.status(405).json({ 
       success: false,
@@ -13,7 +10,7 @@ export default async function handler(req, res) {
   try {
     const { password } = req.body;
 
-    // Validate input
+    // Validasi input
     if (!password || typeof password !== 'string') {
       return res.status(400).json({ 
         success: false,
@@ -21,8 +18,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // Compare with environment variable
-    // Note: In production, use hashed passwords (e.g., bcrypt.compare)
+    // Bandingkan dengan environment variable
+    // Catatan: Di production, gunakan bcrypt.compare() untuk password yang di-hash
     const isValid = password === process.env.ADMIN_PASSWORD;
 
     if (!isValid) {
@@ -32,7 +29,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // Password is valid
+    // Respon sukses
     return res.status(200).json({ 
       success: true,
       message: 'Password verified' 
