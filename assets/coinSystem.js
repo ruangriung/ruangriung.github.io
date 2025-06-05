@@ -52,12 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
     lastResetTime = Date.now();
     saveCoinData();
     updateUI();
-    showSweetAlert('Coins Reset!', 'Your coins have been reset to 500!', 'success');
+    showSweetAlert('Success!', 'Coins have been reset to 500!', 'success');
   }
 
   function spendCoin() {
     if (coins <= 0) {
-      showSweetAlert('No Coins Left', 'You have no coins left! Coins will reset in 24 hours.', 'warning');
+      showSweetAlert('No Coins Left', 'Coins will reset in 24 hours.', 'warning');
       return false;
     }
     coins--;
@@ -107,16 +107,14 @@ document.addEventListener('DOMContentLoaded', function() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: inputPassword }),
       });
-
-      const data = await response.json();
-      return data.success;
+      return await response.json();
     } catch (error) {
-      console.error('Password validation error:', error);
-      return false;
+      console.error('Validation error:', error);
+      return { success: false };
     }
   }
 
-  // Event Listener untuk Tombol Reset
+  // Event Listener dengan Toggle Password
   function setupEventListeners() {
     if (resetBtn) {
       resetBtn.addEventListener('click', async (e) => {
@@ -124,22 +122,59 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const { value: password } = await Swal.fire({
           title: 'Enter Admin Password',
-          input: 'password',
-          inputPlaceholder: 'Enter password...',
+          html: `
+            <div style="position: relative; margin: 1em 0">
+              <input
+                id="swal-password"
+                type="password"
+                class="swal2-input"
+                placeholder="Your password..."
+                style="padding-right: 2.5em"
+              >
+              <button
+                id="swal-toggle-password"
+                type="button"
+                style="
+                  position: absolute;
+                  right: 15px;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  background: transparent;
+                  border: none;
+                  cursor: pointer;
+                  color: #666;
+                  font-size: 1.2em;
+                "
+              >
+                <i class="fa fa-eye"></i>
+              </button>
+            </div>
+          `,
+          focusConfirm: false,
           showCancelButton: true,
-          confirmButtonText: 'Confirm',
+          confirmButtonText: 'Verify',
           cancelButtonText: 'Cancel',
-          background: getComputedStyle(document.body).getPropertyValue('--bg'),
-          color: getComputedStyle(document.body).getPropertyValue('--text'),
+          preConfirm: () => {
+            return document.getElementById('swal-password').value;
+          },
+          didOpen: () => {
+            const toggleBtn = document.getElementById('swal-toggle-password');
+            const passwordInput = document.getElementById('swal-password');
+            
+            toggleBtn.addEventListener('click', () => {
+              const isShowing = passwordInput.type === 'text';
+              passwordInput.type = isShowing ? 'password' : 'text';
+              toggleBtn.innerHTML = isShowing ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>';
+            });
+          }
         });
 
         if (password) {
-          const isValid = await validateAdminPassword(password);
-          if (isValid) {
+          const validation = await validateAdminPassword(password);
+          if (validation.success) {
             resetCoins();
-            startResetTimer();
           } else {
-            showSweetAlert('Wrong Password!', 'The admin password is incorrect.', 'error');
+            showSweetAlert('Access Denied', validation.message || 'Invalid password', 'error');
           }
         }
       });
