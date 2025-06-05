@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const COIN_KEY = 'ruangriung_coin_data';
     const INITIAL_COINS = 500;
     const COIN_RESET_HOURS = 24;
-    const ADMIN_PASSWORD = "ruangriungadmin123"; // Ganti password production!
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD; // Menggunakan environment variable
 
     const coinCount = document.getElementById('coin-count');
     const resetBtn = document.getElementById('coin-reset-btn');
