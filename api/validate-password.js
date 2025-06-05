@@ -1,24 +1,48 @@
-// api/validate-password.js
-export default function handler(req, res) {
-  // 1. Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', 'https://ruangriung.my.id');
-  res.setHeader('Access-Control-Allow-Methods', 'POST');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+// Import dependencies if needed (e.g., for hashing passwords)
+// import bcrypt from 'bcrypt';
 
-  // 2. Hanya terima POST requests
+export default async function handler(req, res) {
+  // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ 
+      success: false,
+      message: 'Method not allowed' 
+    });
   }
 
-  // 3. Validasi password
   try {
     const { password } = req.body;
+
+    // Validate input
+    if (!password || typeof password !== 'string') {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Password is required' 
+      });
+    }
+
+    // Compare with environment variable
+    // Note: In production, use hashed passwords (e.g., bcrypt.compare)
     const isValid = password === process.env.ADMIN_PASSWORD;
 
-    // 4. Response aman
-    res.status(200).json({ valid: isValid });
+    if (!isValid) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid password' 
+      });
+    }
+
+    // Password is valid
+    return res.status(200).json({ 
+      success: true,
+      message: 'Password verified' 
+    });
+
   } catch (error) {
-    console.error('API Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Password validation error:', error);
+    return res.status(500).json({ 
+      success: false,
+      message: 'Internal server error' 
+    });
   }
 }
