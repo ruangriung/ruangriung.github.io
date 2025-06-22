@@ -60,6 +60,7 @@
     <link rel="stylesheet" href="assets/ruangriung.css" />
 <link rel="stylesheet" href="assets/assistant.css" />
     <link rel="stylesheet" href="assets/tts.css"/>
+    <link rel="stylesheet" href="assets/modalbattle.css" />
     <link rel="manifest" href="manifest.json" />
   </head>
   <body>
@@ -1181,14 +1182,14 @@
       ></noscript>
       <!-- Histats.com  END  -->
     </footer>
-    <a
-      href="https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew"
-      target="_blank"
-      class="floating-facebook-btn"
-      title="Follow us on Facebook"
-    >
-      <i class="fab fa-facebook-f"></i>
-    </a>
+<a
+  href="https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew"
+  target="_blank"
+  class="floating-facebook-btn"
+  title="Follow us on Facebook"
+>
+  <i class="fab fa-facebook-f"></i>
+</a>
     <div class="cookie-consent-banner" id="cookieConsentBanner">
       <div class="cookie-consent-content">
         <p>
@@ -1216,6 +1217,82 @@
     </div>
     <!-- Add this before other script tags -->
     <div id="notification-container"></div>
+    
+<div id="battleModal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    
+    <div class="modal-header">
+      <h2>BATTLE VIDEO AI 2025</h2>
+      <p class="subtitle">Di RUANGRIUNG AI IMAGE</p>
+    </div>
+
+    <div class="modal-section">
+        <p><b>Hallo kawan semua....</b><br>
+        Dalam rangka ulang tahun yang pertama RUANGRIUNG AI IMAGE</p> 
+    
+        <p>Pada kesempatan ini, kami akan mengadakan battle yang seru nih yang akan digelar pada :<br>
+        - Hari/Tanggal: <b>Senin, 23 Juni s/d Minggu, 29 Juni</b><br>
+        - Waktu: <b>10.00 WIB s/d 20.00 WIB</b><br>
+        - Pengumuman Pemenang: <b>Sabtu, 05 Juli jam 17.00 WIB</b></p>
+    
+        <p><b>Tema :</b><br>
+        <span style="font-size: 1.2rem; font-weight: 700;">💥 IKLAN LUCU RUANG RIUNG 💥</span><br>
+        (Contoh video ada di bisa lihat di Group )</p>
+    
+        <p>Siapa yang berani menerima tantangan ini?<br>
+        Tunjukkan ide kreatifmu! Akan ada hadiah menarik bagi video-video terbaik!</p>
+    </div>
+
+    <div class="modal-section">
+        <h3 class="modal-section-title"><i class="fas fa-clipboard-check"></i>DASAR PENILAIAN</h3>
+        <ol>
+            <li><b>Kesesuaian Tema:</b> Apakah video sesuai dengan brief tema?</li>
+            <li><b>Kreativitas & Originalitas:</b> Ide harus unik, orisinal, tidak generik.</li>
+            <li><b>Kualitas Produksi:</b> Gambar jernih, audio jelas, hasil edit rapi.</li>
+            <li><b>Storytelling:</b> Cerita mengalir, lucu, bikin penonton betah nonton.</li>
+            <li><b>Pesan & Call to Action:</b> Ada pesan yang jelas & ajakan untuk audiens.</li>
+            <li><b>Branding:</b> Logo/Brand “RUANGRIUNG AI IMAGE” muncul tepat & elegan.</li>
+            <li><b>Kelucuan:</b> Wajib lucu! Minimal bikin senyum-senyum sendiri.</li>
+        </ol>
+    </div>
+
+    <div class="modal-section">
+        <h3 class="modal-section-title"><i class="fas fa-tasks"></i>SYARAT WAJIB PESERTA</h3>
+        <ol>
+            <li>Wajib bergabung dengan grup RUANGRIUNG AI IMAGE.</li>
+            <li>Tulisan “RUANGRIUNG AI IMAGE” wajib muncul di dalam video.</li>
+            <li>Minimal durasi video: 16 detik.</li>
+            <li>Wajib posting video di grup + share postingan ini ke beranda.</li>
+            <li>Tag minimal 5 teman.</li>
+            <li>Format & Generator pembuatan video bebas.</li>
+            <li>Tidak mengandung unsur SARA, pornografi, atau politik.</li>
+            <li>Maksimal kirim 2 video untuk setiap peserta.</li>
+            <li>Gunakan hashtag resmi: <span class="hashtag">#ultah1thnruangriung</span></li>
+            <li>Keputusan juri mutlak & tidak bisa diganggu gugat.</li>
+            <li>Hadiah Pemenang:<br>
+                - Juara 1: <b>Rp 300.000,-</b><br>
+                - Juara 2: <b>Rp 200.000,-</b><br>
+                - Juara 3: <b>Rp 150.000,-</b><br>
+                - Juara 4: <b>Rp 100.000,-</b><br>
+                - Juara 5: <b>Rp 100.000,-</b>
+            </li>
+        </ol>
+        
+        <a href="https://www.facebook.com/groups/1182261482811767/?ref=share&mibextid=lOuIew" target="_blank" class="btn-facebook">
+            <i class="fab fa-facebook-f"></i> Gabung Grup Sekarang
+        </a>
+    </div>
+
+    <div class="footer-text">
+        <p>Yuk kawan semua....kita gaskeun, tunjukkan imajinasi kreatifitasmu disini..</p>
+        <p>Terima kasih atas partisipasinya<br>
+        Salam dari Team Work RAI<br>
+        @sorotan</p>
+    </div>
+
+  </div>
+</div>
 <script>
   let deferredPrompt;
 
@@ -1274,11 +1351,12 @@
     <script src="assets/consent-cookies.js"></script>
     <script src="assets/status-indicator.js"></script>
 	<script src="assets/size-preset.js"></script>
-	  <script src="assets/pwa-installer.js"></script>
+	<script src="assets/pwa-installer.js"></script>
 	  <script src="assets/promptGen.js"></script>
 	  <script src="assets/assistant.js"></script>
 	  <script src="assets/zoom.js"></script>
 	  <script src="assets/tts.js"></script>
+	  <script src="assets/modalbattle.js"></script>
 
   </body>
 </html>
