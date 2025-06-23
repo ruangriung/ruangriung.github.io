@@ -1,9 +1,5 @@
-/* assets/modalbattle.css - Final Version */
+/* assets/modalbattle.css - v4 (Teks Flat, Kontainer Neumorphic) */
 
-/*
- * Variabel ini memastikan konsistensi dengan tema utama Anda.
- * Jika Anda mengubah tema utama, modal akan ikut beradaptasi.
- */
 :root {
     --primary: #6c5ce7;
     --bg: #e0e5ec;
@@ -22,6 +18,7 @@ body.dark-mode {
     --text-light: #b2bec3;
 }
 
+/* Overlay Latar Belakang Modal */
 .modal {
     display: none;
     position: fixed; 
@@ -35,39 +32,7 @@ body.dark-mode {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     animation: fadeIn 0.3s ease-out;
-}
-
-.modal-content {
-    background-color: var(--bg);
-    margin: 5% auto;
-    padding: 30px;
-    border: none;
-    width: 90%;
-    max-width: 700px;
-    border-radius: 20px;
-    position: relative;
-    box-shadow: 
-        8px 8px 15px var(--shadow-dark),
-        -8px -8px 15px var(--shadow-light);
-    animation: slideIn 0.5s ease-out;
-    max-height: 85vh;
-    overflow-y: auto;
-}
-
-/* Styling untuk scrollbar di dalam modal */
-.modal-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-content::-webkit-scrollbar-track {
-  background: var(--bg);
-  border-radius: 10px;
-}
-
-.modal-content::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: 10px;
-  border: 2px solid var(--bg);
+    padding: 20px;
 }
 
 @keyframes fadeIn {
@@ -75,11 +40,75 @@ body.dark-mode {
     to { opacity: 1; }
 }
 
+/* Konten Utama Modal (tetap dengan efek neumorphic) */
+.modal-content {
+    background-color: var(--bg);
+    margin: 5% auto;
+    padding: 25px;
+    border: none;
+    width: 90%;
+    max-width: 750px;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 
+        8px 8px 15px var(--shadow-dark),
+        -8px -8px 15px var(--shadow-light);
+    animation: slideIn 0.5s ease-out;
+    display: flex;
+    gap: 20px;
+    max-height: 90vh;
+}
+
 @keyframes slideIn {
     from { transform: translateY(-30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
 
+/* Ikon Utama di Sisi Kiri */
+.modal-main-icon {
+    font-size: 2.5rem;
+    color: var(--primary);
+    flex-shrink: 0;
+    margin-top: 5px;
+}
+
+/* Wrapper untuk Teks dan Konten */
+.modal-body-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 75vh;
+    padding-right: 15px;
+}
+
+/* Styling Scrollbar */
+.modal-body-content::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-body-content::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 10px;
+}
+.modal-body-content::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+  border: 2px solid var(--bg);
+}
+
+.modal-header h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.modal-header .subtitle {
+    font-size: 1.1rem;
+	padding: 15px;
+    color: var(--text-light);
+    margin: 0;
+}
+
+/* Tombol Close */
 .close-button {
     color: var(--text-light);
     background: var(--bg);
@@ -91,7 +120,6 @@ body.dark-mode {
     top: 15px;
     right: 15px;
     font-size: 24px;
-    font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -102,54 +130,28 @@ body.dark-mode {
     transition: all 0.3s ease;
 }
 
-.close-button:hover,
-.close-button:focus {
-    color: var(--primary);
-    transform: translateY(-2px);
-     box-shadow: 
-        5px 5px 10px var(--shadow-dark),
-        -5px -5px 10px var(--shadow-light);
+.close-button:hover {
+    color: var(--danger);
 }
 
-.close-button:active {
-    transform: translateY(0);
-    box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
-}
-
-/* Heading utama modal */
-.modal-header h2 {
-    text-align: center;
-    color: var(--primary);
-    margin-bottom: 10px;
-    font-size: 2rem;
-    font-weight: 700;
-    text-shadow: 1px 1px 2px var(--shadow-light);
-}
-
-.modal-header .subtitle {
-    text-align: center;
-    font-size: 1.1rem;
-    color: var(--text-light);
-    margin-bottom: 25px;
-}
-
-/* Styling untuk setiap bagian konten */
+/* Bagian Konten (TANPA efek inset) */
 .modal-section {
-    background: var(--bg);
-    padding: 20px;
-    border-radius: 15px;
-    margin-bottom: 25px;
-    /* Efek inset neumorphic */
-    box-shadow: 
-        inset 5px 5px 10px var(--shadow-dark),
-        inset -5px -5px 10px var(--shadow-light);
+    background: transparent; /* Ubah background menjadi transparan */
+    padding: 15px 0; /* Sesuaikan padding */
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--shadow-dark); /* Ganti shadow dengan garis bawah */
+    box-shadow: none; /* Hapus shadow inset */
+}
+
+.modal-section:last-of-type {
+    border-bottom: none; /* Hapus garis bawah di elemen terakhir */
 }
 
 .modal-section-title {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--primary);
-    margin-bottom: 15px;
+    margin: 0 0 15px 0;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -159,24 +161,30 @@ body.dark-mode {
     font-size: 1.1rem;
 }
 
-.modal-content p, .modal-content ol {
-    line-height: 1.7;
-    margin-bottom: 15px;
-    color: var(--text);
-    font-size: 0.95rem;
-}
-
-.modal-content b {
+/* Tombol Gabung Grup Facebook */
+.btn-facebook {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background: #1877f2;
+    color: white;
+    text-decoration: none;
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
     font-weight: 600;
-    color: var(--primary);
+    border-radius: 10px;
+    box-shadow: 
+        3px 3px 6px var(--shadow-dark),
+        -3px -3px 6px var(--shadow-light);
+    transition: all 0.3s ease;
 }
 
-.modal-content ol {
-    padding-left: 25px;
-}
-
-.modal-content li {
-    margin-bottom: 8px;
+.btn-facebook:hover {
+    background: #166fe5;
+    transform: translateY(-2px);
 }
 
 .hashtag {
@@ -195,35 +203,16 @@ body.dark-mode {
     color: var(--text-light);
 }
 
-/* Tombol Gabung Grup Facebook */
-.btn-facebook {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    background: #1877f2; /* Warna khas Facebook */
-    color: white;
-    text-decoration: none;
-    margin-top: 20px;
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 10px;
-    box-shadow: 
-        3px 3px 6px var(--shadow-dark),
-        -3px -3px 6px var(--shadow-light);
-    transition: all 0.3s ease;
-}
-
-.btn-facebook:hover {
-    background: #166fe5;
-    transform: translateY(-2px);
-    box-shadow: 
-        5px 5px 10px var(--shadow-dark),
-        -5px -5px 10px var(--shadow-light);
-}
-
-.btn-facebook i {
-    font-size: 1.2rem;
+/* Responsif untuk layar kecil */
+@media (max-width: 600px) {
+    .modal-content {
+        flex-direction: column;
+        padding: 20px;
+    }
+    .modal-main-icon {
+        display: none;
+    }
+    .modal-body-content {
+        padding-right: 5px;
+    }
 }
