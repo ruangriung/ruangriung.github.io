@@ -19,8 +19,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    // Tampilkan modal setelah 10 detik
-    setTimeout(showModal, 10000);
+    // Tampilkan modal setelah 10 detik (Baris ini sekarang dinonaktifkan)
+    // setTimeout(showModal, 10000);
 
     // Sembunyikan modal saat tombol close diklik
     if (closeButton) {
